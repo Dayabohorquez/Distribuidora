@@ -1,13 +1,1809 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Reset básico para eliminar márgenes y paddings predeterminados */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Estilos básicos */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Estilos del encabezado */
+header {
+    background-color: #ffffff;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 130px;
+    width: auto;
+}
+
+.logo p {
+    margin-left: 10px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: black;
+}
+
+.account {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.account i {
+    margin-right: 10px;
+}
+
+.account .dropdown {
+    align-content: center;
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.account .dropdown a {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    color: #000000;
+    text-decoration: none;
+}
+
+.account .dropdown a i {
+    margin-left: auto;
+    padding: 3px 15px;
+}
+
+.account .dropdown a:hover {
+    background-color: #f0f0f0;
+}
+
+.account:hover .dropdown,
+.account.active .dropdown {
+    display: block;
+}
+
+/* Estilo para mostrar el menú desplegable cuando tiene la clase 'active' */
+.account.active .dropdown,
+.special-dates.active .dropdown {
+    display: block;
+}
+
+/* Estilo general del dropdown para que esté oculto por defecto */
+.account .dropdown,
+.special-dates .dropdown {
+    display: none;
+}
+
+.account-cart {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.account-cart .account {
+    margin-left: 20px;
+    font-size: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.account-cart .cart {
+    margin-left: 20px;
+}
+
+.account-cart .cart button {
+    background-color: #f698ff;
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Estilos para el menú principal */
+.main-menu {
+    background-color: #f698ff;
+    padding: 15px 0;
+}
+
+.main-menu ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.main-menu ul li {
+    position: relative;
+}
+
+.main-menu ul li a {
+    color: black;
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+.main-menu ul li a i {
+    margin-left: 8px;
+}
+
+/* Estilo para el menú desplegable del menú principal */
+.main-menu ul li .dropdown {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    top: 100%;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+}
+
+.main-menu ul li .dropdown li {
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu ul li .dropdown li a {
+    padding: 10px 20px;
+    color: black;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.main-menu ul li .dropdown li a:hover {
+    background-color: #f1f1f1;
+}
+
+.main-menu ul li:hover .dropdown {
+    display: block;
+}
+
+/* Estilo para el ítem "FECHAS ESPECIALES" */
+.special-dates {
+    position: relative;
+}
+
+.special-dates a {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #000000;
+}
+
+.special-dates a i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+/* Estilo para el menú desplegable de "FECHAS ESPECIALES" */
+.special-dates .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 250px;
+}
+
+/* Alineación y estilo de los ítems del dropdown */
+.special-dates .dropdown li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+.special-dates .dropdown li a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    justify-content: flex-start;
+}
+
+.special-dates .dropdown li a i {
+    margin-right: 15px;
+    font-size: 25px;
+    width: 30px;
+    text-align: center;
+}
+
+.special-dates .dropdown li a:hover {
+    background-color: #f0f0f0;
+}
+
+.special-dates.active .dropdown {
+    display: block;
+}
+
+/* Estilo para el menú desplegable de "Flores" */
+.main-menu ul li .dropdown.flower-submenu {
+    display: none; /* Ocultar el menú por defecto */
+    grid-template-columns: repeat(4, 1fr); /* Cuatro columnas para las categorías */
+    gap: 20px; /* Espacio entre columnas */
+    width: auto; /* Ajustar el ancho automáticamente según el contenido */
+    min-width: 400px; /* Ancho mínimo para evitar que el menú sea demasiado estrecho */
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    text-align: center; /* Centrar el texto dentro del menú */
+}
+
+/* Mostrar el menú desplegable cuando el enlace principal está en hover */
+.main-menu ul li:hover .dropdown.flower-submenu {
+    display: grid;
+}
+
+/* Estilos para las columnas del menú desplegable */
+.main-menu ul li .dropdown.flower-submenu .menu-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre categorías */
+}
+
+/* Estilo para los títulos de las categorías */
+.main-menu ul li .dropdown.flower-submenu .menu-column a.parent {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    padding: 2px 10px;
+    margin-bottom: 10px; /* Espacio debajo del título */
+    border-bottom: 2px solid #ddd; /* Línea divisoria debajo del título */
+}
+
+/* Estilo para la lista de productos bajo cada categoría */
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centrar elementos */
+    gap: 10px; /* Espacio entre productos */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Estilo para los elementos de la lista dentro del menú desplegable */
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo para los enlaces de productos */
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li a {
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: block;
+}
+
+/* Estilo al pasar el ratón sobre los enlaces de productos */
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li a:hover {
+    background-color: #e0e0e0;
+}
+
+/* Línea divisoria entre columnas */
+.main-menu ul li .dropdown.flower-submenu .menu-column {
+    border-right: 2px solid #ddd; /* Línea divisoria entre columnas */
+    padding-right: 20px; /* Espacio adicional a la derecha de cada columna */
+}
+
+.main-menu ul li .dropdown.flower-submenu .menu-column:last-child {
+    border-right: none; /* Eliminar la línea divisoria para la última columna */
+}
+
+/* Estilo para centrar el contenido dentro de la sección de eventos */
+.main-menu ul li .dropdown {
+    text-align: center;
+}
+
+.main-menu ul li .dropdown .dropdown-item {
+    display: inline-block;
+}
+
+/* Estilo general del carrusel */
+.carousel {
+    position: relative;
+    width: 300%; /* Ocupa el 90% del ancho del contenedor padre */
+    max-width: 1250px; /* Ajusta el ancho máximo del carrusel según sea necesario */
+    height: 600px; /* Ajusta la altura del carrusel según sea necesario */
+    margin: 5% auto; /* Centra el carrusel en el contenedor padre */
+    overflow: hidden;
+    border: 1px solid #ddd; /* Opcional: Borde para el carrusel */
+    border-radius: 8px; /* Opcional: Bordes redondeados */
+}
+
+/* Contenedor del carrusel */
+.carousel-container {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Deslizamiento del carrusel */
+.carousel-slide {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
+/* Cada ítem del carrusel */
+.carousel-item {
+    min-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto; /* Ajusta la altura automáticamente para mantener la proporción de la imagen */
+    display: block;
+}
+
+/* Estilo de los subtítulos en el carrusel */
+.carousel-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el texto */
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.carousel-caption h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.carousel-caption p {
+    margin: 5px 0 0;
+    font-size: 1em;
+}
+
+/* Botones de navegación */
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+/* Hover effect */
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+
+/* Estilo de la sección de detalles */
+.section-details {
+    padding: 20px;
+    background-color: #f9f9f9; /* Color de fondo claro */
+}
+
+/* Título de la sección */
+.section-details h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #000000; /* Color del texto */
+}
+
+/* Estilo de la cuadrícula de productos */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Cuadrícula responsiva con columnas mínimas de 250px */
+    gap: 20px; /* Espacio entre los elementos */
+    justify-items: center; /* Centra los elementos dentro de las columnas */
+}
+
+/* Estilo de cada ítem del producto */
+.product-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s; /* Agrega transición para efectos suaves */
+    cursor: pointer; /* Cambia el cursor para indicar que el elemento es interactivo */
+    max-width: 300px; /* Ajusta el ancho máximo de cada ítem del producto según sea necesario */
+}
+
+/* Efecto de resaltar el ítem al pasar el cursor */
+.product-item:hover {
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño del ítem */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agrega sombra para destacar */
+    border-color: #000000; /* Cambia el color del borde al pasar el cursor */
+}
+
+/* Estilo de la imagen del producto */
+.product-item img {
+    width: 100%;
+    height: 300px; /* Establece una altura fija para las imágenes */
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionar */
+    display: block; /* Asegura que la imagen se ajuste al contenedor */
+    margin-bottom: 10px; /* Espacio entre la imagen y el texto */
+}
+ 
+/* Estilo del título del producto */
+.product-item h3 {
+    margin: 10px 0 5px;
+    font-size: 1.2em;
+}
+
+/* Estilo del precio del producto */
+.product-item p {
+    margin: 0;
+    color: #555;
+    font-size: 1em;
+}
+
+/* Estilo para la cuenta */
+.account {
+    position: relative;
+    display: inline-flex;
+    align-items: center; /* Alinea el icono y el texto verticalmente */
+    cursor: pointer;
+}
+
+.account i {
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.account .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 150px;
+    text-align: left; /* Alinea el texto dentro del menú desplegable */
+}
+
+.account .dropdown a {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    color: #000000;
+    text-decoration: none;
+}
+
+.account .dropdown a i {
+    margin-left: auto;
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.account .dropdown a:hover {
+    background-color: #f0f0f0;
+}
+
+.account:hover .dropdown,
+.account.active .dropdown {
+    display: block;
+}
+
+/* Estilo para el carrito y cuenta */
+.account-cart {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.account-cart .account {
+    margin-left: 20px;
+    font-size: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.account-cart .account i {
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.account-cart .cart {
+    margin-left: 20px;
+}
+
+.account-cart .cart button {
+    background-color: #f698ff;
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Estilos para el menú principal */
+.main-menu {
+    background-color: #f698ff;
+    padding: 15px 0;
+}
+
+.main-menu ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 20px;
+}
+
+.main-menu ul li {
+    position: relative;
+}
+
+.main-menu ul li a {
+    color: black;
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+.main-menu ul li a i {
+    margin-left: 8px;
+}
+
+/* Estilo para el menú desplegable del menú principal */
+.main-menu ul li .dropdown {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    top: 100%;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+}
+
+.main-menu ul li .dropdown li {
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu ul li .dropdown li a {
+    padding: 10px 20px;
+    color: black;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.main-menu ul li .dropdown li a:hover {
+    background-color: #f1f1f1;
+}
+
+.main-menu ul li:hover .dropdown {
+    display: block;
+}
+
+/* Estilo para el ítem "FECHAS ESPECIALES" */
+.special-dates {
+    position: relative;
+}
+
+.special-dates a {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #000000;
+}
+
+.special-dates a i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+/* Estilo para el menú desplegable de "FECHAS ESPECIALES" */
+.special-dates .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 250px;
+    text-align: left; /* Alinea el texto dentro del menú desplegable */
+}
+
+.special-dates .dropdown li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+.special-dates .dropdown li a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.special-dates .dropdown li a i {
+    margin-right: 15px;
+    font-size: 25px;
+    width: 30px;
+    text-align: center;
+}
+
+.special-dates .dropdown li a:hover {
+    background-color: #f0f0f0;
+}
+
+.special-dates.active .dropdown {
+    display: block;
+}
+
+/* Estilo para el menú desplegable de "Flores" */
+.main-menu ul li .dropdown.flower-submenu {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: auto;
+    min-width: 400px;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    text-align: center;
+}
+
+.main-menu ul li:hover .dropdown.flower-submenu {
+    display: grid;
+}
+
+/* Estilos para las columnas del menú desplegable */
+.main-menu ul li .dropdown.flower-submenu .menu-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-right: 2px solid #ddd; /* Línea divisoria entre columnas */
+    padding-right: 20px; /* Espacio adicional a la derecha de cada columna */
+}
+
+.main-menu ul li .dropdown.flower-submenu .menu-column:last-child {
+    border-right: none; /* Eliminar la línea divisoria para la última columna */
+}
+
+/* Estilo para los títulos de las categorías */
+.main-menu ul li .dropdown.flower-submenu .menu-column a.parent {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    padding: 2px 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Estilo para la lista de productos bajo cada categoría */
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li {
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li a {
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: block;
+}
+
+.main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category li a:hover {
+    background-color: #e0e0e0;
+}
+
+/* Estilos para el contenedor principal */
+.wrapper2 {
+    position: relative;
+    width: 550px;
+    background: #fff;
+    border: 2px solid white;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 150px;
+    margin-bottom: 60px;
+    padding: 20px; /* Añadido padding para asegurarse de que los bordes internos no se corten */
+}
+
+/* Estilos para el formulario */
+.form-box1 {
+    position: relative;
+    width: 100%;
+    max-width: 500px; /* Añadido max-width para asegurar que no se expanda demasiado en pantallas grandes */
+    margin: 0 auto; /* Centrado del formulario */
+    padding: 40px;
+    background: #fff; /* Fondo blanco para el formulario */
+    border-radius: 15px; /* Bordes redondeados para el formulario */
+    border: 2px solid #8d8d8d;
+    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.5); /* Sombra sutil para el contenedor */
+    margin-top: 30px;
+}
+
+
+/* Título del formulario */
+.form-box1 h2 {
+    font-size: 2em;
+    color: black;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Estilos para los campos de entrada */
+.input-box1 {
+    position: relative;
+    width: 100%;
+    margin: 25px 0;
+}
+
+.input-box1 label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input-wrapper2 {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper2 .icon {
+    position: absolute;
+    right: 10px;
+    font-size: 18px;
+    color: #000;
+    pointer-events: none;
+}
+
+.input-wrapper2 input {
+    width: 100%;
+    height: 40px;
+    background: transparent;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    padding-left: 40px; /* Aumentado para no sobreponerse con el icono */
+    padding-right: 40px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 16px;
+}
+
+.input-wrapper2 input:focus {
+    border-color: #007bff;
+}
+
+/* Estilos para el checkbox y enlaces */
+.remember-forgot3 {
+    font-size: .9em;
+    color: black;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.remember-forgot3 label input {
+    accent-color: black;
+    margin-right: 5px;
+}
+
+.remember-forgot3 a {
+    color: black;
+    text-decoration: none;
+}
+
+.remember-forgot3 a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para el botón de envío */
+.btn0 {
+    width: 100%;
+    height: 45px;
+    background: black;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 400;
+    display: block;
+    margin: 20px 0 0; /* Añadido margen para separar del contenido inferior */
+}
+
+/* Estilos para el enlace de registro */
+.login-registerr {
+    color: black;
+    text-align: center;
+    font-weight: 400;
+    margin: 25px 0 10px;
+}
+
+.login-registerr p a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-registerr p a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos específicos para el botón de visibilidad de contraseña */
+.input-wrapper2 .password-toggle {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 18px; /* Tamaño del icono de visibilidad de contraseña */
+    color: #000;
+}
+
+/*Cierre de login y registro */
+
+/* Contenedor principal del historial */
+.his1-historial-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 20px auto;
+    position: relative;
+    text-align: center;
+}
+
+/* Cabecera del historial */
+.his2-historial-header {
+    margin-bottom: 20px;
+}
+
+.his2-historial-header h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilo de la tabla */
+.his5-historial-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+    margin: 0 auto; /* Centrar la tabla en su contenedor */
+}
+
+.his5-historial-table th,
+.his5-historial-table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 16px;
+}
+
+.his5-historial-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    color: #555;
+}
+
+.his5-historial-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.his5-historial-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* Contenedor para el botón */
+.his6-boton-container {
+    text-align: right;
+    margin-top: 20px;
+}
+
+/* Botón continuar */
+.his3-continuar-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #ffffff;
+    color: #000;
+    border: 2.5px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.his3-continuar-btn:hover {
+    background-color: #f27dff;
+    transform: translateY(-2px);
+}
+
+/* Cierre de historial */
+
+.purchase-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del título principal */
+.purchase-container h1 {
+    text-align: center;
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Secciones */
+.section {
+    margin-bottom: 30px;
+}
+
+.section h2 {
+    font-size: 24px;
+    color: #555;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.client-info p, .order-details p {
+    margin: 8px 0;
+}
+
+.order-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-details th, .order-details td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.order-details th {
+    background-color: #f7f7f7;
+}
+
+.order-details tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.order-details tr:hover {
+    background-color: #f1f1f1;
+}
+
+.payment-method form {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-method div {
+    margin-bottom: 10px;
+}
+
+.payment-method input[type="radio"] {
+    margin-right: 10px;
+}
+
+.payment-method label {
+    font-size: 16px;
+}
+/* Botón de Confirmación */
+.confirmation-button {
+    text-align: center;
+    margin-top: 30px; /* Espacio superior para separación */
+}
+
+.confirm-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600; /* Peso del texto más destacado */
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000;
+    border: 2.5px solid #000000; /* Borde rosado claro */
+    border-radius: 8px; /* Bordes redondeados más suaves */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-btn:hover {
+    background-color: #f27dff;
+    transform: translateY(-2px);
+}
+
+/* Opcional: Estilo adicional para enfoque */
+.confirm-btn:focus {
+    outline: none; /* Quitar el borde de enfoque predeterminado */
+    box-shadow: 0 0 0 3px rgba(255, 172, 204, 0.5); /* Sombra rosada de enfoque */
+}
+
+/* Cierre de compra */
+
+/* Estilos del contenedor de métodos de pago */
+.payment-method-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+/* Título del contenedor de métodos de pago */
+.payment-method-container h1 {
+    font-size: 28px;
+    color: #333333;
+    margin-bottom: 20px;
+    font-weight: 700;
+    border-bottom: 2px solid #f698ff;
+    padding-bottom: 10px;
+}
+
+/* Opciones de pago */
+.payment-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.payment-option:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Radio buttons */
+.payment-option input[type="radio"] {
+    margin-right: 15px;
+    accent-color: #f698ff;
+    transition: transform 0.2s;
+    cursor: pointer; /* Asegura que el cursor sea de mano */
+}
+
+.payment-option input[type="radio"]:checked {
+    transform: scale(1.1);
+}
+
+/* Detalles de pago */
+.payment-details {
+    margin-top: 30px;
+}
+
+.payment-details-content {
+    margin-top: 15px;
+}
+
+.payment-details-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555555;
+}
+
+/* Campos de entrada */
+.payment-details-content input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #f7f7f7;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.payment-details-content input[type="text"]:focus {
+    border-color: #f698ff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de envío */
+.submit-btn {
+    margin-top: 30px;
+    padding: 12px 24px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover {
+    background-color: #f27dff;
+    transform: translateY(-2px);
+}
+
+/* Cierre de pago */
+
+
+/* Estilos para el contenedor del vendedor */
+.vend1-container {
+    padding: 20px;
+}
+
+/* Estilo para el saludo */
+.vend2-greeting {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Botones del vendedor */
+.button-vendedor {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.button-vendedor button {
+    background-color: #ffffff;
+    border: 2px solid #000;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.button-vendedor button:hover {
+    background-color: #f48eff;
+}
+
+/* Sección de pedidos y productos */
+.vend4-section,
+.vend5-product-section {
+    margin-top: 30px;
+}
+
+/* Estilo de la tabla */
+.vend4-table,
+.vend5-product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+.vend4-table th,
+.vend5-product-table th,
+.vend4-table td,
+.vend5-product-table td {
+    border: 1px solid #000000;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Ajuste para el ancho de la columna "Acciones" */
+.vend4-table td:last-child,
+.vend5-product-table td:last-child {
+    width: 300px;
+    overflow: visible;
+}
+
+.vend4-table th, .vend5-product-table th{
+    background-color: #f27dff;
+}
+
+/* Estilo general para los botones de acción */
+.action-btn,
+.update-status-btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.action-btn {
+    background-color: #ffffff;
+    border: 1px solid #000;
+}
+
+.action-btn i {
+    margin-right: 5px;
+}
+
+.action-btn:hover {
+    background-color: #f48eff;
+}
+
+.update-status-btn {
+    background-color: #fff;
+}
+
+.update-status-btn:hover {
+    background-color: #f48eff;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo ligeramente más oscuro */
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex; /* Usa flexbox para centrar el contenido */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto; /* Ajustado para que no esté tan cerca del borde superior */
+    padding: 20px;
+    border-radius: 8px; /* Bordes redondeados */
+    width: 80%;
+    max-width: 800px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra más sutil */
+    position: relative;
+}
+
+.close-btn {
+    color: #000000; /* Color gris claro */
+    float: right;
+    font-size: 33px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #000; /* Color negro al pasar el ratón */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #000000; /* Color gris oscuro para el título */
+}
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-content th,
+.modal-content td {
+    border: 1px solid #000000; /* Bordes más suaves */
+    padding: 10px;
+    text-align: left;
+    font-size: 20px;
+}
+
+.modal-content th {
+    background-color: #f27dff;
+}
+
+.modal-content img {
+    max-width: 100px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.product-img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Cierre Vendedor */
+
+/* Estilos generales para el contenedor del domiciliario */
+.domiciliario-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para el saludo */
+.domiciliario-greeting {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Estilo para la tabla de pedidos asignados */
+.domiciliario-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.domiciliario-orders-table th,
+.domiciliario-orders-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: center;
+}
+
+.domiciliario-orders-table th {
+    background-color: #f4f4f4;
+}
+
+/* Estilo para los botones de acción */
+.action-btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #000;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #ff8dd9;
+}
+
+.action-btn:active {
+    background-color: #ff8dd9;
+}
+
+/* Estilo para la imagen del pedido */
+.order-image {
+    max-width: 100px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 70%;
+    max-width: 800px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    text-align: center; /* Centra el texto dentro del modal */
+    font-size: 19px;
+}
+
+.close-btn {
+    color: #333;
+    float: right;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+/* Estilos adicionales para el contenido del modal */
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 28px;
+}
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.modal-content th {
+    background-color: #ffaeed;
+}
+
+.modal-content th,
+.modal-content td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #000000;
+}
+
+.modal-content img {
+    max-width: 150px; /* Imagen más pequeña */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Estilo para los botones dentro del modal */
+.order-actions {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.order-actions label {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.order-actions select {
+    padding: 8px;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 150px;
+}
+
+.update-status-btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #ffffff;
+    border-color: #000;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.update-status-btn:hover {
+    background-color: #ff8dd9;
+}
+
+.update-status-btn:active {
+    transform: scale(0.98);
+}
+
+
+/* Cierre Domiciliario */
+
+/* Pie de página */
+footer {
+    font-family: Arial, sans-serif;
+    margin-top: 30px;
+    background-color: #f8f8f8;
+    color: #000000;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+    border-top: 3px solid #000000;
+    background-color: #f8f8f8;
+}
+
+.footer-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.highlight {
+    color: #f28bfc;
+}
+
+.footer-socials,
+.footer-contact,
+.footer-flowers,
+.footer-description {
+    flex: 1;
+    padding: 10px 15px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icon {
+    font-size: 1.5em;
+    color: #000000;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    color: #000;
+}
+
+/* Sección de redes sociales */
+.footer-socials {
+    flex: 1;
+    min-width: 200px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+}
+
+.footer-socials .footer-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px; /* Espacio entre íconos */
+}
+
+.social-icon {
+    color: #000; /* Color de los íconos */
+    font-size: 2em; /* Tamaño de los íconos */
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    color: #c01acf; /* Cambia el color al pasar el cursor */
+}
+
+/* Sección de contacto */
+.footer-contact {
+    flex: 1;
+    min-width: 150px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+    margin-right: 40px; /* Aumenta el espacio adicional a la derecha para separar de la sección de flores */
+}
+
+.footer-contact .footer-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.footer-contact ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-contact ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.footer-contact ul li i {
+    margin-right: 10px;
+}
+
+/* Sección de flores */
+.footer-flowers {
+    flex: 1;
+    min-width: 250px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+}
+
+.footer-flowers .footer-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.footer-flowers ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-flowers ul li {
+    margin-bottom: 8px;
+}
+
+/* Sección de descripción */
+.footer-description {
+    flex: 2;
+    min-width: 250px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+}
+
+.footer-description .footer-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.footer-description p {
+    margin: 0;
+    line-height: 1.6; /* Espaciado entre líneas para mejor legibilidad */
+}
+
+/* Estilo del pie de página */
+.footer-bottom {
+    text-align: center;
+    padding: 10px;
+    background-color: #e0e0e0; /* Color de fondo ligeramente diferente */
+    border-top: 1px solid #ccc;
+    margin-top: 20px; /* Espacio superior entre el contenido del footer y el pie de página */
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.footer-link {
+    color: #c01acf;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para el botón del carrito */
+.cart-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f698ff;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cart-button:hover {
+    background-color: #f698ff;
+}
+
+.cart-button i {
+    font-size: 1.5em;
+    color: #000;
 }
