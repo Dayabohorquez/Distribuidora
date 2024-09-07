@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../static/img/Logo.png';
-import '../index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../index.css';
+import logo from '../static/img/Logo.png';
 
 const Header = () => {
     const [isAccountOpen, setAccountOpen] = useState(false);
@@ -73,59 +73,48 @@ const Header = () => {
                             FECHAS ESPECIALES <i className="fa fa-bars" aria-hidden="true"></i>
                         </Link>
                         <ul className={`dropdown special-dates-dropdown ${isSpecialDatesOpen ? 'active' : ''}`}>
-                            <li><Link to="#"><i className="fa fa-female" aria-hidden="true"></i> Día de la Mujer</Link></li>
-                            <li><Link to="#"><i className="fa fa-heart" aria-hidden="true"></i> Día de la Madre</Link></li>
-                            <li><Link to="#"><i className="fa fa-cake-candles" aria-hidden="true"></i> Aniversario</Link></li>
-                            <li><Link to="#"><i className="fa fa-heart" aria-hidden="true"></i> Amor y Amistad</Link></li>
-                            <li><Link to="/cumpleaños"><i className="fa fa-birthday-cake" aria-hidden="true"></i> Cumpleaños</Link></li>
-                            <li><Link to="#"><i className="fa fa-sad-tear" aria-hidden="true"></i> Condolencias</Link></li>
+                            <li><Link to="/DiaMujer"><i className="fa fa-female" aria-hidden="true"></i> Día de la Mujer</Link></li>
+                            <li><Link to="/DiaMadre"><i className="fa fa-heart" aria-hidden="true"></i> Día de la Madre</Link></li>
+                            <li><Link to="/Aniversario"><i className="fa fa-cake-candles" aria-hidden="true"></i> Aniversario</Link></li>
+                            <li><Link to="/AmorAmistad"><i className="fa fa-heart" aria-hidden="true"></i> Amor y Amistad</Link></li>
+                            <li><Link to="/Cumpleaños"><i className="fa fa-birthday-cake" aria-hidden="true"></i> Cumpleaños</Link></li>
+                            <li><Link to="/Condolencias"><i className="fa fa-sad-tear" aria-hidden="true"></i> Condolencias</Link></li>
                         </ul>
                     </li>
                     <li>
                         <Link to="#">FLORES <i className="fa fa-chevron-down"></i></Link>
                         <div className="dropdown flower-submenu">
                             <div className="menu-column">
-                                <Link to="#" className="parent">Naturales</Link>
                                 <ul className="column category">
-                                    <li><Link to="#">Rosas</Link></li>
-                                    <li><Link to="#">Tulipanes</Link></li>
-                                    <li><Link to="#">Lirios</Link></li>
+                                    <li><Link to="/Rosas">Rosas</Link></li>
+                                    <li><Link to="/Astromelias">Astromelias</Link></li>
+                                    <li><Link to="/Anturios">Anturios</Link></li>
                                 </ul>
                             </div>
                             <div className="menu-column">
-                                <Link to="#" className="parent">Naturales 2</Link>
                                 <ul className="column category">
-                                    <li><Link to="#">Orquídeas</Link></li>
-                                    <li><Link to="#">Margaritas</Link></li>
-                                    <li><Link to="#">Claveles</Link></li>
+                                    <li><Link to="/Gerberas">Gerberas</Link></li>
+                                    <li><Link to="/Lirios">Lirios</Link></li>
+                                    <li><Link to="/Girasoles">Girasoles</Link></li>
                                 </ul>
                             </div>
                             <div className="menu-column">
-                                <Link to="#" className="parent">Categoría 3</Link>
                                 <ul className="column category">
-                                    <li><Link to="#">Producto 1</Link></li>
-                                    <li><Link to="#">Producto 2</Link></li>
-                                    <li><Link to="#">Producto 3</Link></li>
-                                </ul>
-                            </div>
-                            <div className="menu-column">
-                                <Link to="#" className="parent">Categoría 4</Link>
-                                <ul className="column category">
-                                    <li><Link to="#">Producto A</Link></li>
-                                    <li><Link to="#">Producto B</Link></li>
-                                    <li><Link to="#">Producto C</Link></li>
+                                    <li><Link to="/Chirosas">Chirosas</Link></li>
+                                    <li><Link to="/Maracas">Maracas</Link></li>
+                                    <li><Link to="/Coquetas">Coquetas</Link></li>
                                 </ul>
                             </div>
                         </div>
                     </li>
                     <li>
-                        <Link to="#">EVENTOS <i className="fa fa-angle-down"></i></Link>
+                        <Link to="/Eventos">EVENTOS <i className="fa fa-angle-down"></i></Link>
                         <ul className="dropdown">
-                            <li className="dropdown-item"><Link to="#">Eventos</Link></li>
+                            <li className="dropdown-item"><Link to="/Eventos">Eventos</Link></li>
                         </ul>
                     </li>
                     <li>
-                        <Link to="#">QUIÉNES SOMOS <i className="fa fa-angle-down"></i></Link>
+                        <Link to="/QuienesSomos">QUIÉNES SOMOS <i className="fa fa-angle-down"></i></Link>
                     </li>
                 </ul>
             </nav>

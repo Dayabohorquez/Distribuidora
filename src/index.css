@@ -1442,7 +1442,6 @@ header {
 }
 
 .product-img {
-    max-width: 100px;
     height: auto;
     border-radius: 8px;
 }
@@ -1618,6 +1617,529 @@ header {
     transform: scale(0.98);
 }
 
+/*Aniversario*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+}
+
+.container {
+    display: flex;
+}
+
+.home-link{
+    color: #000000;
+}
+
+ul{
+    list-style: none;
+}
+
+li{
+    list-style: none;
+}
+
+.filter li {
+    position: relative;
+    list-style-type: none;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+.filter li a {
+    text-decoration: none; /* Elimina el subrayado del enlace */
+    color: black; /* Ajusta el color del texto según sea necesario */
+    display: flex; /* Usa flexbox para alinear la imagen y el texto */
+    align-items: center; /* Alinea verticalmente */
+}
+
+.filter li img {
+    width: 100px; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: auto;
+    object-fit: cover; /* Asegura que la imagen se recorte si es necesario */
+    margin-right: 15px; /* Espacio entre la imagen y el texto */
+}
+
+.filter li a p {
+    margin: 0; /* Elimina márgenes predeterminados del párrafo */
+    font-size: 14px; /* Ajusta el tamaño de la fuente según sea necesario */
+}
+
+/* Asegúrate de que el contenedor de la lista tenga suficiente espacio */
+.filter {
+    padding: 25px;
+    background-color: #f7f7f7;
+}
+
+.filter1{
+    margin-top: 20px;
+}
+
+.sidebar {
+    width: 350px;
+    padding: 40px;
+    background-color: #f7f7f7;
+}
+
+.product-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 80px;
+    padding: 40px;
+}
+
+.product-card {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s;
+}
+
+.cart-btn {
+    background-color: #ff96c5;
+    border: none;
+    font-size: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-item-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.cart-item-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.remove-item {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    font-size: 16px;
+    color: red;
+}
+
+
+.Ramo1{
+    height: 150px;
+    width: 150px;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.btn-cart {
+    margin-top: 15px;
+    background-color: #fdcae1;
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-details {
+    margin-top: 15px;
+    background-color: #fdcae1;
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none; /* Por defecto, el modal está oculto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 80%; /* Ajusta el ancho máximo del modal */
+    max-height: 80vh; /* Ajusta la altura máxima del modal */
+    overflow-y: auto; /* Agrega scroll si el contenido es demasiado grande */
+    text-align: center;
+    position: relative;
+    display: flex; /* Flexbox para alinear elementos */
+}
+
+.modal-body {
+    display: flex;
+    align-items: center;
+}
+
+.modal-img {
+    max-width: 50%; /* Ajusta el ancho máximo de la imagen al 50% */
+    height: auto; /* Mantiene la proporción de la imagen */
+    max-height: 60vh; /* Ajusta la altura máxima de la imagen para que no exceda el alto del modal */
+}
+
+.modal-text {
+    padding-left: 20px; /* Espacio entre la imagen y el texto */
+    max-width: 50%; /* Ajusta el ancho máximo del texto al 50% */
+    text-align: left; /* Alinea el texto a la izquierda */
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+/*Carrito*/
+.cart-content {
+    display: none; /* Ocultar por defecto */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-header h2 {
+    margin: 0;
+}
+
+.close-cart {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.cart-footer {
+    margin-top: 20px;
+}
+
+.cart-footer button {
+    background-color: #fdcae1;
+    color: #000000;
+    font-size: 18px;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #fdcae1;
+    color: #000000;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    z-index: 1000;
+}
+
+/*detalle_producto*/
+.contenedor-detalle {
+    display: flex;
+}
+
+.barra-novedades {
+    width: 20%;
+    background-color: #f0f0f0;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.detalle-producto {
+    width: 80%;
+    padding: 20px;
+    background-color: white;
+}
+
+.contenido-producto {
+    display: flex;
+}
+
+.imagen-producto img {
+    max-width: 300px;
+    border-radius: 10px;
+}
+
+.info-producto {
+    margin-left: 20px;
+}
+
+.info-producto h3 {
+    margin-bottom: 10px;
+}
+
+.info-producto p {
+    margin-bottom: 20px;
+}
+
+.meta-producto ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.meta-producto ul li {
+    margin-bottom: 5px;
+}
+
+.opciones-producto label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.opciones-producto select,
+.opciones-producto input,
+.opciones-producto textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn-comprar-producto {
+    background-color: #004d40;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btn-comprar-producto:hover {
+    background-color: #003730;
+}
+
+.descripcion{
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.opciones{
+    padding-bottom: 20px;
+}
+
+.fecha-entrega{
+    padding-top: 20px;
+}
+
+.dedicatoria{
+    padding-top: 20px;
+}
+
+.cantidad{
+    padding-top: 20px;
+}
+
+.botones{
+    padding-top: 20px;
+}
+
+/*Eventos*/
+.container1 {
+    margin: 50px; /* Espaciado alrededor del contenedor */
+    background-color: #f4f4f4;
+}
+
+.container1 h2 {
+    margin: 0; /* Elimina el margen por defecto */
+    padding-bottom: 40px; /* Espaciado entre el <h2> y el siguiente elemento */
+    font-size: 24px; /* Ajusta el tamaño de la fuente según tus necesidades */
+    font-size: 30px;
+}
+
+.container1 p {
+    margin: 0; /* Elimina el margen por defecto */
+    font-size: 20px; /* Ajusta el tamaño de la fuente según tus necesidades */
+    line-height: 1.5; /* Espaciado entre líneas para mejorar la legibilidad */
+}
+
+.eventos1 {
+    border: 2px solid rgb(117, 116, 116); /* Color y grosor del borde */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 10px; /* Espaciado interno */
+    margin: 10px 0; /* Espaciado superior e inferior entre los párrafos */
+    background-color: #fff; /* Color de fondo opcional para destacar el borde */
+    text-align: center; /* Centrar el texto */
+}
+
+.eventos1:hover {
+    background-color: #ffcce0; /* Rosadito claro al pasar el mouse */
+}
+
+.eventos2{
+    padding-top: 20px;
+}
+
+.eventos3{
+    padding-top: 100px;
+}
+
+.imagenes-eventos {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 100px;
+}
+
+.img-evento {
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+}
+
+/*Mi Cuenta*/
+.container2 {
+    background-color: #f9f9f9; /* Color de fondo claro */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto; /* Centrado */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+
+.container2 p {
+    font-size: 18px;
+    color: #555; /* Color de texto */
+    margin: 15px 0;
+}
+
+.container2 a {
+    color: #ff96c5; /* Color del enlace */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container2 a:hover {
+    color: #ff96c5;
+    text-decoration: underline;
+}
+
+.container2 .home-link i {
+    font-size: 25px; /* Ajustar tamaño del ícono */
+    color: #000;
+}
+
+/* Historial link */
+.container2 a:last-child {
+    color: #555;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.container2 a:last-child:hover {
+    color: #ff96c5;
+}
+
+/* Estilos para los modales */
+.modal-custom {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content-custom {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 5px;
+    width: 450px;
+    max-width: 100%;
+}
+
+.close-custom {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-custom:hover, .close-custom:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-custom form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-custom form input {
+    margin-bottom: 20px;
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.modal-custom form button {
+    padding: 10px;
+    background-color: #ff96c5;
+    color: #000000;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-custom form button:hover {
+    background-color: #ff96c5;
+}
 
 /* Cierre Domiciliario */
 
