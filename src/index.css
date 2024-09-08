@@ -2143,6 +2143,135 @@ li{
 
 /* Cierre Domiciliario */
 
+/* Estilos Generales del Contenido */
+.admi1 {
+    padding: 30px; /* Ampliar el padding para un mejor espaciado */
+    background: #f9f2f4; /* Fondo ligeramente rosado */
+    text-align: center; /* Centrar el texto */
+    border-radius: 8px; /* Bordes redondeados para un estilo más suave */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra sutil */
+}
+
+.admi2 {
+    margin-bottom: 30px; /* Mayor margen para mayor separación */
+}
+
+.welcome-title{
+    margin: 0;
+}
+
+.welcome-text {
+    margin-top: 20px;
+}
+
+.nav-buttons {
+    margin-bottom: 30px; /* Mayor margen para separar los botones de otras secciones */
+}
+
+.nav-buttons button {
+    border:rgb(0, 0, 0)e;
+    padding: 12px 24px; /* Aumentar el padding para botones más grandes */
+    cursor: pointer;
+    margin: 0 10px; /* Mayor separación entre botones */
+    border-radius: 8px; /* Bordes más redondeados */
+    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
+}
+
+.nav-buttons button:hover {
+    background-color: #ed6bfc;
+}
+
+.admi3 {
+    margin-bottom: 50px; /* Mayor separación para secciones principales */
+}
+
+.admi4 {
+    padding: 12px 24px; /* Aumentar el padding para un botón más grande */
+    cursor: pointer;
+    margin-bottom: 20px; /* Mayor margen inferior */
+    border-radius: 8px; /* Bordes más redondeados */
+    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
+    margin-top: 20px;
+    border-color: #000;
+}
+
+.admi4:hover {
+    background-color: #f48eff;
+}
+
+.admi40 {
+    background-color: #f48eff;
+    border: none;
+    padding: 12px 24px; /* Aumentar el padding para un botón más grande */
+    cursor: pointer;
+    margin-bottom: 20px; /* Mayor margen inferior */
+    border-radius: 8px; /* Bordes más redondeados */
+    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
+    margin-top: 20px;
+}
+
+.admi40:hover {
+    background-color: #f082fc;
+}
+
+.admi5 {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admi5 th, .admi5 td {
+    border: 1px solid #ddd;
+    padding: 12px; /* Aumentar el padding para celdas más espaciadas */
+    text-align: center;
+}
+
+.admi5 th {
+    background-color: #ffaeed; /* Color de fondo para los encabezados */
+}
+
+.admi6 {
+    padding: 8px 16px; /* Aumentar el padding para un botón más grande */
+    cursor: pointer;
+    border-radius: 5px; /* Bordes ligeramente redondeados */
+    font-size: 16px; /* Tamaño de fuente consistente */
+    border-color: #000;
+}
+
+.admi6:hover {
+    background-color: #f48eff;
+}
+
+.admi7 {
+    padding: 30px; /* Mayor padding para un espaciado más cómodo */
+    background: #fff;
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra más notable */
+}
+
+.admi8 {
+    width: 100%; /* Ancho completo para mejor disposición */
+    max-width: 400px; /* Ancho máximo para control de tamaño */
+    padding: 10px; /* Padding más amplio */
+    margin: 0 0 30px 0; /* Mayor margen inferior */
+}
+
+/* Línea divisoria para la sección de reportes */
+.report-separator {
+    border-top: 2px solid #ddd; /* Color de la línea divisoria */
+    margin: 20px 0; /* Espacio arriba y abajo de la línea divisoria */
+}
+
+/* Estilo para el contenido del reporte */
+.report-content {
+    padding: 20px; /* Padding para un mejor espaciado */
+    background: #fff; /* Fondo blanco */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra ligera */
+    text-align: center; /* Alineación del texto */
+}
+
+/* Cierre Administrador */
+
 /* Pie de página */
 footer {
     font-family: Arial, sans-serif;
@@ -2329,3 +2458,4 @@ footer {
     font-size: 1.5em;
     color: #000;
 }
+

@@ -52,14 +52,16 @@ const Header = () => {
                 </div>
                 <div className="account-cart">
                     <div className="cart">
+                        <Link to = "/car">
                         <button type="button"><i className="fas fa-shopping-cart"></i> 0 ARTÍCULO(S) - $0</button>
+                        </Link>
                     </div>
                     <div className="account" ref={accountRef} onClick={toggleAccountDropdown}>
                         <i className="fas fa-user"></i> MI CUENTA
                         <div className={`dropdown ${isAccountOpen ? 'active' : ''}`}>
                             <Link to="/register">Registrarse <i className="fa fa-unlock-alt" aria-hidden="true"></i></Link>
                             <Link to="/login">Acceder <i className="fa fa-user" aria-hidden="true"></i></Link>
-                            <Link to="/orderhistory">Historial <i className="fa fa-user" aria-hidden="true"></i></Link>
+                            <Link to="/myaccount">Mi Cuenta <i className="fa fa-user" aria-hidden="true"></i></Link>
                             <Link to="/purchasepage">Compra <i className="fa fa-user" aria-hidden="true"></i></Link>
 
                         </div>

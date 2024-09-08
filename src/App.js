@@ -25,6 +25,10 @@ import Register from "./pages.clientes/register";
 import Rosas from "./pages.clientes/rosas";
 import Domiciliary from "./pages/domiciliario";
 import VendorDashboard from "./pages/vendedor";
+import Admin from "./pages/admin";
+import Myaccount from "./pages.clientes/micuenta";
+import Car from "./pages.clientes/carro";
+import Detailprod from "./pages.clientes/detalleprod";
 
 
 function App() {
@@ -40,6 +44,7 @@ function App() {
           <Route path="/PaymentMethod" element={<PaymentMethod />} />
           <Route path="/VendorDashboard" element={<VendorDashboard />} />
           <Route path="/Domiciliary" element={<Domiciliary />} />
+          <Route path="/Admin" element={<Admin />} />
           <Route path="/DiaMujer" element={<DiaMujer />} />
           <Route path="/DiaMadre" element={<DiaMadre />} />
           <Route path="/AmorAmistad" element={<AmorAmistad />} />
@@ -57,6 +62,10 @@ function App() {
           <Route path="Rosas" element={<Rosas />} />
           <Route path="Eventos" element={<Eventos />} />
           <Route path="QuienesSomos" element={<QuienesSomos />} />
+          <Route path="/Myaccount" element={<Myaccount />} />
+          <Route path="/Car" element={<Car/>} />
+          <Route path="/Detailprod" element={<Detailprod/>} />
+
         </Routes>
       </main>
     </div>
