@@ -114,7 +114,7 @@ const ProductPage = () => {
                 </div>
             </aside>
 
-            <main className="product-grid">
+            <main className="product-grid2">
                 {filteredProducts.map(product => (
                     <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
                         <img src={Ramo1} alt={product.name} className="product-img" />

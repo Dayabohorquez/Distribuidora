@@ -7,6 +7,7 @@ import logo from '../static/img/Logo.png';
 const Header = () => {
     const [isAccountOpen, setAccountOpen] = useState(false);
     const [isSpecialDatesOpen, setSpecialDatesOpen] = useState(false);
+    const [isMenuOpen, setMenuOpen] = useState(false);
     const accountRef = useRef(null);
     const specialDatesRef = useRef(null);
 
@@ -23,6 +24,11 @@ const Header = () => {
     const closeAllDropdowns = () => {
         setAccountOpen(false);
         setSpecialDatesOpen(false);
+    };
+
+    const toggleMenu = () => {
+        setMenuOpen(!isMenuOpen);
+        closeAllDropdowns();
     };
 
     useEffect(() => {
@@ -46,14 +52,13 @@ const Header = () => {
         <header>
             <div className="top-bar">
                 <div className="logo">
-                <Link to="/"><img src={logo} alt="Distribuidora de Flores Yesid" />
-                </Link>
-                <p>Distribuidora de Flores Yesid</p>
+                    <Link to="/"><img src={logo} alt="Distribuidora de Flores Yesid" /></Link>
+                    <p>Distribuidora de Flores Yesid</p>
                 </div>
                 <div className="account-cart">
                     <div className="cart">
-                        <Link to = "/car">
-                        <button type="button"><i className="fas fa-shopping-cart"></i> 0 ARTÍCULO(S) - $0</button>
+                        <Link to="/car">
+                            <button type="button"><i className="fas fa-shopping-cart"></i> 0 ARTÍCULO(S) - $0</button>
                         </Link>
                     </div>
                     <div className="account" ref={accountRef} onClick={toggleAccountDropdown}>
@@ -63,13 +68,17 @@ const Header = () => {
                             <Link to="/login">Acceder <i className="fa fa-user" aria-hidden="true"></i></Link>
                             <Link to="/myaccount">Mi Cuenta <i className="fa fa-user" aria-hidden="true"></i></Link>
                             <Link to="/purchasepage">Compra <i className="fa fa-user" aria-hidden="true"></i></Link>
-
                         </div>
                     </div>
                 </div>
             </div>
             <nav className="main-menu">
-                <ul>
+                <div className="hamburger" onClick={toggleMenu}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul className={isMenuOpen ? 'active' : ''}>
                     <li className="special-dates" ref={specialDatesRef}>
                         <Link to="#" className="toggle-special-dates" onClick={toggleSpecialDatesDropdown}>
                             FECHAS ESPECIALES <i className="fa fa-bars" aria-hidden="true"></i>

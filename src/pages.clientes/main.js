@@ -1,28 +1,28 @@
 // src/pages.clientes/main.js
 
-import React, { useEffect, useState, useRef } from 'react';
-import '../index.css';
-import Header from '../components/Header';
+import React, { useEffect, useRef, useState } from 'react';
 import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 
 // Importar imágenes
 import eventoImg from '../static/img/evento.jpeg';
-import ramobaseImg from '../static/img/Ramobase.jpeg';
-import ramoBase1Img from '../static/img/ramoBase1.jpeg';
-import ramoBase2Img from '../static/img/ramoBase2.jpeg';
-import ramoBase3Img from '../static/img/ramoBase3.jpeg';
-import ramoBase4Img from '../static/img/ramoBase4.jpeg';
+import funebreImg from '../static/img/Funebre.jpeg';
+import funebre1Img from '../static/img/Funebre1.jpeg';
+import funebre2Img from '../static/img/Funebre2.jpeg';
+import funebre3Img from '../static/img/Funebre3.jpeg';
+import funebre4Img from '../static/img/Funebre4.jpeg';
 import ramilleteImg from '../static/img/Ramillete.jpeg';
 import ramillete1Img from '../static/img/Ramillete1.jpeg';
 import ramillete2Img from '../static/img/Ramillete2.jpeg';
 import ramillete3Img from '../static/img/Ramillete3.jpeg';
 import ramillete4Img from '../static/img/ramillete4.jpeg';
-import funebre3Img from '../static/img/Funebre3.jpeg';
-import funebreImg from '../static/img/Funebre.jpeg';
-import funebre4Img from '../static/img/Funebre4.jpeg';
-import funebre1Img from '../static/img/Funebre1.jpeg';
-import funebre2Img from '../static/img/Funebre2.jpeg';
+import ramobaseImg from '../static/img/Ramobase.jpeg';
+import ramoBase1Img from '../static/img/ramoBase1.jpeg';
+import ramoBase2Img from '../static/img/ramoBase2.jpeg';
+import ramoBase3Img from '../static/img/ramoBase3.jpeg';
+import ramoBase4Img from '../static/img/ramoBase4.jpeg';
 
 const HomePage = () => {
     const [main, setMain] = useState(0);
@@ -75,6 +75,7 @@ const HomePage = () => {
     return (
         <div>
             <Header />
+            <center>
             <section className="carousel">
                 <div className="carousel-container">
                     <div className="carousel-slide" ref={slidesRef}>
@@ -92,6 +93,7 @@ const HomePage = () => {
                 <button className="prev" ref={prevButtonRef}>&#10094;</button>
                 <button className="next" ref={nextButtonRef}>&#10095;</button>
             </section>
+            </center>
 
             <section className="section-details">
                 <h2>Ramos en Base</h2>

@@ -96,7 +96,7 @@ const ProductPage = () => {
                     <h3>Novedades</h3>
                     <ul>
                         <li>
-                            <a href="detalle_producto.html" className="filter1">
+                            <a href="/detalleprod" className="filter1">
                                 <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
                                 Arreglo floral Lirios de Amor - $350,000
                             </a>
@@ -114,14 +114,14 @@ const ProductPage = () => {
                 </div>
             </aside>
 
-            <main className="product-grid">
+            <main className="product-grid2">
                 {filteredProducts.map(product => (
                     <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
                         <img src={Ramo1} alt={product.name} className="product-img" />
                         <h3>{product.name}</h3>
                         <p>${product.price.toLocaleString()}</p>
                         <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                        <a href="detalle_producto.html"><button className="btn-details personalizar">Personalizar</button></a>
+                        <a href="/detalleprod"><button className="btn-details personalizar">Personalizar</button></a>
                         <button className="btn-cart ">Añadir al carrito</button>
                     </div>
                 ))}

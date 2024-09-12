@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
-import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
 
 const App = () => {
   const [cart, setCart] = useState([]);

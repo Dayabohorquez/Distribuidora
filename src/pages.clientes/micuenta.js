@@ -1,8 +1,9 @@
+// src/components/App.js
 import React, { useState } from 'react';
-import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
-import Header from '../components/Header';
+import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom'; 
+import Header from '../components/Header';
+import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
 
 const App = () => {
   const [isEditAccountModalOpen, setEditAccountModalOpen] = useState(false);

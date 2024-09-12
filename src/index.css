@@ -16,6 +16,9 @@ body {
 /* Estilos del encabezado */
 header {
     background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .top-bar {
@@ -23,8 +26,16 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 0 35px;
+    width: 100%;
     background-color: #f4f4f4;
     border-bottom: 1px solid #ddd;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .logo {
@@ -135,12 +146,21 @@ header {
     padding: 15px 0;
 }
 
-.main-menu ul {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    padding: 0 20px;
+.main-menu li {
+    margin-right: 20px;
+    position: relative;
+}
+
+.main-menu .dropdown {
+    display: none;
+    position: absolute;
+    background: white;
+    z-index: 10;
+    width: 200px;
+}
+
+.main-menu .dropdown.active {
+    display: block;
 }
 
 .main-menu ul li {
@@ -357,16 +377,60 @@ header {
     display: inline-block;
 }
 
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo img {
+        width: 100px;
+    }
+
+    .main-menu ul.active {
+        display: flex;
+    }
+
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .hamburger span {
+        height: 3px;
+        width: 25px;
+        background: black;
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+
+    .account-cart {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .main-menu .dropdown {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .main-menu ul {
+        display: flex;
+    }
+    
+    .hamburger {
+        display: flex;
+    }
+}
+
 /* Estilo general del carrusel */
 .carousel {
     position: relative;
-    width: 300%; /* Ocupa el 90% del ancho del contenedor padre */
-    max-width: 1250px; /* Ajusta el ancho máximo del carrusel según sea necesario */
-    height: 600px; /* Ajusta la altura del carrusel según sea necesario */
-    margin: 5% auto; /* Centra el carrusel en el contenedor padre */
     overflow: hidden;
-    border: 1px solid #ddd; /* Opcional: Borde para el carrusel */
-    border-radius: 8px; /* Opcional: Bordes redondeados */
+    margin-top: 20px;
 }
 
 /* Contenedor del carrusel */
@@ -391,8 +455,8 @@ header {
 }
 
 .carousel-item img {
-    width: 100%;
-    height: auto; /* Ajusta la altura automáticamente para mantener la proporción de la imagen */
+    width: 90%;
+    height: 80%; /* Ajusta la altura automáticamente para mantener la proporción de la imagen */
     display: block;
 }
 
@@ -413,7 +477,6 @@ header {
 }
 
 .carousel-caption p {
-    margin: 5px 0 0;
     font-size: 1em;
 }
 
@@ -446,6 +509,37 @@ header {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
+/* Responsive styles for carousel and product grid */
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 300px; /* Adjust height for smaller screens */
+    }
+
+    .prev, .next {
+        font-size: 16px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-item img {
+        height: 200px; /* Adjust height for even smaller screens */
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr; /* Single column layout */
+    }
+
+    .product-item {
+        padding: 5px;
+    }
+
+    .prev, .next {
+        font-size: 14px;
+        padding: 5px;
+    }
+}
+
 
 /* Estilo de la sección de detalles */
 .section-details {
@@ -457,7 +551,6 @@ header {
 .section-details h2 {
     text-align: center;
     font-size: 2em;
-    margin-bottom: 20px;
     color: #000000; /* Color del texto */
 }
 
@@ -594,11 +687,6 @@ header {
 }
 
 /* Estilos para el menú principal */
-.main-menu {
-    background-color: #f698ff;
-    padding: 15px 0;
-}
-
 .main-menu ul {
     list-style: none;
     display: flex;
@@ -1046,6 +1134,51 @@ header {
     transform: translateY(-2px);
 }
 
+/* Estilos Responsivos */
+@media (max-width: 768px) {
+    .form-box1 {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    select {
+        padding: 8px;
+    }
+
+    button.btn0 {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-box1 {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    select {
+        padding: 6px;
+    }
+
+    button.btn0 {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+}
+
 /* Cierre de historial */
 
 .purchase-container {
@@ -1442,8 +1575,55 @@ header {
 }
 
 .product-img {
-    height: auto;
+    height: 200px;
     border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .vend4-table th,
+    .vend4-table td,
+    .vend5-product-table th,
+    .vend5-product-table td {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+
+    .product-img {
+        width: 80px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .button-vendedor button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vend2-greeting h1 {
+        font-size: 1.5em;
+    }
+
+    .vend4-table th,
+    .vend4-table td,
+    .vend5-product-table th,
+    .vend5-product-table td {
+        font-size: 0.8em;
+        padding: 6px;
+    }
+
+    .product-img {
+        width: 60px;
+    }
+
+    .update-status-btn,
+    .action-btn {
+        font-size: 0.8em;
+        padding: 8px 15px;
+    }
 }
 
 /* Cierre Vendedor */
@@ -1617,14 +1797,48 @@ header {
     transform: scale(0.98);
 }
 
-/*Aniversario*/
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
+@media (max-width: 768px) {
+    .domiciliario-orders-table th,
+    .domiciliario-orders-table td {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+
+    .order-image {
+        width: 80px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .order-actions select,
+    .order-actions button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 
+@media (max-width: 480px) {
+    .domiciliario-greeting h1 {
+        font-size: 1.5em;
+    }
+
+    .domiciliario-orders-section h2 {
+        font-size: 1.2em;
+    }
+
+    .order-image {
+        width: 60px;
+    }
+
+    .update-status-btn {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+}
+
+/*Aniversario*/
 .container {
     display: flex;
 }
@@ -1683,7 +1897,7 @@ li{
     background-color: #f7f7f7;
 }
 
-.product-grid {
+.product-grid2 {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -1821,6 +2035,94 @@ li{
     right: 20px;
     cursor: pointer;
     font-size: 24px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .product-grid2 {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid2 {
+        grid-template-columns: 1fr;
+    }
+
+    .filter1 img {
+        width: 50px;
+    }
+
+    .btn-details, .btn-cart {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    .close-modal {
+        font-size: 1.2em;
+    }
+}
+
+/* Filtros en pantallas pequeñas */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .filter {
+        margin-bottom: 15px;
+    }
+
+    .filter h3 {
+        font-size: 1.1em;
+    }
+
+    .filter ul {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .filter li {
+        flex: 1 1 50%;
+        margin-bottom: 10px;
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter {
+        margin-bottom: 10px;
+    }
+
+    .filter h3 {
+        font-size: 1em;
+    }
+
+    .filter ul {
+        display: block;
+    }
+
+    .filter li {
+        margin-bottom: 8px;
+        font-size: 0.8em;
+    }
+
+    .filter1 img {
+        width: 50px;
+    }
 }
 
 /*Carrito*/
@@ -1984,6 +2286,24 @@ li{
     padding-top: 20px;
 }
 
+@media (min-width: 769px) and (max-width: 1024px) {
+    .contenedor-detalle {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 25%;
+    }
+
+    .detalle-producto {
+        width: 75%;
+    }
+
+    .opciones-producto {
+        font-size: 16px;
+    }
+}
+
 /*Eventos*/
 .container1 {
     margin: 50px; /* Espaciado alrededor del contenedor */
@@ -2035,6 +2355,57 @@ li{
     height: auto;
     border-radius: 10px;
     border: 2px solid #ccc;
+}
+
+/* Estilos Responsivos */
+@media (max-width: 768px) {
+    .container1 {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    p {
+        font-size: 0.9em;
+    }
+
+    .eventos1 {
+        font-size: 1.1em;
+    }
+
+    .imagenes-eventos {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container1 {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    p {
+        font-size: 0.8em;
+    }
+
+    .eventos1 {
+        font-size: 1em;
+        padding: 8px;
+    }
+
+    .img-evento {
+        max-width: 100px;
+    }
+
+    .imagenes-eventos {
+        flex-direction: column;
+        align-items: center;
+    }
 }
 
 /*Mi Cuenta*/
@@ -2139,6 +2510,40 @@ li{
 
 .modal-custom form button:hover {
     background-color: #ff96c5;
+}
+
+@media (max-width: 768px) {
+    .modal-content-custom {
+        width: 95%;
+    }
+
+    .modal-content-custom input[type="text"],
+    .modal-content-custom input[type="email"],
+    .modal-content-custom input[type="password"] {
+        padding: 8px;
+    }
+
+    .modal-content-custom button {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content-custom {
+        width: 98%;
+    }
+
+    .modal-content-custom input[type="text"],
+    .modal-content-custom input[type="email"],
+    .modal-content-custom input[type="password"] {
+        padding: 6px;
+    }
+
+    .modal-content-custom button {
+        padding: 6px;
+        font-size: 0.8em;
+    }
 }
 
 /* Cierre Domiciliario */
@@ -2270,16 +2675,61 @@ li{
     text-align: center; /* Alineación del texto */
 }
 
+@media (max-width: 768px) {
+    .nav-buttons {
+        flex-direction: column;
+    }
+
+    .admi40 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .admi8 {
+        padding: 8px;
+    }
+
+    .admi4 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .admi5 th,
+    .admi5 td {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-title {
+        font-size: 1.5em;
+    }
+
+    .welcome-text {
+        font-size: 1em;
+    }
+
+    .admi8 {
+        padding: 6px;
+    }
+
+    .admi4 {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+
+    .admi6 {
+        font-size: 0.8em;
+        padding: 4px 8px;
+    }
+}
+
 /* Cierre Administrador */
 
 /* Pie de página */
 footer {
-    font-family: Arial, sans-serif;
-    margin-top: 30px;
-    background-color: #f8f8f8;
-    color: #000000;
-    padding: 20px;
-    text-align: center;
+    background-color: #f8f9fa;
+    padding: 0px;
 }
 
 .footer-content {
@@ -2292,9 +2742,7 @@ footer {
 }
 
 .footer-title {
-    font-size: 1.5em;
     font-weight: bold;
-    color: #333;
     margin-bottom: 10px;
 }
 
@@ -2361,6 +2809,15 @@ footer {
 .footer-contact .footer-title {
     font-size: 1.2em;
     margin-bottom: 10px;
+}
+
+.footer-contact ul, .footer-flowers ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-contact li, .footer-flowers li {
+    margin-bottom: 8px;
 }
 
 .footer-contact ul {
@@ -2434,6 +2891,69 @@ footer {
 
 .footer-link:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-socials, .footer-contact, .footer-flowers, .footer-description {
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-title {
+        font-size: 16px;
+    }
+
+    .social-icon {
+        font-size: 20px;
+    }
+
+    .footer-contact li, .footer-flowers li {
+        font-size: 14px;
+    }
+
+    .footer-description p {
+        font-size: 14px;
+    }
+
+    .footer-bottom {
+        font-size: 14px;
+    }
+}
+
+/* Responsive styles for contact section */
+@media (max-width: 768px) {
+    .footer-contact {
+        text-align: center;
+    }
+
+    .footer-contact li {
+        justify-content: center;
+    }
+
+    .footer-contact li svg {
+        margin-right: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-contact li {
+        font-size: 14px;
+    }
+
+    .footer-contact li svg {
+        font-size: 16px;
+    }
 }
 
 /* Estilos para el botón del carrito */

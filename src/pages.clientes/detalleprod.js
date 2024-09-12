@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
-import Header from '../components/Header';
+import React, { useState } from 'react';
 import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
+
+/*Importar imagenes*/
+import Ramo1 from '../static/img/Ramo1.jpeg';
 
 const App = () => {
   const [cart, setCart] = useState([]);
@@ -59,7 +62,7 @@ const App = () => {
       <div className="contenedor-detalle">
         <aside className="sidebar">
           <h2>
-            <a href="aniversario.html" className="home-link">
+            <a href="/DiaMujer" className="home-link">
               <FontAwesomeIcon icon={faArrowLeft} />
             </a> / Personalización
           </h2>
@@ -68,7 +71,15 @@ const App = () => {
             <ul>
               <li>
                 <a href="detalle_producto.html" className="filter1">
-                  <img src="assets/img/Ramo1.jpeg" alt="Arreglo floral Lirios de Amor" className="Ramo1" />
+                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
+                  Arreglo floral Lirios de Amor - $350,000
+                </a>
+                <a href="detalle_producto.html" className="filter1">
+                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
+                  Arreglo floral Lirios de Amor - $350,000
+                </a>
+                <a href="detalle_producto.html" className="filter1">
+                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
                   Arreglo floral Lirios de Amor - $350,000
                 </a>
               </li>
@@ -82,7 +93,7 @@ const App = () => {
 
           <div className="contenido-producto">
             <div className="imagen-producto">
-              <img src="assets/img/Ramo1.jpeg" alt="Arreglo floral Lirios de Amor" />
+              <img src={Ramo1} alt="Arreglo floral Lirios de Amor" />
             </div>
             <div className="info-producto">
               <h3>Arreglo floral Lirios de Amor</h3>

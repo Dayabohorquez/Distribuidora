@@ -1,11 +1,11 @@
 // src/components/Register.js
-import React, { useState } from 'react';
-import '../index.css';
+import { faEnvelope, faIdCard, faKey, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIdCard, faKey, faUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 const Register = () => {
     const [passwordVisible] = useState(false);
