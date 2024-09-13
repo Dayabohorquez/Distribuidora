@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../index.css';
-import Header from "../components/Header";
+import Headerc from "../components/Header.c";
 import Footer from "../components/Footer";
 
 const App = () => {
-    const [orders, setOrders] = useState([
-        {
-            id: '001',
-            date: '2024-09-05',
-            client: 'Juan Pérez',
-            status: 'En camino',
-            image: 'https://via.placeholder.com/100',
-            phone: '123456789',
-            address: 'Calle Ejemplo 123',
-            products: 'Rosa Roja, Tulipanes',
-            total: '$25',
-        },
-        // Puedes agregar más pedidos aquí
-    ]);
-
+    const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [newStatus, setNewStatus] = useState('');
 
+    // Obtener pedidos desde la API
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/pedidos/');
+                if (Array.isArray(response.data)) {
+                    setOrders(response.data);
+                } else {
+                    console.error('La respuesta no es un arreglo:', response.data);
+                }
+            } catch (error) {
+                console.error('Error al obtener los pedidos:', error);
+            }
+        };
+
+        fetchOrders();
+    }, []);
+
     const openModal = (order) => {
         setSelectedOrder(order);
-        setNewStatus(order.status);
+        setNewStatus(order.estado_pedido); // Inicializa el nuevo estado con el estado actual del pedido
     };
 
     const closeModal = () => {
@@ -35,25 +40,30 @@ const App = () => {
         setNewStatus(event.target.value);
     };
 
-    const updateStatus = () => {
+    const updateStatus = async () => {
         if (selectedOrder) {
-            if (window.confirm(`¿Estás seguro de que deseas actualizar el estado del pedido ${selectedOrder.id} a: ${newStatus}?`)) {
-                const updatedOrders = orders.map((order) =>
-                    order.id === selectedOrder.id ? { ...order, status: newStatus } : order
-                );
-                setOrders(updatedOrders);
-                setSelectedOrder({ ...selectedOrder, status: newStatus });
-                closeModal();  // Cierra el modal después de la actualización
+            if (window.confirm(`¿Estás seguro de que deseas actualizar el estado del pedido ${selectedOrder.id_pedido} a: ${newStatus}?`)) {
+                try {
+                    await axios.patch(`http://localhost:4000/api/pedidos/${selectedOrder.id_pedido}/estado`, { nuevo_estado: newStatus });
+                    const updatedOrders = orders.map((order) =>
+                        order.id_pedido === selectedOrder.id_pedido ? { ...order, estado_pedido: newStatus } : order
+                    );
+                    setOrders(updatedOrders);
+                    setSelectedOrder({ ...selectedOrder, estado_pedido: newStatus });
+                    closeModal(); // Cierra el modal después de la actualización
+                } catch (error) {
+                    console.error('Error al actualizar el estado del pedido:', error);
+                }
             }
         }
     };
 
     return (
         <div className="app-container">
-            <Header />
+            <Headerc />
             <div className="domiciliario-container">
                 <div className="domiciliario-greeting">
-                <h1>¡Bienvenido Domiciliario!</h1>
+                    <h1>¡Bienvenido Domiciliario!</h1>
                 </div>
                 <div className="domiciliario-orders-section">
                     <h2>Pedidos Asignados</h2>
@@ -70,12 +80,14 @@ const App = () => {
                         </thead>
                         <tbody>
                             {orders.map((order) => (
-                                <tr key={order.id}>
-                                    <td>{order.id}</td>
-                                    <td>{order.date}</td>
-                                    <td>{order.client}</td>
-                                    <td>{order.status}</td>
-                                    <td><img src={order.image} alt="Imagen del Pedido" className="order-image" /></td>
+                                <tr key={order.id_pedido}>
+                                    <td>{order.id_pedido}</td>
+                                    <td>{order.fecha_pedido}</td>
+                                    <td>{order.documento}</td>
+                                    <td>{order.estado_pedido}</td>
+                                    <td>
+                                        <img src={order.foto_PedidoURL || 'https://via.placeholder.com/100'} alt="Imagen del Pedido" className="order-image" />
+                                    </td>
                                     <td>
                                         <button className="action-btn" onClick={() => openModal(order)}>Ver</button>
                                     </td>
@@ -93,35 +105,36 @@ const App = () => {
                                 <tbody>
                                     <tr>
                                         <th>ID Pedido</th>
-                                        <td>{selectedOrder.id}</td>
+                                        <td>{selectedOrder.id_pedido}</td>
                                     </tr>
                                     <tr>
                                         <th>Fecha</th>
-                                        <td>{selectedOrder.date}</td>
+                                        <td>{selectedOrder.fecha_pedido}</td>
                                     </tr>
                                     <tr>
                                         <th>Cliente</th>
-                                        <td>{selectedOrder.client}</td>
+                                        <td>{selectedOrder.documento}</td>
                                     </tr>
                                     <tr>
                                         <th>Teléfono</th>
-                                        <td>{selectedOrder.phone}</td>
+                                        <td>{selectedOrder.telefono}</td>
                                     </tr>
                                     <tr>
                                         <th>Dirección</th>
-                                        <td>{selectedOrder.address}</td>
+                                        <td>{selectedOrder.direccion}</td>
                                     </tr>
                                     <tr>
                                         <th>Productos</th>
-                                        <td>{selectedOrder.products}</td>
+                                        <td>{selectedOrder.productos}</td>
                                     </tr>
                                     <tr>
                                         <th>Total</th>
-                                        <td>{selectedOrder.total}</td>
+                                        <td>{selectedOrder.total_pagado}</td>
                                     </tr>
                                     <tr>
                                         <th>Imagen</th>
-                                        <td><img src={selectedOrder.image} alt="Imagen del Pedido" className="order-image" /></td>
+                                        <td><img src="http://localhost:4000/uploads/pedido_1.jpg" alt="Imagen del Pedido" />
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -132,9 +145,10 @@ const App = () => {
                                     value={newStatus}
                                     onChange={handleStatusChange}
                                 >
-                                    <option value="En camino">En camino</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Enviado">Enviado</option>
                                     <option value="Entregado">Entregado</option>
-                                    <option value="Retrasado">Retrasado</option>
+                                    <option value="Cancelado">Cancelado</option>
                                 </select>
                                 <button className="update-status-btn" onClick={updateStatus}>
                                     Actualizar Estado
@@ -142,8 +156,8 @@ const App = () => {
                             </div>
                         </div>
                     </div>
-                    )}
-                </div>
+                )}
+            </div>
             <Footer />
         </div>
     );
