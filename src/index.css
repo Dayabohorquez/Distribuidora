@@ -131,7 +131,7 @@ header {
 }
 
 .account-cart .cart button {
-    background-color: #f698ff;
+    background-color: #fdcae1;
     border: none;
     color: rgb(0, 0, 0);
     font-size: 1em;
@@ -142,7 +142,7 @@ header {
 
 /* Estilos para el menú principal */
 .main-menu {
-    background-color: #f698ff;
+    background-color: #fdcae1;
     padding: 15px 0;
 }
 
@@ -677,7 +677,7 @@ header {
 }
 
 .account-cart .cart button {
-    background-color: #f698ff;
+    background-color: #fdcae1;
     border: none;
     color: rgb(0, 0, 0);
     font-size: 1em;
@@ -973,7 +973,7 @@ header {
 }
 
 .input-wrapper2 input:focus {
-    border-color: #007bff;
+    border-color: #fdcae1;
 }
 
 /* Estilos para el checkbox y enlaces */
@@ -1130,7 +1130,7 @@ header {
 }
 
 .his3-continuar-btn:hover {
-    background-color: #f27dff;
+    background-color: #fdcae1;
     transform: translateY(-2px);
 }
 
@@ -1277,7 +1277,7 @@ header {
 }
 
 .confirm-btn:hover {
-    background-color: #f27dff;
+    background-color: #fdcae1;
     transform: translateY(-2px);
 }
 
@@ -1306,7 +1306,7 @@ header {
     color: #333333;
     margin-bottom: 20px;
     font-weight: 700;
-    border-bottom: 2px solid #f698ff;
+    border-bottom: 2px solid #fdcae1;
     padding-bottom: 10px;
 }
 
@@ -1330,7 +1330,7 @@ header {
 /* Radio buttons */
 .payment-option input[type="radio"] {
     margin-right: 15px;
-    accent-color: #f698ff;
+    accent-color: #fdcae1;
     transition: transform 0.2s;
     cursor: pointer; /* Asegura que el cursor sea de mano */
 }
@@ -1367,7 +1367,7 @@ header {
 }
 
 .payment-details-content input[type="text"]:focus {
-    border-color: #f698ff;
+    border-color: #fdcae1;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -1387,7 +1387,7 @@ header {
 }
 
 .submit-btn:hover {
-    background-color: #f27dff;
+    background-color: #fdcae1;
     transform: translateY(-2px);
 }
 
@@ -1427,7 +1427,7 @@ header {
 }
 
 .button-vendedor button:hover {
-    background-color: #f48eff;
+    background-color: #fdcae1;
 }
 
 /* Sección de pedidos y productos */
@@ -1462,7 +1462,7 @@ header {
 }
 
 .vend4-table th, .vend5-product-table th{
-    background-color: #f27dff;
+    background-color: #fdcae1;
 }
 
 /* Estilo general para los botones de acción */
@@ -1488,7 +1488,7 @@ header {
 }
 
 .action-btn:hover {
-    background-color: #f48eff;
+    background-color: #fdcae1;
 }
 
 .update-status-btn {
@@ -1496,7 +1496,7 @@ header {
 }
 
 .update-status-btn:hover {
-    background-color: #f48eff;
+    background-color: #fdcae1;
 }
 
 /* Estilos para el modal */
@@ -1564,7 +1564,7 @@ header {
 }
 
 .modal-content th {
-    background-color: #f27dff;
+    background-color: #fdcae1;
 }
 
 .modal-content img {
@@ -1671,11 +1671,11 @@ header {
 }
 
 .action-btn:hover {
-    background-color: #ff8dd9;
+    background-color: #fdcae1;
 }
 
 .action-btn:active {
-    background-color: #ff8dd9;
+    background-color: #fdcae1;
 }
 
 /* Estilo para la imagen del pedido */
@@ -1740,7 +1740,7 @@ header {
 }
 
 .modal-content th {
-    background-color: #ffaeed;
+    background-color: #fdcae1;
 }
 
 .modal-content th,
@@ -1790,7 +1790,7 @@ header {
 }
 
 .update-status-btn:hover {
-    background-color: #ff8dd9;
+    background-color: #fdcae1;
 }
 
 .update-status-btn:active {
@@ -1915,7 +1915,7 @@ li{
 }
 
 .cart-btn {
-    background-color: #ff96c5;
+    background-color: #fdcae1;
     border: none;
     font-size: 1em;
     padding: 10px 15px;
@@ -1963,7 +1963,7 @@ li{
 
 .product-card img {
     width: 100%;
-    height: auto;
+    height: 70%;
     border-radius: 10px;
 }
 
@@ -1977,11 +1977,12 @@ li{
     cursor: pointer;
 }
 
-.btn-details {
-    margin-top: 15px;
+.btn-details, .btn-cart, .personalizar {
+    margin-top: 20px;
+    margin-right: 10px;  /* Separación horizontal */
+    padding: 10px 20px;
     background-color: #fdcae1;
     color: #000000;
-    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -2248,7 +2249,7 @@ li{
 }
 
 .btn-comprar-producto {
-    background-color: #004d40;
+    background-color: #fdcae1;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -2258,7 +2259,7 @@ li{
 }
 
 .btn-comprar-producto:hover {
-    background-color: #003730;
+    background-color: #fdcae1;
 }
 
 .descripcion{
@@ -2427,13 +2428,13 @@ li{
 }
 
 .container2 a {
-    color: #ff96c5; /* Color del enlace */
+    color: #fdcae1; /* Color del enlace */
     text-decoration: none;
     font-weight: bold;
 }
 
 .container2 a:hover {
-    color: #ff96c5;
+    color: #fdcae1;
     text-decoration: underline;
 }
 
@@ -2450,7 +2451,7 @@ li{
 }
 
 .container2 a:last-child:hover {
-    color: #ff96c5;
+    color: #fdcae1;
 }
 
 /* Estilos para los modales */
@@ -2502,14 +2503,14 @@ li{
 
 .modal-custom form button {
     padding: 10px;
-    background-color: #ff96c5;
+    background-color: #fdcae1;
     color: #000000;
     border: none;
     cursor: pointer;
 }
 
 .modal-custom form button:hover {
-    background-color: #ff96c5;
+    background-color: #fdcae1;
 }
 
 @media (max-width: 768px) {
@@ -2583,7 +2584,7 @@ li{
 }
 
 .nav-buttons button:hover {
-    background-color: #ed6bfc;
+    background-color: #fdcae1;
 }
 
 .admi3 {
@@ -2601,11 +2602,11 @@ li{
 }
 
 .admi4:hover {
-    background-color: #f48eff;
+    background-color: #fdcae1;
 }
 
 .admi40 {
-    background-color: #f48eff;
+    background-color: #fdcae1;
     border: none;
     padding: 12px 24px; /* Aumentar el padding para un botón más grande */
     cursor: pointer;
@@ -2616,7 +2617,7 @@ li{
 }
 
 .admi40:hover {
-    background-color: #f082fc;
+    background-color: #fdcae1;
 }
 
 .admi5 {
@@ -2631,7 +2632,7 @@ li{
 }
 
 .admi5 th {
-    background-color: #ffaeed; /* Color de fondo para los encabezados */
+    background-color: #fdcae1; /* Color de fondo para los encabezados */
 }
 
 .admi6 {
@@ -2643,7 +2644,7 @@ li{
 }
 
 .admi6:hover {
-    background-color: #f48eff;
+    background-color: #fdcae1;
 }
 
 .admi7 {
@@ -2747,7 +2748,7 @@ footer {
 }
 
 .highlight {
-    color: #f28bfc;
+    color: #fdcae1;
 }
 
 .footer-socials,
@@ -2796,7 +2797,7 @@ footer {
 }
 
 .social-icon:hover {
-    color: #c01acf; /* Cambia el color al pasar el cursor */
+    color: #fdcae1; /* Cambia el color al pasar el cursor */
 }
 
 /* Sección de contacto */
@@ -2885,7 +2886,7 @@ footer {
 }
 
 .footer-link {
-    color: #c01acf;
+    color: #fdcae1;
     text-decoration: none;
 }
 
@@ -2961,7 +2962,7 @@ footer {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #f698ff;
+    background-color: #fdcae1;
     border: none;
     border-radius: 50%;
     padding: 15px;
@@ -2971,7 +2972,7 @@ footer {
 }
 
 .cart-button:hover {
-    background-color: #f698ff;
+    background-color: #fdcae1;
 }
 
 .cart-button i {
