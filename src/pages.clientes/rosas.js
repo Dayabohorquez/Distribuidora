@@ -88,7 +88,7 @@ const ProductPage = () => {
                     <div className="filter">
                         <h3>Precio</h3>
                         <ul>
-                            <li><input type="checkbox" id="below-100" onChange={handleFilterChange} /> Debajo de $100.000</li>
+                            <li><input type="checkbox" id="below-100" onChange={handleFilterChange} /> Inferior a $100.000</li>
                             <li><input type="checkbox" id="between-100-200" onChange={handleFilterChange} /> Entre $100.000 - $200.000</li>
                             <li><input type="checkbox" id="above-200" onChange={handleFilterChange} /> Superior a $200.000</li>
                         </ul>

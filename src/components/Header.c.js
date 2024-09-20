@@ -1,7 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { jwtDecode } from 'jwt-decode'; // Asegúrate de que este import es correcto
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Asegúrate de que este import es correcto
 import '../index.css';
 import logo from '../static/img/Logo.png';
 
@@ -79,7 +79,7 @@ const Headerc = () => {
                 <div className="account-cart">
                     <div className="cart">
                         <Link to="/car">
-                            <button type="button"><i className="fas fa-shopping-cart"></i> 0 ARTÍCULO(S) - $0</button>
+                            <button type="button"><i className="fas fa-shopping-cart"></i>ARTÍCULO(S)</button>
                         </Link>
                     </div>
                     <div className="account" ref={accountRef} onClick={toggleAccountDropdown}>
@@ -122,7 +122,7 @@ const Headerc = () => {
                             <div className="menu-column">
                                 <ul className="column category">
                                     <li><Link to="/Rosas">Rosas</Link></li>
-                                    <li><Link to="/Astromelias">Astromelias</Link></li>
+                                    <li><Link to="/Chirosas">Chirosas</Link></li>
                                     <li><Link to="/Anturios">Anturios</Link></li>
                                 </ul>
                             </div>
@@ -133,13 +133,6 @@ const Headerc = () => {
                                     <li><Link to="/Girasoles">Girasoles</Link></li>
                                 </ul>
                             </div>
-                            <div className="menu-column">
-                                <ul className="column category">
-                                    <li><Link to="/Chirosas">Chirosas</Link></li>
-                                    <li><Link to="/Maracas">Maracas</Link></li>
-                                    <li><Link to="/Coquetas">Coquetas</Link></li>
-                                </ul>
-                            </div>
                         </div>
                     </li>
                     <li>
@@ -147,9 +140,6 @@ const Headerc = () => {
                         <ul className="dropdown">
                             <li className="dropdown-item"><Link to="/Eventos">Eventos</Link></li>
                         </ul>
-                    </li>
-                    <li>
-                        <Link to="/QuienesSomos">QUIÉNES SOMOS <i className="fa fa-angle-down"></i></Link>
                     </li>
                 </ul>
             </nav>

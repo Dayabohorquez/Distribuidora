@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import '../index.css';
+import { faEnvelope, faIdCard, faKey, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIdCard, faKey, faUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 const Register = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -87,9 +87,10 @@ const Register = () => {
                                         required
                                         value={documentType}
                                         onChange={(e) => setDocumentType(e.target.value)}
+                                        autoFocus
                                     >
                                         <option value="">Seleccione un tipo de documento</option>
-                                        <option value="CC">Cedula de ciudadania</option>
+                                        <option value="CC">Cédula de ciudadanía</option>
                                         <option value="Pasaporte">Pasaporte</option>
                                         <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
                                     </select>

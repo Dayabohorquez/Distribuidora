@@ -10,7 +10,7 @@ const QuienesSomosPage = () => {
         <div className="container1">
             <div>
                 <h2>
-                    <a href="index.html" className="home-link">
+                    <a href="/Main" className="home-link">
                         <i className="fa-solid fa-house"></i>
                     </a> / Quienes Somos
                 </h2>
@@ -25,15 +25,15 @@ const QuienesSomosPage = () => {
                 </p><br /><br />
                 <h2>Misión</h2>
                 <p>
-                    Nuestra misión es simple pero poderosa: transformar cada momento especial con la belleza y elegancia de nuestras flores. 
-                    Creemos en el impacto positivo que las flores pueden tener en la vida de las personas y nos esforzamos por ofrecer arreglos 
-                    florales visualmente impresionantes que transmitan emociones y sentimientos. Nos dedicamos a superar las expectativas de 
+                    Nuestra misión es simple pero poderosa: transformar cada momento especial con la belleza y elegancia de nuestras flores.
+                    Creemos en el impacto positivo que las flores pueden tener en la vida de las personas y nos esforzamos por ofrecer arreglos
+                    florales visualmente impresionantes que transmitan emociones y sentimientos. Nos dedicamos a superar las expectativas de
                     nuestros clientes, proporcionando un servicio excepcional en cada paso del camino.
                 </p><br /><br />
                 <h2>Visión</h2>
                 <p>
-                    Ser reconocidos como la distribuidora líder de flores en el país, comprometida con la innovación, la sostenibilidad y la 
-                    satisfacción total del cliente. Queremos continuar creciendo y ofreciendo productos florales que no solo sorprendan y 
+                    Ser reconocidos como la distribuidora líder de flores en el país, comprometida con la innovación, la sostenibilidad y la
+                    satisfacción total del cliente. Queremos continuar creciendo y ofreciendo productos florales que no solo sorprendan y
                     deleiten, sino que también reflejen nuestro compromiso con la calidad y la responsabilidad ambiental.
                 </p>
             </div>

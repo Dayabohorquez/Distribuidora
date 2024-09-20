@@ -58,7 +58,7 @@ const Header = () => {
                 <div className="account-cart">
                     <div className="cart">
                         <Link to="/car">
-                            <button type="button"><i className="fas fa-shopping-cart"></i> 0 ARTÍCULO(S) - $0</button>
+                            <button type="button"><i className="fas fa-shopping-cart"></i>ARTÍCULO(S)</button>
                         </Link>
                     </div>
                     <div className="account" ref={accountRef} onClick={toggleAccountDropdown}>
@@ -98,7 +98,7 @@ const Header = () => {
                             <div className="menu-column">
                                 <ul className="column category">
                                     <li><Link to="/Rosas">Rosas</Link></li>
-                                    <li><Link to="/Astromelias">Astromelias</Link></li>
+                                    <li><Link to="/Chirosas">Chirosas</Link></li>
                                     <li><Link to="/Anturios">Anturios</Link></li>
                                 </ul>
                             </div>
@@ -109,13 +109,6 @@ const Header = () => {
                                     <li><Link to="/Girasoles">Girasoles</Link></li>
                                 </ul>
                             </div>
-                            <div className="menu-column">
-                                <ul className="column category">
-                                    <li><Link to="/Chirosas">Chirosas</Link></li>
-                                    <li><Link to="/Maracas">Maracas</Link></li>
-                                    <li><Link to="/Coquetas">Coquetas</Link></li>
-                                </ul>
-                            </div>
                         </div>
                     </li>
                     <li>
@@ -123,9 +116,6 @@ const Header = () => {
                         <ul className="dropdown">
                             <li className="dropdown-item"><Link to="/Eventos">Eventos</Link></li>
                         </ul>
-                    </li>
-                    <li>
-                        <Link to="/QuienesSomos">QUIÉNES SOMOS <i className="fa fa-angle-down"></i></Link>
                     </li>
                 </ul>
             </nav>

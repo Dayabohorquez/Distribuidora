@@ -3,12 +3,12 @@ import { Route, Routes } from "react-router-dom";
 import AmorAmistad from "./pages.clientes/amor_amistad";
 import Aniversario from "./pages.clientes/aniversario";
 import Anturios from "./pages.clientes/anturios";
-import Astromelias from "./pages.clientes/astromelias";
+import Car from "./pages.clientes/carro";
 import Chirosas from "./pages.clientes/chirosas";
 import PurchasePage from "./pages.clientes/compra";
 import Condolencias from "./pages.clientes/condolencias";
-import Coquetas from "./pages.clientes/coquetas";
 import Cumpleaños from "./pages.clientes/cumpleaños";
+import Detailprod from "./pages.clientes/detalleprod";
 import DiaMadre from "./pages.clientes/dia_madre";
 import DiaMujer from "./pages.clientes/dia_mujer";
 import Eventos from "./pages.clientes/eventos";
@@ -18,17 +18,14 @@ import OrderHistory from "./pages.clientes/historial";
 import Lirios from "./pages.clientes/lirios";
 import Login from "./pages.clientes/login";
 import Main from "./pages.clientes/main";
-import Maracas from "./pages.clientes/maracas";
+import Myaccount from "./pages.clientes/micuenta";
 import PaymentMethod from "./pages.clientes/pago";
 import QuienesSomos from "./pages.clientes/quienes_somos";
 import Register from "./pages.clientes/register";
 import Rosas from "./pages.clientes/rosas";
+import Admin from "./pages/admin";
 import Domiciliary from "./pages/domiciliario";
 import VendorDashboard from "./pages/vendedor";
-import Admin from "./pages/admin";
-import Myaccount from "./pages.clientes/micuenta";
-import Car from "./pages.clientes/carro";
-import Detailprod from "./pages.clientes/detalleprod";
 
 
 function App() {
@@ -52,20 +49,16 @@ function App() {
           <Route path="Condolencias" element={<Condolencias />} />
           <Route path="Cumpleaños" element={<Cumpleaños />} />
           <Route path="Anturios" element={<Anturios />} />
-          <Route path="Astromelias" element={<Astromelias />} />
           <Route path="Chirosas" element={<Chirosas />} />
-          <Route path="Coquetas" element={<Coquetas />} />
           <Route path="Gerberas" element={<Gerberas />} />
           <Route path="Girasoles" element={<Girasoles />} />
           <Route path="Lirios" element={<Lirios />} />
-          <Route path="Maracas" element={<Maracas />} />
           <Route path="Rosas" element={<Rosas />} />
           <Route path="Eventos" element={<Eventos />} />
           <Route path="QuienesSomos" element={<QuienesSomos />} />
           <Route path="/Myaccount" element={<Myaccount />} />
           <Route path="/Car" element={<Car/>} />
           <Route path="/Detailprod" element={<Detailprod/>} />
-
         </Routes>
       </main>
     </div>

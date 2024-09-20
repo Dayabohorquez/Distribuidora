@@ -1,4 +1,6 @@
 import React from 'react';
+import { FaWhatsapp } from 'react-icons/fa'; // Importar ícono de WhatsApp
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
@@ -6,58 +8,48 @@ import Boda from '../static/img/boda.jpg';
 
 const EventosPage = () => {
     const eventos = [
-        'Matrimonios',
-        'Primera Comunion',
-        'Bautizo',
-        'Cumpleaños',
-        'Graduacion'
+        { nombre: 'Matrimonios', descripcion: 'Celebra el día más especial con nosotros.', imgSrc: Boda},
+        { nombre: 'Primera Comunión', descripcion: 'Una ocasión espiritual que recordarán siempre.' },
+        { nombre: 'Bautizo', descripcion: 'El inicio de un camino lleno de bendiciones.' },
+        { nombre: 'Cumpleaños', descripcion: 'Haz que cada año sea inolvidable.' },
+        { nombre: 'Graduación', descripcion: 'Celebra tus logros con estilo y elegancia.' }
     ];
 
-    const imagenes = [
-        'assets/img/boda.jpg',
-        'assets/img/boda.jpg',
-        'assets/img/boda.jpg',
-        'assets/img/boda.jpg',
-        'assets/img/boda.jpg',
-        'assets/img/boda.jpg'
-    ];
+    const navigate = useNavigate();
+
+    const handleContactClick = () => {
+        navigate('/Formulario'); // Redirige a la página del formulario de contacto
+    };
 
     return (
         <div>
-        <Header/>
-        <div className="container1">
-            <div>
-                <h2>
-                    <a href="index.html" className="home-link">
-                        <i className="fa-solid fa-house"></i>
-                    </a> / Eventos
-                </h2>
+            <Header />
+            <div className="hero-section">
+                <h1>Eventos Memorables</h1>
+                <p>Organizamos el evento perfecto para cualquier ocasión. ¡Hacemos realidad tus sueños!</p>
             </div>
-            <div>
-                <p>
-                    Consulte personalmente con nuestros asesores y recibirá una completa guía para que su evento sea inolvidable. <br /> <br />
-                    <strong>whatsApp: </strong>3222118028 <strong>Correo:</strong> mari.luzgomez@hotmail.com
-                </p>
-            </div>
-            <div>
+            <div className="eventos-grid">
                 {eventos.map((evento, index) => (
-                    <div key={index} className={index === 0 ? "eventos3" : "eventos2"}>
-                        <p className="eventos1">{evento}</p>
+                    <div key={index} className="evento-card">
+                        <img src={Boda} alt={evento.nombre} className="evento-img"/>
+                        <div className="evento-content">
+                            <h3>{evento.nombre}</h3>
+                            <p>{evento.descripcion}</p>
+                        </div>
                     </div>
                 ))}
             </div>
-            <div className="imagenes-eventos">
-                {imagenes.map((imgSrc, index) => (
-                    <img key={index} src={Boda} alt={`Imagen de ${eventos[index]}`} className="img-evento" />
-                ))}
-            </div>
-            <div className="imagenes-eventos">
-                {imagenes.map((imgSrc, index) => (
-                    <img key={index + imagenes.length} src={Boda} alt={`Imagen de ${eventos[index % eventos.length]}`} className="img-evento" />
-                ))}
-            </div>
-        </div>
-        <Footer/>
+
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/1234567890" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
+            <Footer />
         </div>
     );
 };

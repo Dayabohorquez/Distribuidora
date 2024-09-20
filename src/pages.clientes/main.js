@@ -7,12 +7,14 @@ import '../index.css';
 
 
 // Importar imágenes
-import eventoImg from '../static/img/evento.jpeg';
 import funebreImg from '../static/img/Funebre.jpeg';
 import funebre1Img from '../static/img/Funebre1.jpeg';
 import funebre2Img from '../static/img/Funebre2.jpeg';
 import funebre3Img from '../static/img/Funebre3.jpeg';
 import funebre4Img from '../static/img/Funebre4.jpeg';
+import Oferta1 from '../static/img/Oferta1.png';
+import Oferta2 from '../static/img/Oferta2.png';
+import Oferta3 from '../static/img/Oferta3.png';
 import ramilleteImg from '../static/img/Ramillete.jpeg';
 import ramillete1Img from '../static/img/Ramillete1.jpeg';
 import ramillete2Img from '../static/img/Ramillete2.jpeg';
@@ -80,13 +82,13 @@ const HomePage = () => {
                 <div className="carousel-container">
                     <div className="carousel-slide" ref={slidesRef}>
                         <div className="carousel-item">
-                            <img src={eventoImg} alt="Evento 2" />
+                            <img src={Oferta1} alt="Evento 2" />
                         </div>
                         <div className="carousel-item">
-                            <img src={eventoImg} alt="Evento 2" />
+                            <img src={Oferta2} alt="Evento 2" />
                         </div>
                         <div className="carousel-item">
-                            <img src={eventoImg} alt="Evento 3" />
+                            <img src={Oferta3} alt="Evento 3" />
                         </div>
                     </div>
                 </div>

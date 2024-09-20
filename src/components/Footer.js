@@ -1,9 +1,9 @@
+import { faFacebook, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faCalendarDay, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../index.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faEnvelope, faCalendarDay, faClock } from '@fortawesome/free-solid-svg-icons';
-import { faFacebook, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 const Footer = () => {
     return (
@@ -21,7 +21,6 @@ const Footer = () => {
                     <p className="footer-title">Contáctenos</p>
                     <ul>
                         <li><FontAwesomeIcon icon={faPhone} /> +57 3222118028</li>
-                        <li><FontAwesomeIcon icon={faEnvelope} /> mari.luzgomez@hotmail.com</li>
                         <li><FontAwesomeIcon icon={faCalendarDay} /> Lunes-Sábado</li>
                         <li><FontAwesomeIcon icon={faClock} /> 2am - 2pm</li>
                     </ul>
@@ -46,6 +45,7 @@ const Footer = () => {
                         y otros tipos de flores que son entregados a domicilio en fechas tan
                         especiales como el día del amor y la amistad, día de la mujer, día de la madre,
                         cumpleaños, condolencias, entre otros.
+                        <Link to="/QuienesSomos" className="footer-link">Mas información</Link>
                     </p>
                 </div>
             </div>
