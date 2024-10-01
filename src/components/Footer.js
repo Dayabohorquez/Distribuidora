@@ -52,8 +52,8 @@ const Footer = () => {
 
             <div className="footer-bottom">
                 <p>
-                    © 2023-2024 Todos los derechos reservados | Construido con ❤ por
-                    <Link to="/terminos" className="footer-link">Términos y condiciones</Link>
+                    © 2024 Todos los derechos reservados | Construido con ❤ por
+                    <Link to="/Terminos" className="footer-link">Términos y condiciones</Link>
                 </p>
             </div>
         </footer>

@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 const PurchasePage = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+      } catch (e) {
+        console.error('Error decodificando el token', e);
+        localStorage.removeItem('token');
+      }
+    }
+  }, []);
+
   return (
     <>
-      <Header />
+      {isAuthenticated ? <Headerc /> : <Header />}
       <main className="purchase-container">
         <h1>Hoja de Compra</h1>
 
@@ -75,6 +93,15 @@ const PurchasePage = () => {
           <Link to="/PaymentMethod" className="confirm-btn">Confirmar Compra</Link>
         </section>
       </main>
+      {/* Botón de WhatsApp */}
+      <a 
+        href="https://wa.me/3222118028" 
+        className="whatsapp-btn" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <FaWhatsapp size={30} />
+      </a>
       <Footer />
     </>
   );

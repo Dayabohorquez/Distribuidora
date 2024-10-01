@@ -1,16 +1,27 @@
+// src/pages/ProtectedRoute.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
-  const token = localStorage.getItem('token');
-  const userRole = token ? JSON.parse(atob(token.split('.')[1])).rol : null; // Decodificar el token para obtener el rol
+    const token = localStorage.getItem('token');
+    let userRole = null;
 
-  if (!token || !allowedRoles.includes(userRole)) {
-    // Redirigir al login si no hay token o el rol no está permitido
-    return <Navigate to="/" />;
-  }
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            userRole = decoded.rol; 
+        } catch (e) {
+            console.error('Error decoding token', e);
+            localStorage.removeItem('token');
+        }
+    }
 
-  return children;
+    if (!token || (userRole && !allowedRoles.includes(userRole))) {
+        return <Navigate to="/login" />;
+    }
+
+    return children;
 };
 
 export default ProtectedRoute;

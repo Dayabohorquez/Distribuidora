@@ -1,15 +1,15 @@
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { jwtDecode } from 'jwt-decode'; // Asegúrate de que este import es correcto
+import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../index.css';
 import logo from '../static/img/Logo.png';
 
-const Headerc = () => {
+const Headerc = ({ totalItems }) => {
     const [isAccountOpen, setAccountOpen] = useState(false);
     const [isSpecialDatesOpen, setSpecialDatesOpen] = useState(false);
-    const [user, setUser] = useState(null); // Estado para almacenar la información del usuario
-    const [logoutMessage, setLogoutMessage] = useState(''); // Estado para el mensaje de cierre de sesión
+    const [user, setUser] = useState(null);
+    const [notification, setNotification] = useState('');
     const accountRef = useRef(null);
     const specialDatesRef = useRef(null);
     const navigate = useNavigate();
@@ -19,9 +19,9 @@ const Headerc = () => {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setUser(decoded); // Guarda la información del usuario decodificada
+                setUser(decoded);
             } catch (e) {
-                console.error('Error decodificando el token', e);
+                console.error('Error decoding token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -60,13 +60,29 @@ const Headerc = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Elimina el token del almacenamiento local
-        setLogoutMessage('Cierre de sesión exitoso');
-        setUser(null); // Limpia el estado del usuario
+        localStorage.removeItem('token');
+        setUser(null);
+        setNotification('Cierre de sesión exitoso'); // Notificación
         setTimeout(() => {
-            setLogoutMessage('');
-            navigate('/'); // Redirige a la página de inicio o a una página específica
-        }, 1000); // 3 segundos para mostrar el mensaje
+            setNotification(''); // Limpiar notificación después de un segundo
+            navigate('/');
+        }, 1000);
+    };
+
+    const handleRoleNavigation = () => {
+        if (user) {
+            const roleRoutes = {
+                'Administrador': '/admin',
+                'Vendedor': '/VendorDashboard',
+                'Domiciliario': '/domiciliary'
+            };
+            const redirectPath = roleRoutes[user.rol] || '/';
+            setNotification(`Navegando a: ${redirectPath}`); // Notificación
+            navigate(redirectPath);
+        } else {
+            setNotification('Redirigiendo a la página principal'); // Notificación
+            navigate('/');
+        }
     };
 
     return (
@@ -79,7 +95,9 @@ const Headerc = () => {
                 <div className="account-cart">
                     <div className="cart">
                         <Link to="/car">
-                            <button type="button"><i className="fas fa-shopping-cart"></i>ARTÍCULO(S)</button>
+                            <button type="button">
+                                <i className="fas fa-shopping-cart"></i> {totalItems} ARTÍCULO(S)
+                            </button>
                         </Link>
                     </div>
                     <div className="account" ref={accountRef} onClick={toggleAccountDropdown}>
@@ -87,14 +105,17 @@ const Headerc = () => {
                         <div className={`dropdown ${isAccountOpen ? 'active' : ''}`}>
                             {user ? (
                                 <>
-                                    <Link to="/myaccount">Mi Cuenta <i className="fa fa-user" aria-hidden="true"></i></Link>
-                                    <Link to="/purchasepage">Historial de Pedidos <i className="fa fa-box" aria-hidden="true"></i></Link>
-                                    <Link to="#" onClick={handleLogout}>Cerrar sesión <i className="fa fa-sign-out-alt" aria-hidden="true"></i></Link>
+                                    <Link to="/myaccount">Mi Cuenta</Link>
+                                    <Link to="/OrderHistory">Historial de Pedidos</Link>
+                                    <Link to="#" onClick={handleLogout}>Cerrar sesión</Link>
+                                    <button type="button" className="role-navigation-button" onClick={handleRoleNavigation}>
+                                        Volver a Vista de {user.rol}
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <Link to="/register">Registrarse <i className="fa fa-unlock-alt" aria-hidden="true"></i></Link>
-                                    <Link to="/login">Acceder <i className="fa fa-user" aria-hidden="true"></i></Link>
+                                    <Link to="/register">Registrarse</Link>
+                                    <Link to="/login">Acceder</Link>
                                 </>
                             )}
                         </div>
@@ -143,9 +164,9 @@ const Headerc = () => {
                     </li>
                 </ul>
             </nav>
-            {logoutMessage && (
-                <div className="logout-message">
-                    {logoutMessage}
+            {notification && (
+                <div className="notification">
+                    {notification}
                 </div>
             )}
         </header>

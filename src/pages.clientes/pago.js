@@ -1,12 +1,18 @@
 // src/pages/PaymentMethod.js
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 const PaymentMethod = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
     const paymentOptions = document.querySelectorAll('input[name="payment-method"]');
+  
     paymentOptions.forEach(option => {
       option.addEventListener('change', () => {
         document.querySelectorAll('.payment-details-content').forEach(content => {
@@ -16,78 +22,86 @@ const PaymentMethod = () => {
       });
     });
 
+    const closeDropdowns = (dropdowns) => {
+      dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
+    };
+
     const account = document.querySelector('.account');
     const specialDates = document.querySelector('.special-dates');
 
-    function closeAllDropdowns() {
-      account.classList.remove('active');
-      specialDates.classList.remove('active');
-    }
+    const toggleDropdown = (dropdown) => {
+      dropdown.classList.toggle('active');
+      closeDropdowns([account, specialDates].filter(d => d !== dropdown));
+    };
 
     account.addEventListener('click', (event) => {
       event.stopPropagation();
-      if (!account.classList.contains('active')) {
-        closeAllDropdowns();
-        account.classList.add('active');
-      } else {
-        account.classList.remove('active');
-      }
+      toggleDropdown(account);
     });
 
     specialDates.addEventListener('click', (event) => {
       event.stopPropagation();
-      if (!specialDates.classList.contains('active')) {
-        closeAllDropdowns();
-        specialDates.classList.add('active');
-      } else {
-        specialDates.classList.remove('active');
-      }
+      toggleDropdown(specialDates);
     });
 
-    document.addEventListener('click', () => {
-      closeAllDropdowns();
-    });
+    document.addEventListener('click', () => closeDropdowns([account, specialDates]));
+
+    return () => {
+      paymentOptions.forEach(option => option.removeEventListener('change', () => {}));
+      account.removeEventListener('click', () => {});
+      specialDates.removeEventListener('click', () => {});
+    };
   }, []);
 
   return (
     <>
-      <Header />
+      {isAuthenticated ? <Headerc /> : <Header />}
       <main className="payment-method-container">
         <h1>Método de Pago</h1>
         <section className="section payment-method">
           <h2>Selecciona tu Método de Pago</h2>
           <form>
-            <div className="payment-option">
-              <input type="radio" id="nequi" name="payment-method" value="nequi" defaultChecked />
-              <label htmlFor="nequi">Nequi</label>
-            </div>
-            <div className="payment-option">
-              <input type="radio" id="bancolombia" name="payment-method" value="bancolombia" />
-              <label htmlFor="bancolombia">Bancolombia</label>
-            </div>
-            <div className="payment-option">
-              <input type="radio" id="efectivo" name="payment-method" value="efectivo" />
-              <label htmlFor="efectivo">Efectivo</label>
-            </div>
+            {['nequi', 'bancolombia', 'efectivo'].map(method => (
+              <div className="payment-option" key={method}>
+                <input 
+                  type="radio" 
+                  id={method} 
+                  name="payment-method" 
+                  value={method} 
+                  defaultChecked={method === 'nequi'} 
+                />
+                <label htmlFor={method}>{method.charAt(0).toUpperCase() + method.slice(1)}</label>
+              </div>
+            ))}
             <div className="payment-details">
               <h3>Detalles del Pago</h3>
-              <div id="nequi-details" className="payment-details-content">
-                <label htmlFor="nequi-number">Número de Nequi:</label>
-                <input type="text" id="nequi-number" name="nequi-number" />
-              </div>
-              <div id="bancolombia-details" className="payment-details-content" style={{ display: 'none' }}>
-                <label htmlFor="bancolombia-account">Número de Cuenta Bancolombia:</label>
-                <input type="text" id="bancolombia-account" name="bancolombia-account" />
-              </div>
-              <div id="efectivo-details" className="payment-details-content" style={{ display: 'none' }}>
-                <label htmlFor="efectivo-amount">Monto en Efectivo:</label>
-                <input type="text" id="efectivo-amount" name="efectivo-amount" />
-              </div>
+              {['nequi', 'bancolombia', 'efectivo'].map(method => (
+                <div 
+                  id={`${method}-details`} 
+                  className="payment-details-content" 
+                  style={{ display: method === 'nequi' ? 'block' : 'none' }} 
+                  key={method}
+                >
+                  <label htmlFor={`${method}-number`}>
+                    {method === 'efectivo' ? 'Monto en Efectivo' : `Número de ${method.charAt(0).toUpperCase() + method.slice(1)}:`}
+                  </label>
+                  <input type="text" id={`${method}-number`} name={`${method}-number`} />
+                </div>
+              ))}
             </div>
             <button className="submit-btn" type="submit">Realizar Pago</button>
           </form>
         </section>
       </main>
+      {/* Botón de WhatsApp */}
+      <a 
+        href="https://wa.me/3222118028" 
+        className="whatsapp-btn" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <FaWhatsapp size={30} />
+      </a>
       <Footer />
     </>
   );

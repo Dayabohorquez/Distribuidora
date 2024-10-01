@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
 
 /* Importar imágenes */
 import Rosa1 from '../static/img/Rosa1.jpeg';
@@ -13,14 +15,30 @@ import Rosa6 from '../static/img/Rosa6.jpeg';
 import Rosa7 from '../static/img/Rosa7.jpeg';
 import Rosa8 from '../static/img/Rosa8.jpeg';
 import Rosa9 from '../static/img/Rosa9.jpeg';
+import { jwtDecode } from 'jwt-decode';
+
 
 const ProductPage = () => {
     const [modalData, setModalData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const decoded = jwtDecode(token);
+            setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+          } catch (e) {
+            console.error('Error decodificando el token', e);
+            localStorage.removeItem('token');
+          }
+        }
+      }, []);
 
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Rosa1 },
@@ -70,7 +88,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -153,6 +171,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

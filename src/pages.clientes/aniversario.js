@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import Headerc from '../components/Header.c';
+import { FaWhatsapp } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
 import '../index.css';
 
 /* Importar imágenes */
@@ -21,24 +24,38 @@ const ProductPage = () => {
         price: null,
         type: ''
     });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verificar si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
 
     const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario1 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario2 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario3 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario4 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario5 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario6 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario7 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario8 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Aniversario9 },
-        // Añadir más productos aquí
+        { id: 'product1', name: 'Ramo de Rosas Rojas', price: 50000, type: 'Rosas', occasion: 'Aniversario', imgSrc: Aniversario1 },
+        { id: 'product2', name: 'Ramo de Lirios', price: 60000, type: 'Lirios', occasion: 'Aniversario', imgSrc: Aniversario2 },
+        { id: 'product3', name: 'Ramo Surtido', price: 70000, type: 'Surtido', occasion: 'Aniversario', imgSrc: Aniversario3 },
+        { id: 'product4', name: 'Ramo de Tulipanes', price: 80000, type: 'Tulipanes', occasion: 'Aniversario', imgSrc: Aniversario4 },
+        { id: 'product5', name: 'Ramo de Orquídeas', price: 90000, type: 'Orquídeas', occasion: 'Aniversario', imgSrc: Aniversario5 },
+        { id: 'product6', name: 'Ramo de Margaritas', price: 100000, type: 'Margaritas', occasion: 'Aniversario', imgSrc: Aniversario6 },
+        { id: 'product7', name: 'Ramo de Gerberas', price: 110000, type: 'Gerberas', occasion: 'Aniversario', imgSrc: Aniversario7 },
+        { id: 'product8', name: 'Ramo de Claveles', price: 120000, type: 'Claveles', occasion: 'Aniversario', imgSrc: Aniversario8 },
+        { id: 'product9', name: 'Ramo de Fresias', price: 130000, type: 'Fresias', occasion: 'Aniversario', imgSrc: Aniversario9 },
     ];
 
     const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
-        'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
+        'product1': 'Descripción detallada del Ramo de Rosas Rojas.',
+        'product2': 'Descripción detallada del Ramo de Lirios.',
+        'product3': 'Descripción detallada del Ramo Surtido.',
+        // Añadir más descripciones si es necesario
     };
 
     const handleDetailsClick = (product) => {
@@ -70,7 +87,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -106,16 +123,16 @@ const ProductPage = () => {
                         <ul>
                             <li>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Aniversario1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Aniversario1} alt="Ramo de Rosas Rojas" className="Ramo1" />
+                                    Ramo de Rosas Rojas - $350,000
                                 </a>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Aniversario2} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Aniversario2} alt="Ramo de Lirios" className="Ramo1" />
+                                    Ramo de Lirios - $350,000
                                 </a>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Aniversario3} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Aniversario3} alt="Ramo Surtido" className="Ramo1" />
+                                    Ramo Surtido - $350,000
                                 </a>
                             </li>
                             {/* Añadir más novedades aquí */}
@@ -153,6 +170,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

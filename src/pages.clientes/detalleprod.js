@@ -1,182 +1,118 @@
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css'; // Asegúrate de ajustar la ruta a tu archivo CSS
+import Headerc from '../components/Header.c';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { jwtDecode } from 'jwt-decode';
 
-/*Importar imagenes*/
-import Ramo1 from '../static/img/Ramo1.jpeg';
+const DetailProd = ({ addToCart }) => {
+    const location = useLocation();
+    const { product } = location.state || {};
+    const navigate = useNavigate();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-const App = () => {
-  const [cart, setCart] = useState([]);
-  const [isCartVisible, setCartVisible] = useState(false);
-  const [notification, setNotification] = useState('');
-  const [opcionAdicionalPrecio, setOpcionAdicionalPrecio] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedOption, setSelectedOption] = useState('ninguno');
-  
-  const addToCart = (product) => {
-    setCart(prevCart => [...prevCart, product]);
-    setNotification('Producto añadido al carrito de compras.');
-    setTimeout(() => setNotification(''), 3000);
-  };
-
-  const removeFromCart = (index) => {
-    setCart(prevCart => prevCart.filter((_, i) => i !== index));
-  };
-
-  const hideCart = () => setCartVisible(false);
-
-  const cartTotal = cart.reduce((total, item) => total + item.price, 0);
-
-  const updateProductPrice = () => {
-    const basePrice = 350000; // Precio base del producto
-    const totalPrice = (basePrice + opcionAdicionalPrecio) * quantity;
-    return totalPrice;
-  };
-
-  const handleOptionChange = (event) => {
-    const option = event.target.value;
-    switch (option) {
-      case 'chocolate':
-        setOpcionAdicionalPrecio(30000);
-        break;
-      case 'vino':
-        setOpcionAdicionalPrecio(86000);
-        break;
-      default:
-        setOpcionAdicionalPrecio(0);
-    }
-    setSelectedOption(option);
-  };
-
-  const handleQuantityChange = (event) => {
-    setQuantity(parseInt(event.target.value, 10));
-  };
-
-  return (
-    <div>
-      <Header/>
-
-      <div className="contenedor-detalle">
-        <aside className="sidebar">
-          <h2>
-            <a href="/DiaMujer" className="home-link">
-              <FontAwesomeIcon icon={faArrowLeft} />
-            </a> / Personalización
-          </h2>
-          <div className="filter">
-            <h3>Novedades</h3>
-            <ul>
-              <li>
-                <a href="detalle_producto.html" className="filter1">
-                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                  Arreglo floral Lirios de Amor - $350,000
-                </a>
-                <a href="detalle_producto.html" className="filter1">
-                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                  Arreglo floral Lirios de Amor - $350,000
-                </a>
-                <a href="detalle_producto.html" className="filter1">
-                  <img src={Ramo1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                  Arreglo floral Lirios de Amor - $350,000
-                </a>
-              </li>
-              {/* Añadir más elementos aquí */}
-            </ul>
-          </div>
-        </aside>
-
-        <section className="detalle-producto">
-          <h2 className="descripcion">Descripción del Producto</h2>
-
-          <div className="contenido-producto">
-            <div className="imagen-producto">
-              <img src={Ramo1} alt="Arreglo floral Lirios de Amor" />
-            </div>
-            <div className="info-producto">
-              <h3>Arreglo floral Lirios de Amor</h3>
-              <p>Hermoso arreglo en rosas fucsias y lirios, con follaje en rusco y gypsophila (redondo).</p>
-
-              <div className="meta-producto">
-                <p><strong>$350,000</strong></p>
-              </div>
-
-              <div className="opciones-producto">
-                <h4 className="opciones">Opciones disponibles</h4>
-                <label className="detalle-adicional" htmlFor="detalle-adicional">Detalle adicional</label>
-                <select id="detalle-adicional" value={selectedOption} onChange={handleOptionChange}>
-                  <option value="ninguno">Ninguno</option>
-                  <option value="chocolate">Chocolate Ferrero Rocher (caja x 8Und) (+$30,000)</option>
-                  <option value="vino">Vino (+$86,000)</option>
-                </select>
-
-                <label className="fecha-entrega" htmlFor="fecha-entrega">Fecha de Entrega</label>
-                <input type="date" id="fecha-entrega" required />
-
-                <label className="dedicatoria" htmlFor="dedicatoria">Dirección</label>
-                <textarea id="dedicatoria" placeholder="Escribe tu mensaje aquí" required></textarea>
-
-                <label className="dedicatoria" htmlFor="dedicatoria">Dedicatoria</label>
-                <textarea id="dedicatoria" placeholder="Escribe tu mensaje aquí"></textarea>
-
-                <label className="cantidad" htmlFor="cantidad">Cantidad:</label>
-                <input type="number" id="cantidad" value={quantity} min="1" onChange={handleQuantityChange} required />
-              </div>
-              <div className="botones">
-                <button className="btn-comprar-producto" onClick={() => addToCart({
-                  img: 'assets/img/Ramo1.jpeg',
-                  title: 'Arreglo floral Lirios de Amor',
-                  price: updateProductPrice()
-                })}>Comprar</button>
-                <button className="btn-comprar-producto" onClick={() => addToCart({
-                  img: 'assets/img/Ramo1.jpeg',
-                  title: 'Arreglo floral Lirios de Amor',
-                  price: updateProductPrice()
-                })}>Añadir al carrito</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Carrito de compras */}
-        {isCartVisible && (
-          <div id="cart" className="cart-content">
-            <div className="cart-header">
-              <h2>Carrito de Compras</h2>
-              <span className="close-cart" onClick={hideCart}>&times;</span>
-            </div>
-            <div id="cart-items">
-              {cart.map((item, index) => (
-                <div key={index} className="cart-item">
-                  <img src={item.img} alt={item.title} className="cart-item-img" />
-                  <div className="cart-item-details">
-                    <p>{item.title}</p>
-                    <p>${item.price.toLocaleString()}</p>
-                  </div>
-                  <span className="remove-item" onClick={() => removeFromCart(index)}>&times;</span>
+    const [opcionAdicionalPrecio, setOpcionAdicionalPrecio] = useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [selectedOption, setSelectedOption] = useState('ninguno');
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
+    
+    if (!product) {
+        return (
+            <div>
+                <Header />
+                <div className="contenedor-detalle">
+                    <h2>Producto no encontrado</h2>
+                    <button onClick={() => navigate('/ProductPage')}>Volver a la página de productos</button>
                 </div>
-              ))}
+                <Footer />
             </div>
-            <div className="cart-footer">
-              <p id="cart-total">Total: ${cartTotal.toLocaleString()}</p>
-              <button id="checkout-button">Comprar</button>
+        );
+    }
+
+    const handleOptionChange = (event) => {
+        const option = event.target.value;
+        setOpcionAdicionalPrecio(option === 'chocolate' ? 30000 : option === 'vino' ? 86000 : 0);
+        setSelectedOption(option);
+    };
+
+    const handleQuantityChange = (event) => {
+        const value = parseInt(event.target.value, 10);
+        setQuantity(value > 0 ? value : 1);
+    };
+
+    const updateProductPrice = () => {
+        return (product.price + opcionAdicionalPrecio) * quantity;
+    };
+
+    return (
+        <div>
+            {isAuthenticated ? <Headerc /> : <Header />}
+            <div className="contenedor-detalle">
+                <aside className="sidebar">
+                    <h2>
+                        <a href="/ProductPage" className="home-link">
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        </a> / Personalización
+                    </h2>
+                </aside>
+
+                <section className="detalle-producto">
+                    <h2 className="descripcion">Descripción del Producto</h2>
+                    <div className="contenido-producto">
+                        <div className="imagen-producto">
+                            <img src={product.imgSrc} alt={product.name} />
+                        </div>
+                        <div className="info-producto">
+                            <h3>{product.name}</h3>
+                            <p>{product.description || 'Descripción no disponible.'}</p>
+                            <div className="meta-producto">
+                                <p><strong>Precio base: ${product.price.toLocaleString()}</strong></p>
+                                <p><strong>Precio total: ${updateProductPrice().toLocaleString()}</strong></p>
+                            </div>
+                            <div className="opciones-producto">
+                                <h4 className="opciones">Opciones disponibles</h4>
+                                <label htmlFor="detalle-adicional">Detalle adicional</label>
+                                <select id="detalle-adicional" value={selectedOption} onChange={handleOptionChange}>
+                                    <option value="ninguno">Ninguno</option>
+                                    <option value="chocolate">Chocolate Ferrero Rocher (caja x 8Und) (+$30,000)</option>
+                                    <option value="vino">Vino (+$86,000)</option>
+                                </select>
+
+                                <label htmlFor="cantidad">Cantidad:</label>
+                                <input type="number" id="cantidad" value={quantity} min="1" onChange={handleQuantityChange} required />
+                            </div>
+                            <div className="botones">
+                                <button className="btn-comprar-producto" onClick={() => {
+                                    addToCart({
+                                        img: product.imgSrc,
+                                        title: product.name,
+                                        price: updateProductPrice(),
+                                        quantity
+                                    });
+                                    alert('Producto añadido al carrito.');
+                                }}>Añadir al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
-          </div>
-        )}
-
-        {/* Contenedor para la notificación */}
-        {notification && (
-          <div id="notification" className="notification">
-            {notification}
-          </div>
-        )}
-      </div>
-
-      <Footer/>
-    </div>
-  );
+            <Footer />
+        </div>
+    );
 };
 
-export default App;
+export default DetailProd;

@@ -1,10 +1,10 @@
-// src/pages.clientes/main.js
-
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import Headerc from '../components/Header.c';
 import '../index.css';
-
+import { FaWhatsapp } from 'react-icons/fa';
 
 // Importar imágenes
 import funebreImg from '../static/img/Funebre.jpeg';
@@ -27,172 +27,218 @@ import ramoBase3Img from '../static/img/ramoBase3.jpeg';
 import ramoBase4Img from '../static/img/ramoBase4.jpeg';
 
 const HomePage = () => {
-    const [main, setMain] = useState(0);
-    const slidesRef = useRef(null);
-    const nextButtonRef = useRef(null);
-    const prevButtonRef = useRef(null);
+  const [main, setMain] = useState(0);
+  const slidesRef = useRef(null);
+  const prevButtonRef = useRef(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const slides = slidesRef.current;
-        if (!slides) return;
+  const products = [
+    {
+      id: 1,
+      title: 'Ramo en Base 1',
+      img: ramobaseImg,
+      description: 'Descripción del ramo en base 1.',
+      price: 25000,
+    },
+    {
+      id: 2,
+      title: 'Ramo en Base 2',
+      img: ramoBase1Img,
+      description: 'Descripción del ramo en base 2.',
+      price: 25000,
+    },
+    {
+      id: 3,
+      title: 'Ramo en Base 3',
+      img: ramoBase2Img,
+      description: 'Descripción del ramo en base 3.',
+      price: 25000,
+    },
+    {
+      id: 4,
+      title: 'Ramo en Base 4',
+      img: ramoBase3Img,
+      description: 'Descripción del ramo en base 4.',
+      price: 25000,
+    },
+    {
+      id: 5,
+      title: 'Ramo en Base 4',
+      img: ramoBase4Img,
+      description: 'Descripción del ramo en base 4.',
+      price: 25000,
+    },
+    {
+      id: 6,
+      title: 'Ramillete 1',
+      img: ramilleteImg,
+      description: 'Descripción del ramillete 1.',
+      price: 25000,
+    },
+    {
+      id: 7,
+      title: 'Ramillete 2',
+      img: ramillete1Img,
+      description: 'Descripción del ramillete 2.',
+      price: 25000,
+    },
+    {
+      id: 8,
+      title: 'Ramillete 3',
+      img: ramillete2Img,
+      description: 'Descripción del ramillete 3.',
+      price: 25000,
+    },
+    {
+      id: 9,
+      title: 'Ramillete 4',
+      img: ramillete3Img,
+      description: 'Descripción del ramillete 4.',
+      price: 25000,
+    },
+    {
+      id: 10,
+      title: 'Ramillete 4',
+      img: ramillete4Img,
+      description: 'Descripción del ramillete 4.',
+      price: 25000,
+    },
+    {
+      id: 11,
+      title: 'Funebre 1',
+      img: funebreImg,
+      description: 'Descripción del funebre 1.',
+      price: 25000,
+    },
+    {
+      id: 12,
+      title: 'Funebre 2',
+      img: funebre1Img,
+      description: 'Descripción del funebre 2.',
+      price: 25000,
+    },
+    {
+      id: 13,
+      title: 'Funebre 3',
+      img: funebre2Img,
+      description: 'Descripción del funebre 3.',
+      price: 25000,
+    },
+    {
+      id: 14,
+      title: 'Funebre 4',
+      img: funebre3Img,
+      description: 'Descripción del funebre 4.',
+      price: 25000,
+    },
+    {
+      id: 15,
+      title: 'Funebre 4',
+      img: funebre4Img,
+      description: 'Descripción del funebre 4.',
+      price: 25000,
+    },
+  ];
 
-        const items = Array.from(slides.children);
-        const totalSlides = items.length;
-        const slideWidth = items[0].clientWidth;
+  const handleProductClick = (product) => {
+    navigate(`/producto/${product}`);
+  };
+  
+  const images = [Oferta1, Oferta2, Oferta3];
+  const totalSlides = images.length;
 
-        // Clonamos la primera imagen al final para el desplazamiento continuo
-        const firstSlide = items[0].cloneNode(true);
-        slides.appendChild(firstSlide);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMain((prevIndex) => (prevIndex + 1) % totalSlides);
+    }, 3000);
 
-        slides.style.width = `${(totalSlides + 1) * 100}%`;
-        slides.style.transition = 'transform 0.5s ease';
+    return () => clearInterval(interval);
+  }, [totalSlides]);
 
-        const showSlide = (n) => {
-            const offset = n * slideWidth;
-            slides.style.transform = `translateX(-${offset}px)`;
-        };
+  useEffect(() => {
+    const slides = slidesRef.current;
+    if (slides) {
+      slides.style.transform = `translateX(-${main * 100}%)`;
+      slides.style.transition = 'transform 0.5s ease-in-out';
+    }
+  }, [main]);
 
-        const nextSlide = () => {
-            setMain(prevIndex => (prevIndex + 1) % totalSlides);
-            showSlide((main + 1) % totalSlides);
-        };
-
-        const prevSlide = () => {
-            setMain(prevIndex => (prevIndex - 1 + totalSlides) % totalSlides);
-            showSlide((main - 1 + totalSlides) % totalSlides);
-        };
-
-        const nextButton = nextButtonRef.current;
-        const prevButton = prevButtonRef.current;
-
-        if (nextButton) nextButton.addEventListener('click', nextSlide);
-        if (prevButton) prevButton.addEventListener('click', prevSlide);
-
-        return () => {
-            if (nextButton) nextButton.removeEventListener('click', nextSlide);
-            if (prevButton) prevButton.removeEventListener('click', prevSlide);
-        };
-    }, [main]);
-
-    return (
-        <div>
-            <Header />
-            <center>
-            <section className="carousel">
-                <div className="carousel-container">
-                    <div className="carousel-slide" ref={slidesRef}>
-                        <div className="carousel-item">
-                            <img src={Oferta1} alt="Evento 2" />
-                        </div>
-                        <div className="carousel-item">
-                            <img src={Oferta2} alt="Evento 2" />
-                        </div>
-                        <div className="carousel-item">
-                            <img src={Oferta3} alt="Evento 3" />
-                        </div>
-                    </div>
+  return (
+    <div>
+      {isAuthenticated ? <Headerc /> : <Header/>}
+      <center>
+        <section className="carousel">
+          <div className="carousel-container">
+            <div
+              className="carousel-slide"
+              ref={slidesRef}
+              style={{
+                display: 'flex',
+                width: `${totalSlides * 100}%`,
+                flexDirection: 'row',
+              }}
+            >
+              {images.map((img, index) => (
+                <div className="carousel-item" key={index} style={{ minWidth: '100%' }}>
+                  <img src={img} alt={`Oferta ${index + 1}`} style={{ width: '95%', height: '600px', margin: '0 auto' }} />
                 </div>
-                <button className="prev" ref={prevButtonRef}>&#10094;</button>
-                <button className="next" ref={nextButtonRef}>&#10095;</button>
-            </section>
-            </center>
+              ))}
+            </div>
+          </div>
+        </section>
+      </center>
 
-            <section className="section-details">
-                <h2>Ramos en Base</h2>
-                <div className="product-grid">
-                    <div className="product-item">
-                        <img src={ramobaseImg} alt="Ramo en Base"/>
-                        <h3>RAMO EN BASE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramoBase1Img} alt="Ramo en Base"/>
-                        <h3>RAMO EN BASE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramoBase2Img} alt="Ramo en Base"/>
-                        <h3>RAMO EN BASE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramoBase3Img} alt="Ramo en Base"/>
-                        <h3>RAMO EN BASE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramoBase4Img} alt="Ramo en Base"/>
-                        <h3>RAMO EN BASE</h3>
-                        <p>$25,000</p>
-                    </div>
-                </div>
-            </section>
-
-            <section className="section-details">
-                <h2>Ramilletes</h2>
-                <div className="product-grid">
-                    <div className="product-item">
-                        <img src={ramilleteImg} alt="Ramillete"/>
-                        <h3>RAMILLETE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramillete1Img} alt="Ramillete"/>
-                        <h3>RAMILLETE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramillete2Img} alt="Ramillete"/>
-                        <h3>RAMILLETE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramillete3Img} alt="Ramillete"/>
-                        <h3>RAMILLETE</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={ramillete4Img} alt="Ramillete"/>
-                        <h3>RAMILLETE</h3>
-                        <p>$25,000</p>
-                    </div>
-                </div>
-            </section>
-
-            <section className="section-details">
-                <h2>Funebres</h2>
-                <div className="product-grid">
-                    <div className="product-item">
-                        <img src={funebre3Img} alt="Funebres"/>
-                        <h3>FUNEBRES</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={funebreImg} alt="Funebres"/>
-                        <h3>FUNEBRES</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={funebre4Img} alt="Funebres"/>
-                        <h3>FUNEBRES</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={funebre1Img} alt="Funebres"/>
-                        <h3>FUNEBRES</h3>
-                        <p>$25,000</p>
-                    </div>
-                    <div className="product-item">
-                        <img src={funebre2Img} alt="Funebres"/>
-                        <h3>FUNEBRES</h3>
-                        <p>$25,000</p>
-                    </div>
-                </div>
-            </section>
-
-            <Footer />
+      <section className="section-details">
+        <h2>Ramos en Base</h2>
+        <div className="product-grid">
+          {[ramobaseImg, ramoBase1Img, ramoBase2Img, ramoBase3Img, ramoBase4Img].map((img, index) => (
+            <div className="product-item" key={index} onClick={() => handleProductClick(index + 1)}>
+              <img src={img} alt={`Ramo en Base ${index + 1}`} />
+              <h3>RAMO EN BASE</h3>
+              <p>$25,000</p>
+            </div>
+          ))}
         </div>
-    );
+      </section>
+
+      <section className="section-details">
+        <h2>Ramilletes</h2>
+        <div className="product-grid">
+          {[ramilleteImg, ramillete1Img, ramillete2Img, ramillete3Img, ramillete4Img].map((img, index) => (
+            <div className="product-item" key={index} onClick={() => handleProductClick(index + 6)}>
+              <img src={img} alt={`Ramo en Base ${index + 1}`} />
+              <h3>RAMILLETE</h3>
+              <p>$25,000</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-details">
+        <h2>Funebres</h2>
+        <div className="product-grid">
+          {[funebreImg, funebre1Img, funebre2Img, funebre3Img, funebre4Img].map((img, index) => (
+            <div className="product-item" key={index} onClick={() => handleProductClick(index + 11)}>
+              <img src={img} alt={`Funebre ${index + 1}`} />
+              <h3>FUNEBRES</h3>
+              <p>$25,000</p>
+            </div>
+          ))}
+        </div>
+      </section>
+      {/* Botón de WhatsApp */}
+      <a
+        href="https://wa.me/3222118028"
+        className="whatsapp-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FaWhatsapp size={30} />
+      </a>
+      <Footer />
+    </div>
+  );
 };
 
 export default HomePage;

@@ -6,13 +6,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer'; 
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
+import { FaWhatsapp } from 'react-icons/fa';
 
 const Login = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [notification, setNotification] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
@@ -27,7 +27,6 @@ const Login = () => {
             const { token, Usuario } = response.data;
             localStorage.setItem('token', token);
     
-            // Redirigir según el rol
             switch (Usuario.rol_usuario) {
                 case 'Administrador':
                     navigate('/Admin');
@@ -39,29 +38,25 @@ const Login = () => {
                     navigate('/Domiciliary');
                     break;
                 default:
-                    navigate('/'); // Redirige a la página principal o una página predeterminada
+                    navigate('/Myaccount');
                     break;
             }
     
-            setSuccess('Inicio de sesión exitoso');
-            setError('');
+            setNotification('Inicio de sesión exitoso');
         } catch (error) {
-            setSuccess('');
-            setError('Error al iniciar sesión. Verifique su correo electrónico y contraseña.');
+            setNotification('Error al iniciar sesión. Verifique su correo electrónico y contraseña.');
             console.error(error);
         }
-    };
+    };    
 
     return (
         <div>
             <Header />
-
             <main>
                 <div className="form-container">
                     <div className="form-box1 login">
                         <h2>Iniciar Sesión</h2>
-                        {error && <div className="error-message" style={{ display: 'block' }}>{error}</div>}
-                        {success && <div className="success-message" style={{ display: 'block' }}>{success}</div>}
+                        {notification && <div className="notification">{notification}</div>}
                         <form id="login-form" className="form" onSubmit={handleSubmit}>
                             <div className="input-box1">
                                 <label htmlFor="email">Correo</label>
@@ -116,10 +111,17 @@ const Login = () => {
                     </div>
                 </div>
             </main>
-
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
-    );
+    );    
 };
 
 export default Login;

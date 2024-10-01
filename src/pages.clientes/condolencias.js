@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 /* Importar imágenes */
 import Condolencias1 from '../static/img/Condolencias1.jpeg';
@@ -14,8 +17,8 @@ import Condolencias7 from '../static/img/Condolencias7.jpeg';
 import Condolencias8 from '../static/img/Condolencias8.jpeg';
 import Condolencias9 from '../static/img/Condolencias9.jpeg';
 
-
 const ProductPage = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [filters, setFilters] = useState({
         occasion: '',
@@ -23,22 +26,29 @@ const ProductPage = () => {
         type: ''
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
+
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias1 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias2 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias3 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias4 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias5 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias6 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias7 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias8 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias9 },
+        { id: 'product2', name: 'Nombre del Producto 2', price: 60000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias2 },
+        { id: 'product3', name: 'Nombre del Producto 3', price: 70000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Condolencias3 },
         // Añadir más productos aquí
     ];
 
     const descriptions = {
         'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
+        'product2': 'Descripción detallada del Producto 2. Ideal para celebraciones.',
         'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
     };
 
@@ -61,17 +71,15 @@ const ProductPage = () => {
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-
         const matchOccasion = !occasion || product.occasion === occasion;
         const matchPrice = !price || (product.price < price);
         const matchType = !type || product.type === type;
-
         return matchOccasion && matchPrice && matchType;
     });
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -100,26 +108,6 @@ const ProductPage = () => {
                             <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
                             <li><input type="checkbox" id="tropicales" onChange={handleFilterChange} /> Flores Tropicales</li>
                             <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
-                        </ul>
-                    </div>
-                    <div className="filter">
-                        <h3>Novedades</h3>
-                        <ul>
-                            <li>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Condolencias1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Condolencias2} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Condolencias3} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                            </li>
-                            {/* Añadir más novedades aquí */}
                         </ul>
                     </div>
                 </aside>
@@ -154,6 +142,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

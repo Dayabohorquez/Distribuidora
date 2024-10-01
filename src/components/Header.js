@@ -66,8 +66,6 @@ const Header = () => {
                         <div className={`dropdown ${isAccountOpen ? 'active' : ''}`}>
                             <Link to="/register">Registrarse <i className="fa fa-unlock-alt" aria-hidden="true"></i></Link>
                             <Link to="/login">Acceder <i className="fa fa-user" aria-hidden="true"></i></Link>
-                            <Link to="/myaccount">Mi Cuenta <i className="fa fa-user" aria-hidden="true"></i></Link>
-                            <Link to="/purchasepage">Compra <i className="fa fa-user" aria-hidden="true"></i></Link>
                         </div>
                     </div>
                 </div>

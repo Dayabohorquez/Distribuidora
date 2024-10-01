@@ -1,279 +1,285 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../index.css';
-import Header from '../components/Header';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import Headerc from '../components/Header.c';
 import Footer from '../components/Footer';
 
 const App = () => {
-    const [orders, setOrders] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [selectedOrder, setSelectedOrder] = useState(null);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [newStatus, setNewStatus] = useState('');
+    const [productos, setProductos] = useState([]);
+    const [pedidos, setPedidos] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeSection, setActiveSection] = useState('productos');
+    const [detalleVisible, setDetalleVisible] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [notification, setNotification] = useState('');
 
-    // Obtener pedidos y productos desde la API
+    const showNotification = (message) => {
+        setNotification(message);
+        setTimeout(() => setNotification(''), 3000);
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/api/pedidos/');
-                if (Array.isArray(response.data)) {
-                    setOrders(response.data);
-                } else {
-                    console.error('La respuesta no es un arreglo:', response.data);
-                }
-            } catch (error) {
-                console.error('Error al obtener los pedidos:', error);
-            }
-        };
-
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/api/productos/');
-                if (Array.isArray(response.data)) {
-                    setProducts(response.data);
-                } else {
-                    console.error('La respuesta no es un arreglo:', response.data);
-                }
-            } catch (error) {
-                console.error('Error al obtener los productos:', error);
-            }
-        };
-
-        fetchOrders();
-        fetchProducts();
+        fetchProductos();
+        fetchPedidos();
     }, []);
 
-    const openOrderModal = (order) => {
-        setSelectedOrder(order);
-        setNewStatus(order.estado_pedido); // Inicializa el nuevo estado con el estado actual del pedido
+    const handleSectionChange = (section) => {
+        setActiveSection(section);
     };
 
-    const openProductModal = (product) => {
-        setSelectedProduct(product);
+    const fetchProductos = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/productos');
+            setProductos(response.data);
+        } catch (error) {
+            console.error('Error al obtener productos:', error);
+            showNotification('Error al obtener productos: ' + (error.response ? error.response.data.message : error.message));
+        }
     };
 
-    const closeModal = () => {
-        setSelectedOrder(null);
-        setSelectedProduct(null);
+    const fetchPedidos = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/pedidos');
+            setPedidos(response.data);
+        } catch (error) {
+            console.error('Error al obtener pedidos:', error);
+            showNotification('Error al obtener pedidos: ' + (error.response ? error.response.data.message : error.message));
+        }
     };
 
-    const handleStatusChange = (event) => {
-        setNewStatus(event.target.value);
-    };
+    const handleToggleProductStatus = async (idProducto) => {
+        if (!idProducto) return;
+        if (window.confirm('¿Estás seguro de que deseas cambiar el estado?')) {
+            try {
+                const productoActual = productos.find(p => p.id_producto === idProducto);
+                const nuevoEstado = !productoActual.estado_producto;
 
-    const updateOrderStatus = async () => {
-        if (selectedOrder) {
-            if (window.confirm(`¿Estás seguro de que deseas actualizar el estado del pedido ${selectedOrder.id_pedido} a: ${newStatus}?`)) {
-                try {
-                    await axios.patch(`http://localhost:4000/api/pedidos/${selectedOrder.id_pedido}/estado`, { nuevo_estado: newStatus });
-                    const updatedOrders = orders.map((order) =>
-                        order.id_pedido === selectedOrder.id_pedido ? { ...order, estado_pedido: newStatus } : order
-                    );
-                    setOrders(updatedOrders);
-                    setSelectedOrder({ ...selectedOrder, estado_pedido: newStatus });
-                    closeModal(); // Cierra el modal después de la actualización
-                } catch (error) {
-                    console.error('Error al actualizar el estado del pedido:', error);
-                }
+                await axios.patch(`http://localhost:4000/api/productos/${idProducto}/estado`, { estado: nuevoEstado });
+                fetchProductos();
+                showNotification(`Estado del producto ${idProducto} actualizado a "${nuevoEstado ? 'Activo' : 'Inactivo'}".`);
+            } catch (error) {
+                console.error('Error al cambiar el estado del producto:', error);
+                showNotification('Error al cambiar el estado del producto: ' + (error.response ? error.response.data.message : error.message));
             }
         }
     };
 
-    const toggleProductStatus = async (productId) => {
+    const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
+        if (!idPedido) return;
         try {
-            const product = products.find(p => p.id_producto === productId);
-            const newStatus = product.estado_producto === 'Activo' ? 'Inactivo' : 'Activo';
-            await axios.patch(`http://localhost:4000/api/productos/${productId}`, { estado_producto: newStatus });
-            const updatedProducts = products.map(p =>
-                p.id_producto === productId ? { ...p, estado_producto: newStatus } : p
-            );
-            setProducts(updatedProducts);
+            await axios.patch(`http://localhost:4000/api/pedidos/${idPedido}/estado`, { nuevo_estado: nuevoEstado });
+            fetchPedidos();
+            showNotification(`Estado del pedido ${idPedido} actualizado a "${nuevoEstado}".`);
         } catch (error) {
-            console.error('Error al actualizar el estado del producto:', error);
+            console.error('Error al cambiar el estado del pedido:', error);
+            showNotification('Error al cambiar el estado del pedido: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
+    const handleOpenDetalle = (item) => {
+        setCurrentItem(item);
+        setDetalleVisible(true);
+    };
+
+    const closeDetalle = () => {
+        setDetalleVisible(false);
+        setCurrentItem(null);
+    };
+
+    // Filtrado de productos
+    const filteredProductos = productos.filter(producto =>
+        producto.nombre_producto.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        producto.id_producto.toString().includes(searchQuery) ||
+        producto.codigo_producto.toString().includes(searchQuery)
+    );
+
+    // Filtrado de pedidos
+    const filteredPedidos = pedidos.filter(pedido =>
+        pedido.fecha_pedido.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pedido.id_pedido.toString().includes(searchQuery)
+    );
+
     return (
-        <div className="app-container">
-            <Header />
+        <div className="admin-app">
+            <Headerc />
             <div className="vend1-container">
-                <div className="vend2-greeting">
-                    <h1>¡Bienvenido Vendedor!</h1>
+                <div className="admin-header">
+                    <h1 className="admin-title">¡Bienvenido Vendedor!</h1>
+                    <p className="admin-description">Utilice el menú de navegación para gestionar los productos y pedidos.</p>
+                </div>
+                <div className="admin-nav">
+                    <button className="admin-nav-button" onClick={() => handleSectionChange('productos')}>Productos</button>
+                    <button className="admin-nav-button" onClick={() => handleSectionChange('pedidos')}>Pedidos</button>
                 </div>
 
-                <div className="button-vendedor">
-                    <button onClick={() => document.getElementById('pedidos').scrollIntoView({ behavior: 'smooth' })}>Ver Pedidos</button>
-                    <button onClick={() => document.getElementById('productos').scrollIntoView({ behavior: 'smooth' })}>Ver Productos</button>
-                </div>
-
-                <div id="pedidos" className="vend4-section">
-                    <h2>Pedidos Recientes</h2>
-                    <table className="vend4-table">
-                        <thead>
-                            <tr>
-                                <th>ID Pedido</th>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Estado</th>
-                                <th>Imagen</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.map(order => (
-                                <tr key={order.id_pedido}>
-                                    <td>{order.id_pedido}</td>
-                                    <td>{order.fecha_pedido}</td>
-                                    <td>{order.documento}</td>
-                                    <td>{order.estado_pedido}</td>
-                                    <td>
-                                        <img src={order.foto_PedidoURL || 'https://via.placeholder.com/100'} alt="Imagen del Pedido" className="order-image" />
-                                    </td>
-                                    <td>
-                                        <button className="action-btn" onClick={() => openOrderModal(order)}>Ver</button>
-                                    </td>
+                {activeSection === 'productos' && (
+                    <div className="vend5-product-section">
+                        <h2>Productos</h2>
+                        <input
+                            type="text"
+                            placeholder="Buscar producto..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            className="admin-search"
+                        />
+                        <table className="vend5-product-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Foto</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {filteredProductos.length > 0 ? (
+                                    filteredProductos.map(producto => (
+                                        <tr key={producto.id_producto}>
+                                            <td>{producto.id_producto}</td>
+                                            <td>{producto.codigo_producto}</td>
+                                            <td>{producto.nombre_producto}</td>
+                                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
+                                            <td>{producto.estado_producto ? 'Activo' : 'Inactivo'}</td>
+                                            <td>
+                                                {producto.foto_ProductoURL ? (
+                                                    <img
+                                                        src={producto.foto_ProductoURL}
+                                                        alt={producto.nombre_producto}
+                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+                                                    />
+                                                ) : (
+                                                    <span>No disponible</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <div className="admin-actions">
+                                                    <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(producto)} />
+                                                    <FontAwesomeIcon
+                                                        icon={producto.estado_producto ? faToggleOn : faToggleOff}
+                                                        onClick={() => handleToggleProductStatus(producto.id_producto)}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr><td colSpan="7">No hay productos disponibles</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-                <div id="productos" className="vend5-product-section">
-                    <h2>Productos Disponibles</h2>
-                    <table className="vend5-product-table">
-                        <thead>
-                            <tr>
-                                <th>ID Producto</th>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Precio</th>
-                                <th>Estado</th>
-                                <th>Imagen</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map(product => (
-                                <tr key={product.id_producto}>
-                                    <td>{product.id_producto}</td>
-                                    <td>{product.nombre_producto}</td>
-                                    <td>{product.descripcion_producto}</td>
-                                    <td>{product.precio_producto}</td>
-                                    <td>{product.estado_producto}</td>
-                                    <td>
-                                        <img src={product.foto_ProductoURL || 'https://via.placeholder.com/100'} alt="Imagen del Producto" className="product-image" />
-                                    </td>
-                                    <td>
-                                        <button className="action-btn" onClick={() => openProductModal(product)}>Ver</button>
-                                        <button className="update-status-btn" onClick={() => toggleProductStatus(product.id_producto)}>Actualizar Estado</button>
-                                    </td>
+                {activeSection === 'pedidos' && (
+                    <div className="vend4-section">
+                        <h2>Pedidos</h2>
+                        <input
+                            type="text"
+                            placeholder="Buscar pedido..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            className="admin-search"
+                        />
+                        <table className="vend4-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Foto</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {filteredPedidos.length > 0 ? (
+                                    filteredPedidos.map(pedido => (
+                                        <tr key={pedido.id_pedido}>
+                                            <td>{pedido.id_pedido}</td>
+                                            <td>{pedido.fecha_pedido}</td>
+                                            <td>{pedido.total_pagado}</td>
+                                            <td>
+                                                <select
+                                                    value={pedido.estado_pedido}
+                                                    onChange={(e) => handleTogglePedidoStatus(pedido.id_pedido, e.target.value)}
+                                                >
+                                                    <option value="Pendiente">Pendiente</option>
+                                                    <option value="Enviado">Enviado</option>
+                                                    <option value="Entregado">Entregado</option>
+                                                    <option value="Cancelado">Cancelado</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                {pedido.foto_PedidoURL ? (
+                                                    <img
+                                                        src={pedido.foto_PedidoURL}
+                                                        alt={pedido.nombre_usuario}
+                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+                                                    />
+                                                ) : (
+                                                    <span>No disponible</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr><td colSpan="6">No hay pedidos disponibles</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
-                {/* Modal de Detalles del Pedido */}
-                {selectedOrder && (
-                    <div className="modal" onClick={closeModal}>
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <span className="close-btn" onClick={closeModal}>&times;</span>
-                            <h2>Detalles del Pedido</h2>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>ID Pedido</th>
-                                        <td>{selectedOrder.id_pedido}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <td>{selectedOrder.fecha_pedido}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Cliente</th>
-                                        <td>{selectedOrder.documento}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Teléfono</th>
-                                        <td>{selectedOrder.telefono}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Dirección</th>
-                                        <td>{selectedOrder.direccion}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Productos</th>
-                                        <td>{selectedOrder.productos}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Total</th>
-                                        <td>{selectedOrder.total_pagado}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Imagen</th>
-                                        <td>
-                                            <img src={selectedOrder.foto_PedidoURL || 'https://via.placeholder.com/100'} alt="Imagen del Pedido" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div className="order-actions">
-                                <label htmlFor="order-status">Cambiar Estado:</label>
-                                <select
-                                    id="order-status"
-                                    value={newStatus}
-                                    onChange={handleStatusChange}
-                                >
-                                    <option value="Pendiente">Pendiente</option>
-                                    <option value="Enviado">Enviado</option>
-                                    <option value="Entregado">Entregado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                    <option value="Completo">Completo</option> {/* Estado Completo agregado */}
-                                </select>
-                                <button className="update-status-btn" onClick={updateOrderStatus}>
-                                    Actualizar Estado
-                                </button>
-                            </div>
+                {/* Detalles del Vendedor */}
+                {detalleVisible && (
+                    <div className="vend-detalle show" onClick={closeDetalle}>
+                        <div className="detalle-content" onClick={e => e.stopPropagation()}>
+                            <span className="close-btn" onClick={closeDetalle}>&times;</span>
+                            <h2>{currentItem.nombre_producto ? 'Detalles del Producto' : 'Detalles del Pedido'}</h2>
+                            {currentItem.nombre_producto ? (
+                                <div>
+                                    <p>ID: {currentItem.id_producto}</p>
+                                    <p>Nombre: {currentItem.nombre_producto}</p>
+                                    <p>Precio: {currentItem.precio_producto ? `${Math.floor(currentItem.precio_producto)} USD` : 'N/A'}</p>
+                                    <p>Código: {currentItem.codigo_producto}</p>
+                                    <p>Estado: {currentItem.estado_producto ? 'Activo' : 'Inactivo'}</p>
+                                    {currentItem.foto_ProductoURL && (
+                                        <img
+                                            src={currentItem.foto_ProductoURL}
+                                            alt={currentItem.nombre_producto}
+                                            className="product-img"
+                                        />
+                                    )}
+                                </div>
+                            ) : (
+                                <div>
+                                    <p>ID: {currentItem.id_pedido}</p>
+                                    <p>Fecha: {currentItem.fecha_pedido}</p>
+                                    <p>Total: {currentItem.total_pagado}</p>
+                                    <p>Estado: {currentItem.estado_pedido}</p>
+                                    {currentItem.foto_PedidoURL && (
+                                        <img
+                                            src={currentItem.foto_PedidoURL}
+                                            alt={`Pedido ${currentItem.id_pedido}`}
+                                            className="product-img"
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
 
-                {/* Modal de Detalles del Producto */}
-                {selectedProduct && (
-                    <div className="modal" onClick={closeModal}>
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <span className="close-btn" onClick={closeModal}>&times;</span>
-                            <h2>Detalles del Producto</h2>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>ID Producto</th>
-                                        <td>{selectedProduct.id_producto}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <td>{selectedProduct.nombre_producto}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Descripción</th>
-                                        <td>{selectedProduct.descripcion_producto}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Precio</th>
-                                        <td>{selectedProduct.precio_producto}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Imagen</th>
-                                        <td>
-                                            <img src={selectedProduct.foto_ProductoURL || 'https://via.placeholder.com/100'} alt="Imagen del Producto" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
+                {notification && <div className="notification">{notification}</div>}
             </div>
+
             <Footer />
         </div>
     );

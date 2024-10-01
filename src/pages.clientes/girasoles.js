@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 /* Importar imágenes */
 import Girasoles1 from '../static/img/Girasoles1.jpeg';
@@ -16,29 +19,48 @@ import Girasoles9 from '../static/img/Girasoles9.jpeg';
 
 const ProductPage = () => {
     const [modalData, setModalData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
+
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Girasoles1 },
         { id: 'product2', name: 'Nombre del Producto 2', price: 45000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles2 },
         { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles3 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles4 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles5 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles6 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles7 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles8 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles9 },
-        // Añadir más productos aquí
+        { id: 'product4', name: 'Nombre del Producto 4', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles4 },
+        { id: 'product5', name: 'Nombre del Producto 5', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles5 },
+        { id: 'product6', name: 'Nombre del Producto 6', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles6 },
+        { id: 'product7', name: 'Nombre del Producto 7', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles7 },
+        { id: 'product8', name: 'Nombre del Producto 8', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles8 },
+        { id: 'product9', name: 'Nombre del Producto 9', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles9 },
     ];
 
     const descriptions = {
         'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
         'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
         'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
+        'product4': 'Descripción detallada del Producto 4. Ideal para sorpresas.',
+        'product5': 'Descripción detallada del Producto 5. Perfecto para alegrar el día.',
+        'product6': 'Descripción detallada del Producto 6. Un regalo único.',
+        'product7': 'Descripción detallada del Producto 7. Ideal para celebraciones.',
+        'product8': 'Descripción detallada del Producto 8. Perfecto para expresar amor.',
+        'product9': 'Descripción detallada del Producto 9. Un hermoso detalle.',
     };
 
     const handleDetailsClick = (product) => {
@@ -70,7 +92,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -106,16 +128,16 @@ const ProductPage = () => {
                         <ul>
                             <li>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Girasoles1} alt="Arreglo floral Girasoles" className="Ramo1" />
+                                    Arreglo floral Girasoles - $350,000
                                 </a>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles2} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Girasoles2} alt="Arreglo floral Girasoles" className="Ramo1" />
+                                    Arreglo floral Girasoles - $350,000
                                 </a>
                                 <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles3} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
+                                    <img src={Girasoles3} alt="Arreglo floral Girasoles" className="Ramo1" />
+                                    Arreglo floral Girasoles - $350,000
                                 </a>
                             </li>
                             {/* Añadir más novedades aquí */}
@@ -153,6 +175,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

@@ -1,44 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 /* Importar imágenes */
 import Cumpleaños1 from '../static/img/Cumpleaños1.jpeg';
 import Cumpleaños2 from '../static/img/Cumpleaños2.jpeg';
 import Cumpleaños3 from '../static/img/Cumpleaños3.jpeg';
-import Cumpleaños4 from '../static/img/Cumpleaños4.jpeg';
-import Cumpleaños5 from '../static/img/Cumpleaños5.jpeg';
-import Cumpleaños6 from '../static/img/Cumpleaños6.jpeg';
-import Cumpleaños7 from '../static/img/Cumpleaños7.jpeg';
-import Cumpleaños8 from '../static/img/Cumpleaños8.jpeg';
-import Cumpleaños9 from '../static/img/Cumpleaños9.jpeg';
-
 
 const ProductPage = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [modalData, setModalData] = useState(null);
+    const [cart, setCart] = useState([]);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol);
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
 
     const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños1 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños2 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños3 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños4 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños5 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños6 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños7 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños8 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Cumpleaños9 },
-        // Añadir más productos aquí
+        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños1 },
+        { id: 'product2', name: 'Nombre del Producto 2', price: 60000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños2 },
+        { id: 'product3', name: 'Nombre del Producto 3', price: 70000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños3 },
     ];
 
     const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
+        'product1': 'Descripción detallada del Producto 1. Perfecto para Cumpleaños.',
+        'product2': 'Descripción detallada del Producto 2. Ideal para celebraciones.',
         'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
     };
 
@@ -49,6 +55,15 @@ const ProductPage = () => {
             price: `$${product.price.toLocaleString()}`,
             description: descriptions[product.id] || 'Descripción del producto no disponible.'
         });
+    };
+
+    const handlePersonalizarClick = (product) => {
+        navigate('/producto/' + product.id, { state: { product } });
+    };
+
+    const handleAddToCart = (product) => {
+        setCart(prevCart => [...prevCart, product]);
+        alert(`${product.name} añadido al carrito.`);
     };
 
     const handleFilterChange = (e) => {
@@ -69,9 +84,11 @@ const ProductPage = () => {
         return matchOccasion && matchPrice && matchType;
     });
 
+    const cartTotal = cart.reduce((total, item) => total + item.price, 0);
+
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -82,7 +99,6 @@ const ProductPage = () => {
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
-                            <li><input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} /> Amor y Amistad</li>
                             <li><input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} /> Cumpleaños</li>
                         </ul>
                     </div>
@@ -98,41 +114,19 @@ const ProductPage = () => {
                         <h3>Tipo de Flor</h3>
                         <ul>
                             <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
-                            <li><input type="checkbox" id="tropicales" onChange={handleFilterChange} /> Flores Tropicales</li>
-                            <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
-                        </ul>
-                    </div>
-                    <div className="filter">
-                        <h3>Novedades</h3>
-                        <ul>
-                            <li>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Cumpleaños1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Cumpleaños2} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Cumpleaños3} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                            </li>
-                            {/* Añadir más novedades aquí */}
                         </ul>
                     </div>
                 </aside>
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
+                        <div key={product.id} className="product-card">
                             <img src={product.imgSrc} alt={product.name} className="product-img" />
                             <h3>{product.name}</h3>
                             <p>${product.price.toLocaleString()}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                            <a href="/Detailprod"><button className="btn-details personalizar">Personalizar</button></a>
-                            <button className="btn-cart">Añadir al carrito</button>
+                            <button className="btn-details personalizar" onClick={() => handlePersonalizarClick(product)}>Personalizar</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -147,13 +141,23 @@ const ProductPage = () => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart">Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={() => handleAddToCart({ ...modalData, price: Number(modalData.price.replace(/\D/g, '')) })}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

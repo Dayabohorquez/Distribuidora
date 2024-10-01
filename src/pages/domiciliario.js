@@ -1,163 +1,163 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../index.css';
-import Headerc from "../components/Header.c";
-import Footer from "../components/Footer";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import Headerc from '../components/Header.c';
+import Footer from '../components/Footer';
 
 const App = () => {
-    const [orders, setOrders] = useState([]);
-    const [selectedOrder, setSelectedOrder] = useState(null);
-    const [newStatus, setNewStatus] = useState('');
+    const [pedidos, setPedidos] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [detalleVisible, setDetalleVisible] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [notification, setNotification] = useState('');
 
-    // Obtener pedidos desde la API
+    const showNotification = (message) => {
+        setNotification(message);
+        setTimeout(() => setNotification(''), 3000);
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/api/pedidos/');
-                if (Array.isArray(response.data)) {
-                    setOrders(response.data);
-                } else {
-                    console.error('La respuesta no es un arreglo:', response.data);
-                }
-            } catch (error) {
-                console.error('Error al obtener los pedidos:', error);
-            }
-        };
-
-        fetchOrders();
+        fetchPedidos();
     }, []);
 
-    const openModal = (order) => {
-        setSelectedOrder(order);
-        setNewStatus(order.estado_pedido); // Inicializa el nuevo estado con el estado actual del pedido
-    };
-
-    const closeModal = () => {
-        setSelectedOrder(null);
-    };
-
-    const handleStatusChange = (event) => {
-        setNewStatus(event.target.value);
-    };
-
-    const updateStatus = async () => {
-        if (selectedOrder) {
-            if (window.confirm(`¿Estás seguro de que deseas actualizar el estado del pedido ${selectedOrder.id_pedido} a: ${newStatus}?`)) {
-                try {
-                    await axios.patch(`http://localhost:4000/api/pedidos/${selectedOrder.id_pedido}/estado`, { nuevo_estado: newStatus });
-                    const updatedOrders = orders.map((order) =>
-                        order.id_pedido === selectedOrder.id_pedido ? { ...order, estado_pedido: newStatus } : order
-                    );
-                    setOrders(updatedOrders);
-                    setSelectedOrder({ ...selectedOrder, estado_pedido: newStatus });
-                    closeModal(); // Cierra el modal después de la actualización
-                } catch (error) {
-                    console.error('Error al actualizar el estado del pedido:', error);
-                }
-            }
+    const fetchPedidos = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/pedidos');
+            setPedidos(response.data);
+        } catch (error) {
+            console.error('Error al obtener pedidos:', error);
+            showNotification('Error al obtener pedidos: ' + (error.response ? error.response.data.message : error.message));
         }
     };
+    
+    const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
+        if (!idPedido) return;
+        try {
+            await axios.patch(`http://localhost:4000/api/pedidos/${idPedido}/estado`, { nuevo_estado: nuevoEstado });
+            fetchPedidos();
+            showNotification(`Estado del pedido ${idPedido} actualizado a "${nuevoEstado}".`);
+        } catch (error) {
+            console.error('Error al cambiar el estado del pedido:', error);
+            showNotification('Error al cambiar el estado del pedido: ' + (error.response ? error.response.data.message : error.message));
+        }
+    };
+    
+    const handleOpenDetalle = (pedido) => {
+        setCurrentItem(pedido);
+        setDetalleVisible(true);
+    };
+    
+    const closeDetalle = () => {
+        setDetalleVisible(false);
+        setCurrentItem(null);
+    };
+    
+    // Filtrado de pedidos
+    const filteredPedidos = pedidos.filter(pedido =>
+        pedido.fecha_pedido.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pedido.id_pedido.toString().includes(searchQuery)
+    );
 
     return (
-        <div className="app-container">
+        <div className="admin-app">
             <Headerc />
-            <div className="domiciliario-container">
-                <div className="domiciliario-greeting">
-                    <h1>¡Bienvenido Domiciliario!</h1>
+
+            <div className="vend1-container">
+                <div className="admin-header">
+                    <h1 className="admin-title">¡Bienvenido Domiciliario!</h1>
+                    <p className="admin-description">Utilice el menú de navegación para gestionar los pedidos.</p>
                 </div>
-                <div className="domiciliario-orders-section">
-                    <h2>Pedidos Asignados</h2>
-                    <table className="domiciliario-orders-table">
+
+                <div className="vend4-section">
+                    <h2>Pedidos</h2>
+                    <input
+                        type="text"
+                        placeholder="Buscar pedido..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="admin-search"
+                    />
+                    <table className="vend4-table">
                         <thead>
                             <tr>
-                                <th>ID Pedido</th>
+                                <th>ID</th>
                                 <th>Fecha</th>
-                                <th>Cliente</th>
+                                <th>Total</th>
                                 <th>Estado</th>
-                                <th>Imagen</th>
+                                <th>Foto</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.map((order) => (
-                                <tr key={order.id_pedido}>
-                                    <td>{order.id_pedido}</td>
-                                    <td>{order.fecha_pedido}</td>
-                                    <td>{order.documento}</td>
-                                    <td>{order.estado_pedido}</td>
-                                    <td>
-                                        <img src={order.foto_PedidoURL || 'https://via.placeholder.com/100'} alt="Imagen del Pedido" className="order-image" />
-                                    </td>
-                                    <td>
-                                        <button className="action-btn" onClick={() => openModal(order)}>Ver</button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {filteredPedidos.length > 0 ? (
+                                filteredPedidos.map(pedido => (
+                                    <tr key={pedido.id_pedido}>
+                                        <td>{pedido.id_pedido}</td>
+                                        <td>{pedido.fecha_pedido}</td>
+                                        <td>{pedido.total_pagado ? `${Math.floor(pedido.total_pagado)} USD` : 'N/A'}</td>
+                                        <td>
+                                            <select
+                                                value={pedido.estado_pedido}
+                                                onChange={(e) => handleTogglePedidoStatus(pedido.id_pedido, e.target.value)}
+                                            >
+                                                <option value="Pendiente">Pendiente</option>
+                                                <option value="Enviado">Enviado</option>
+                                                <option value="Entregado">Entregado</option>
+                                                <option value="Cancelado">Cancelado</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            {pedido.foto_PedidoURL ? (
+                                                <img
+                                                    src={pedido.foto_PedidoURL}
+                                                    alt={pedido.nombre_usuario}
+                                                    style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+                                                />
+                                            ) : (
+                                                <span>No disponible</span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr><td colSpan="6">No hay pedidos disponibles</td></tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
-                {selectedOrder && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <span className="close-btn" onClick={closeModal}>&times;</span>
+
+                {/* Detalles del Pedido */}
+                {detalleVisible && (
+                    <div className="vend-detalle show" onClick={closeDetalle}>
+                        <div className="detalle-content" onClick={e => e.stopPropagation()}>
+                            <span className="close-btn" onClick={closeDetalle}>&times;</span>
                             <h2>Detalles del Pedido</h2>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>ID Pedido</th>
-                                        <td>{selectedOrder.id_pedido}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <td>{selectedOrder.fecha_pedido}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Cliente</th>
-                                        <td>{selectedOrder.documento}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Teléfono</th>
-                                        <td>{selectedOrder.telefono}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Dirección</th>
-                                        <td>{selectedOrder.direccion}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Productos</th>
-                                        <td>{selectedOrder.productos}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Total</th>
-                                        <td>{selectedOrder.total_pagado}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Imagen</th>
-                                        <td><img src="http://localhost:4000/uploads/pedido_1.jpg" alt="Imagen del Pedido" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div className="order-actions">
-                                <label htmlFor="order-status">Cambiar Estado:</label>
-                                <select
-                                    id="order-status"
-                                    value={newStatus}
-                                    onChange={handleStatusChange}
-                                >
-                                    <option value="Pendiente">Pendiente</option>
-                                    <option value="Enviado">Enviado</option>
-                                    <option value="Entregado">Entregado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                </select>
-                                <button className="update-status-btn" onClick={updateStatus}>
-                                    Actualizar Estado
-                                </button>
-                            </div>
+                            {currentItem && (
+                                <div>
+                                    <p>ID: {currentItem.id_pedido}</p>
+                                    <p>Fecha: {currentItem.fecha_pedido}</p>
+                                    <p>Total: {currentItem.total_pagado}</p>
+                                    <p>Estado: {currentItem.estado_pedido}</p>
+                                    {currentItem.foto_PedidoURL && (
+                                        <img
+                                            src={currentItem.foto_PedidoURL}
+                                            alt={`Pedido ${currentItem.id_pedido}`}
+                                            className="product-img"
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
+
+                {notification && <div className="notification">{notification}</div>}
             </div>
+
             <Footer />
         </div>
     );

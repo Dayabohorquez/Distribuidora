@@ -430,7 +430,7 @@ header {
 .carousel {
     position: relative;
     overflow: hidden;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 /* Contenedor del carrusel */
@@ -443,21 +443,22 @@ header {
 /* Deslizamiento del carrusel */
 .carousel-slide {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.5s ease-in-out; /* Transición suave para el desplazamiento */
     width: 100%;
 }
 
 /* Cada ítem del carrusel */
 .carousel-item {
-    min-width: 100%;
+    min-width: 100%; /* Cada imagen ocupa el 100% del contenedor */
     box-sizing: border-box;
     position: relative;
 }
 
 .carousel-item img {
-    width: 90%;
-    height: 75%; /* Ajusta la altura automáticamente para mantener la proporción de la imagen */
+    width: 70%; /* Ajusta el ancho de las imágenes */
+    height: 600px; /* Mantiene la proporción de la imagen */
     display: block;
+    margin: 0 auto; /* Centra la imagen */
 }
 
 /* Estilo de los subtítulos en el carrusel */
@@ -534,6 +535,22 @@ header {
         font-size: 14px;
         padding: 5px;
     }
+}
+
+.role-navigation-button {
+    background-color: white;
+    padding: 8px ; /* Espaciado interno */
+    border: none; /* Sin borde */
+    font-size: 16px; /* Tamaño de fuente */
+    cursor: pointer; /* Cambiar cursor al pasar el mouse */
+    transition: background-color 0.3s, transform 0.3s; /* Transición suave */
+    text-align: left;
+}
+
+
+.role-navigation-button:active {
+    transform: translateY(0); /* Volver a la posición original al hacer clic */
+    background-color: #ebebeb; /* Color de fondo al pasar el mouse */
 }
 
 
@@ -1388,40 +1405,76 @@ header {
 
 /* Cierre de pago */
 
-
 /* Estilos para el contenedor del vendedor */
+
+.admin-header {
+    text-align: center; /* Centrar el contenido */
+    margin: 40px 0; /* Espaciado superior e inferior */
+}
+
+.admin-title {
+    font-size: 36px; /* Tamaño del título más grande */
+    font-weight: bold; /* Negrita para el título */
+    margin-bottom: 20px; /* Espacio entre título y párrafo */
+}
+
+.admin-description {
+    font-size: 20px; /* Tamaño del párrafo más grande */
+    line-height: 1.5; /* Espaciado entre líneas */
+}
+
 .vend1-container {
     padding: 20px;
+    font-family: 'Arial', sans-serif;
 }
 
 /* Estilo para el saludo */
 .vend2-greeting {
     text-align: center;
     padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Títulos de secciones */
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 28px;
+}
+
+/* Estilo del input de búsqueda */
+.admin-search {
+    width: 80%;
+    max-width: 400px;
+    padding: 12px;
+    margin: 20px auto;
+    border: 2px solid #000;
+    border-radius: 8px;
+    font-size: 16px;
+    display: block;
 }
 
 /* Botones del vendedor */
-.button-vendedor {
+.admin-nav {
     display: flex;
     justify-content: center;
     gap: 20px;
-    flex-wrap: wrap;
     margin-top: 20px;
 }
 
-.button-vendedor button {
+.admin-nav button {
+    padding: 10px 20px;
     background-color: #ffffff;
     border: 2px solid #000;
-    padding: 12px 24px;
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    transition: background-color 0.3s;
 }
 
-.button-vendedor button:hover {
+.admin-nav button:hover {
     background-color: #fdcae1;
 }
 
@@ -1449,53 +1502,25 @@ header {
     text-align: center;
 }
 
+.vend4-table th, .vend5-product-table th {
+    background-color: #fdcae1;
+}
+
 /* Ajuste para el ancho de la columna "Acciones" */
 .vend4-table td:last-child,
 .vend5-product-table td:last-child {
     width: 300px;
-    overflow: visible;
-}
-
-.vend4-table th, .vend5-product-table th{
-    background-color: #fdcae1;
 }
 
 /* Estilo general para los botones de acción */
-.action-btn,
-.update-status-btn {
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    display: inline-block;
-    white-space: nowrap;
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-.action-btn {
-    background-color: #ffffff;
-    border: 1px solid #000;
-}
-
-.action-btn i {
-    margin-right: 5px;
-}
-
-.action-btn:hover {
-    background-color: #fdcae1;
-}
-
-.update-status-btn {
-    background-color: #fff;
-}
-
-.update-status-btn:hover {
-    background-color: #fdcae1;
-}
-
-/* Estilos para el modal */
-.modal {
+/* Estilos para el detalle */
+.vend-detalle {
     display: none;
     position: fixed;
     z-index: 1;
@@ -1504,29 +1529,28 @@ header {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo ligeramente más oscuro */
-    transition: opacity 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal.show {
-    display: flex; /* Usa flexbox para centrar el contenido */
+.vend-detalle.show {
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.modal-content {
+.detalle-content {
     background-color: #fff;
-    margin: 10% auto; /* Ajustado para que no esté tan cerca del borde superior */
+    margin: 10% auto;
     padding: 20px;
-    border-radius: 8px; /* Bordes redondeados */
-    width: 80%;
-    max-width: 800px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombra más sutil */
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px; /* Ajuste de ancho para que no sea tan grande */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     position: relative;
 }
 
 .close-btn {
-    color: #000000; /* Color gris claro */
+    color: #000;
     float: right;
     font-size: 33px;
     font-weight: bold;
@@ -1536,64 +1560,63 @@ header {
 
 .close-btn:hover,
 .close-btn:focus {
-    color: #000; /* Color negro al pasar el ratón */
+    color: #000;
 }
 
-.modal-content h2 {
+.detalle-content h2 {
     margin-top: 0;
     font-size: 24px;
-    color: #000000; /* Color gris oscuro para el título */
+    text-align: center; /* Centrar título del detalle */
 }
 
-.modal-content table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.modal-content th,
-.modal-content td {
-    border: 1px solid #000000; /* Bordes más suaves */
-    padding: 10px;
-    text-align: left;
-    font-size: 20px;
-}
-
-.modal-content th {
-    background-color: #fdcae1;
-}
-
-.modal-content img {
-    max-width: 100px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-
+/* Imágenes de productos */
 .product-img {
-    height: 200px;
-    border-radius: 8px;
+    width: 100%; /* Asegura que la imagen ocupe todo el ancho disponible */
+    max-width: 150px; /* Tamaño máximo razonable */
+    height: auto; /* Mantiene la proporción */
+    display: block;
+    margin: 20px auto; /* Añadir margen superior e inferior */
 }
 
-@media (max-width: 768px) {
+/* Responsive Styles */
+@media (max-width: 1024px) {
     .vend4-table th,
     .vend4-table td,
     .vend5-product-table th,
     .vend5-product-table td {
-        font-size: 0.9em;
-        padding: 8px;
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    .admin-nav button {
+        font-size: 14px;
+    }
+
+    .admin-search {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vend2-greeting {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .vend4-table,
+    .vend5-product-table {
+        font-size: 18px;
     }
 
     .product-img {
-        width: 80px;
+        max-width: 100px; /* Ajustar a un tamaño más pequeño en pantallas más pequeñas */
     }
 
-    .modal-content {
-        width: 95%;
-    }
-
-    .button-vendedor button {
-        width: 100%;
-        margin-bottom: 10px;
+    .detalle-content {
+        width: 90%; /* Ajustar ancho del modal */
     }
 }
 
@@ -1611,13 +1634,16 @@ header {
     }
 
     .product-img {
-        width: 60px;
+        max-width: 80px; /* Hacer que la imagen ocupe menos espacio */
     }
 
-    .update-status-btn,
-    .action-btn {
-        font-size: 0.8em;
-        padding: 8px 15px;
+    .admin-nav button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .close-btn {
+        font-size: 24px;
     }
 }
 
@@ -1896,14 +1922,14 @@ li{
     flex: 3;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 80px;
+    gap: 100px;
     padding: 40px;
 }
 
 .product-card {
     background-color: white;
     border: 1px solid #e0e0e0;
-    padding: 20px;
+    padding: 0px;
     text-align: center;
     position: relative;
     transition: transform 0.3s;
@@ -2114,8 +2140,7 @@ li{
         width: 50px;
     }
 }
-
-/*Carrito*/
+/* Carrito */
 .cart-content {
     display: none; /* Ocultar por defecto */
     position: fixed;
@@ -2127,6 +2152,7 @@ li{
     box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     overflow-y: auto;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
 }
 
 .cart-header {
@@ -2137,11 +2163,29 @@ li{
 
 .cart-header h2 {
     margin: 0;
+    font-size: 24px; /* Tamaño de fuente ajustado */
 }
 
 .close-cart {
     cursor: pointer;
     font-size: 24px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px; /* Espacio entre imagen y texto */
+}
+
+.cart-item-details {
+    flex-grow: 1; /* Permite que los detalles ocupen el espacio disponible */
 }
 
 .cart-footer {
@@ -2157,6 +2201,7 @@ li{
     border-radius: 5px;
     margin-top: 20px;
     cursor: pointer;
+    width: 100%; /* Botón ocupa el ancho completo */
 }
 
 .notification {
@@ -2171,6 +2216,7 @@ li{
     font-size: 16px;
     z-index: 1000;
 }
+
 
 /*detalle_producto*/
 .contenedor-detalle {
@@ -2320,7 +2366,7 @@ li{
 .eventos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    gap: 100px;
     padding: 100px;
     background-color: #fff;
 }
@@ -2378,7 +2424,7 @@ li{
 
 .whatsapp-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: 40px;
     right: 20px;
     background-color: #25D366;
     color: white;
@@ -2595,7 +2641,7 @@ li{
 /* Cierre Domiciliario */
 
 /* Estilos Generales del Contenido */
-.admi1 {
+.admin-container {
     padding: 30px; /* Ampliar el padding para un mejor espaciado */
     background: #f9f2f4; /* Fondo ligeramente rosado */
     text-align: center; /* Centrar el texto */
@@ -2603,116 +2649,212 @@ li{
     box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra sutil */
 }
 
-.admi2 {
+.admin-header {
     margin-bottom: 30px; /* Mayor margen para mayor separación */
 }
 
-.welcome-title{
+.admin-title {
     margin: 0;
+    font-size: 2em; /* Aumentar tamaño de título */
+    font-weight: bold; /* Negrita para el título */
 }
 
-.welcome-text {
+.admin-description {
     margin-top: 20px;
+    font-size: 1.2em; /* Aumentar tamaño de descripción */
 }
 
-.nav-buttons {
+/* Estilos para la Navegación */
+.admin-nav {
     margin-bottom: 30px; /* Mayor margen para separar los botones de otras secciones */
 }
 
-.nav-buttons button {
-    border:rgb(0, 0, 0)e;
-    padding: 12px 24px; /* Aumentar el padding para botones más grandes */
-    cursor: pointer;
-    margin: 0 10px; /* Mayor separación entre botones */
-    border-radius: 8px; /* Bordes más redondeados */
+.admin-nav-button,
+.admin-add-button,
+.admin-nav-button-main {
+    background-color: #ffffff; /* Color de fondo */
+    border-color: #000;
+    padding: 12px 20px; /* Padding cómodo */
+    border-radius: 8px; /* Bordes redondeados */
+    color: #000; /* Color del texto */
     font-size: 18px; /* Tamaño de fuente ligeramente mayor */
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
 }
 
-.nav-buttons button:hover {
+.admin-nav-button:hover,
+.admin-add-button:hover,
+.admin-nav-button-main:hover {
     background-color: #fdcae1;
+    transform: translateY(-2px); /* Efecto de elevación */
 }
 
-.admi3 {
+/* Secciones */
+.admin-section {
     margin-bottom: 50px; /* Mayor separación para secciones principales */
 }
 
-.admi4 {
-    padding: 12px 24px; /* Aumentar el padding para un botón más grande */
-    cursor: pointer;
-    margin-bottom: 20px; /* Mayor margen inferior */
-    border-radius: 8px; /* Bordes más redondeados */
-    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
-    margin-top: 20px;
-    border-color: #000;
-}
-
-.admi4:hover {
-    background-color: #fdcae1;
-}
-
-.admi40 {
-    background-color: #fdcae1;
-    border: none;
-    padding: 12px 24px; /* Aumentar el padding para un botón más grande */
-    cursor: pointer;
-    margin-bottom: 20px; /* Mayor margen inferior */
-    border-radius: 8px; /* Bordes más redondeados */
-    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
-    margin-top: 20px;
-}
-
-.admi40:hover {
-    background-color: #fdcae1;
-}
-
-.admi5 {
+.admin-table {
+    margin-top: 30px;
     width: 100%;
     border-collapse: collapse;
 }
 
-.admi5 th, .admi5 td {
+.admin-table th, .admin-table td {
     border: 1px solid #ddd;
     padding: 12px; /* Aumentar el padding para celdas más espaciadas */
     text-align: center;
 }
 
-.admi5 th {
+.admin-table th {
     background-color: #fdcae1; /* Color de fondo para los encabezados */
 }
 
-.admi6 {
+/* Estilos para botones de acción */
+.admin-action-button {
+    background-color: #fff; /* Fondo blanco */
+    border: 1px solid #ddd; /* Borde sutil */
+    color: #000; /* Color del texto */
     padding: 8px 16px; /* Aumentar el padding para un botón más grande */
-    cursor: pointer;
     border-radius: 5px; /* Bordes ligeramente redondeados */
     font-size: 16px; /* Tamaño de fuente consistente */
-    border-color: #000;
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
 }
 
-.admi6:hover {
-    background-color: #fdcae1;
+.admin-action-button:hover {
+    background-color: #fdcae1; /* Color de fondo al pasar el ratón */
+    transform: translateY(-2px); /* Efecto de elevación */
 }
 
-.admi7 {
-    padding: 30px; /* Mayor padding para un espaciado más cómodo */
-    background: #fff;
+/* Estilos para el Modal */
+.admin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8); /* Fondo oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegurarse de que esté por encima de otros elementos */
+    overflow: auto; /* Permitir desplazamiento si es necesario */
+}
+
+.admin-modal-content {
+    background: #ffffff; /* Fondo blanco */
+    padding: 30px; /* Espaciado interno más ajustado */
+    border-radius: 12px; /* Bordes más redondeados */
+    width: 90%; /* Ancho responsivo */
+    max-width: 600px; /* Ancho máximo */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
+    position: relative; /* Para posicionar el botón de cerrar */
+    overflow-y: auto; /* Permitir desplazamiento vertical */
+    max-height: 80vh; /* Altura máxima del modal */
+}
+
+/* Botón de cerrar */
+.admin-modal-close {
+    cursor: pointer;
+    font-size: 28px; /* Tamaño de fuente mayor */
+    color: #333; /* Color más oscuro */
+    position: absolute;
+    top: 20px; /* Ajustar posición */
+    right: 20px; /* Ajustar posición */
+}
+
+.admin-modal-close:hover {
+    color: #fdcae1; /* Color al pasar el ratón */
+}
+
+/* Estilos de botones en el modal */
+.modal-buttons {
+    display: flex;
+    justify-content: center; /* Centrar los botones */
+    margin-top: 20px; /* Espacio superior */
+}
+
+.admin-modal-button {
+    background-color: #fdcae1; /* Color de fondo */
+    border: none; /* Sin borde */
+    padding: 12px 25px; /* Espaciado interno */
     border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra más notable */
+    color: #000; /* Color del texto */
+    font-size: 18px; /* Tamaño de fuente */
+    cursor: pointer; /* Cambiar cursor */
+    transition: background-color 0.3s; /* Transición suave */
+    margin: 0 10px; /* Espaciado entre botones */
 }
 
-.admi8 {
+.admin-modal-button:hover {
+    background-color: #f6a5b4; /* Color más oscuro al pasar el ratón */
+}
+
+/* Estilo de entrada de formulario */
+.admin-form-input {
     width: 100%; /* Ancho completo para mejor disposición */
-    max-width: 400px; /* Ancho máximo para control de tamaño */
-    padding: 10px; /* Padding más amplio */
-    margin: 0 0 30px 0; /* Mayor margen inferior */
+    padding: 12px; /* Padding más amplio */
+    margin: 10px 0; /* Espaciado superior e inferior */
+    border: 1px solid #ddd; /* Borde suave */
+    border-radius: 6px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño de fuente */
 }
 
-/* Línea divisoria para la sección de reportes */
+.admin-form-input:focus {
+    border-color: #fdcae1; /* Color al enfocar */
+    outline: none; /* Sin contorno predeterminado */
+}
+
+/* Estilo de las etiquetas de entrada */
+.admin-form-label {
+    display: block;
+    margin: 15px 0 5px; /* Margen superior e inferior */
+    font-weight: bold; /* Negrita para mejor legibilidad */
+}
+
+/* Estilos para el encabezado del modal */
+.admin-modal-header {
+    margin-bottom: 20px; /* Espacio debajo del encabezado */
+    font-size: 24px; /* Tamaño de fuente del encabezado */
+    text-align: center; /* Centrar el texto */
+}
+
+/* Estilo para el formulario */
+form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px; /* Espacio superior */
+}
+
+label {
+    margin-bottom: 5px; /* Espacio inferior */
+}
+
+/* Estilo de las entradas específicas */
+input[type="date"],
+input[type="number"],
+input[type="text"],
+input[type="file"] {
+    padding: 10px; /* Espaciado interno */
+    border: 1px solid #ddd; /* Borde suave */
+    border-radius: 5px; /* Bordes redondeados */
+    width: 100%; /* Ancho completo */
+    margin-top: 5px; /* Espacio entre el texto y el input */
+}
+
+input[type="date"]:focus,
+input[type="number"]:focus,
+input[type="text"]:focus {
+    border-color: #fdcae1; /* Cambiar color al enfocar */
+    outline: none; /* Quitar contorno predeterminado */
+}
+
+/* Separador de informes */
 .report-separator {
     border-top: 2px solid #ddd; /* Color de la línea divisoria */
     margin: 20px 0; /* Espacio arriba y abajo de la línea divisoria */
 }
 
-/* Estilo para el contenido del reporte */
+/* Contenido del reporte */
 .report-content {
     padding: 20px; /* Padding para un mejor espaciado */
     background: #fff; /* Fondo blanco */
@@ -2721,56 +2863,66 @@ li{
     text-align: center; /* Alineación del texto */
 }
 
+/* Galería de imágenes */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px; /* Espacio entre la tabla y la galería */
+}
+
+.image-gallery img {
+    margin: 5px; /* Espacio entre las imágenes */
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .nav-buttons {
+    .admin-nav {
         flex-direction: column;
     }
 
-    .admi40 {
+    .admin-nav-button-main {
         width: 100%;
         text-align: center;
     }
 
-    .admi8 {
+    .admin-form-input {
         padding: 8px;
     }
 
-    .admi4 {
+    .admin-add-button {
         width: 100%;
         text-align: center;
     }
 
-    .admi5 th,
-    .admi5 td {
+    .admin-table th,
+    .admin-table td {
         font-size: 0.9em;
     }
 }
 
 @media (max-width: 480px) {
-    .welcome-title {
+    .admin-title {
         font-size: 1.5em;
     }
 
-    .welcome-text {
+    .admin-description {
         font-size: 1em;
     }
 
-    .admi8 {
+    .admin-form-input {
         padding: 6px;
     }
 
-    .admi4 {
+    .admin-add-button {
         font-size: 0.9em;
         padding: 8px 15px;
     }
 
-    .admi6 {
+    .admin-action-button {
         font-size: 0.8em;
         padding: 4px 8px;
     }
 }
-
-/* Cierre Administrador */
 
 /* Pie de página */
 footer {

@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 /* Importar imágenes */
 import Gerberas1 from '../static/img/Gerberas1.jpeg';
@@ -13,25 +16,42 @@ import Gerberas6 from '../static/img/Gerberas6.jpeg';
 
 const ProductPage = () => {
     const [modalData, setModalData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
+
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Gerberas1 },
         { id: 'product2', name: 'Nombre del Producto 2', price: 45000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas2 },
         { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas3 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas4 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas5 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas6 },
+        { id: 'product4', name: 'Nombre del Producto 4', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas4 },
+        { id: 'product5', name: 'Nombre del Producto 5', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas5 },
+        { id: 'product6', name: 'Nombre del Producto 6', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Gerberas6 },
     ];
 
     const descriptions = {
         'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
         'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
         'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
+        'product4': 'Descripción detallada del Producto 4. Ideal para sorpresas.',
+        'product5': 'Descripción detallada del Producto 5. Perfecto para alegrar el día.',
+        'product6': 'Descripción detallada del Producto 6. Un regalo único.',
     };
 
     const handleDetailsClick = (product) => {
@@ -63,7 +83,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -146,6 +166,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

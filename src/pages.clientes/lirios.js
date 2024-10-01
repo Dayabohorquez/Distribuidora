@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
+import { FaWhatsapp } from 'react-icons/fa';
+import Headerc from '../components/Header.c';
+import { jwtDecode } from 'jwt-decode';
 
 /* Importar imágenes */
 import Lirios1 from '../static/img/Lirios1.jpeg';
@@ -14,25 +17,39 @@ import Lirios7 from '../static/img/Lirios7.jpeg';
 import Lirios8 from '../static/img/Lirios8.jpeg';
 import Lirios9 from '../static/img/Lirios9.jpeg';
 
+
 const ProductPage = () => {
     const [modalData, setModalData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
+
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Lirios1 },
         { id: 'product2', name: 'Nombre del Producto 2', price: 45000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios2 },
         { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios3 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios4 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios5 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios6 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios7 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios8 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios9 },
-        // Añadir más productos aquí
+        { id: 'product4', name: 'Nombre del Producto 4', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios4 },
+        { id: 'product5', name: 'Nombre del Producto 5', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios5 },
+        { id: 'product6', name: 'Nombre del Producto 6', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios6 },
+        { id: 'product7', name: 'Nombre del Producto 7', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios7 },
+        { id: 'product8', name: 'Nombre del Producto 8', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios8 },
+        { id: 'product9', name: 'Nombre del Producto 9', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios9 },
     ];
 
     const descriptions = {
@@ -54,15 +71,14 @@ const ProductPage = () => {
         const { id, checked } = e.target;
         setFilters(prevFilters => ({
             ...prevFilters,
-            [id]: checked
+            [id]: checked ? id : ''
         }));
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.price < price);
+        const matchPrice = !price || (product.price < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
         const matchType = !type || product.type === type;
 
         return matchOccasion && matchPrice && matchType;
@@ -70,7 +86,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -101,31 +117,11 @@ const ProductPage = () => {
                             <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
                         </ul>
                     </div>
-                    <div className="filter">
-                        <h3>Novedades</h3>
-                        <ul>
-                            <li>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Lirios1} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Lirios2} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Lirios3} alt="Arreglo floral Lirios de Amor" className="Ramo1" />
-                                    Arreglo floral Lirios de Amor - $350,000
-                                </a>
-                            </li>
-                            {/* Añadir más novedades aquí */}
-                        </ul>
-                    </div>
                 </aside>
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
+                        <div key={product.id} className="product-card">
                             <img src={product.imgSrc} alt={product.name} className="product-img" />
                             <h3>{product.name}</h3>
                             <p>${product.price.toLocaleString()}</p>
@@ -153,6 +149,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );

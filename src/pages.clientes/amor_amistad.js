@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import Headerc from '../components/Header.c';
+import { FaWhatsapp } from 'react-icons/fa';
 import '../index.css';
+import { jwtDecode } from 'jwt-decode';
 
 /* Importar imágenes */
 import AmorAmistad1 from '../static/img/AmorAmistad1.jpeg';
@@ -14,7 +17,6 @@ import AmorAmistad7 from '../static/img/AmorAmistad7.jpeg';
 import AmorAmistad8 from '../static/img/AmorAmistad8.jpeg';
 import AmorAmistad9 from '../static/img/AmorAmistad9.jpeg';
 
-
 const ProductPage = () => {
     const [modalData, setModalData] = useState(null);
     const [filters, setFilters] = useState({
@@ -22,18 +24,31 @@ const ProductPage = () => {
         price: null,
         type: ''
     });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setIsAuthenticated(!!decoded.rol); // Comprueba si tiene un rol
+            } catch (e) {
+                console.error('Error decodificando el token', e);
+                localStorage.removeItem('token');
+            }
+        }
+    }, []);
 
     const products = [
         { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad1 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad2 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad3 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad4 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad5 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad6 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad7 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad8 },
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad9 },
-        // Añadir más productos aquí
+        { id: 'product2', name: 'Nombre del Producto 2', price: 60000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad2 },
+        { id: 'product3', name: 'Nombre del Producto 3', price: 70000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad3 },
+        { id: 'product4', name: 'Nombre del Producto 4', price: 80000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad4 },
+        { id: 'product5', name: 'Nombre del Producto 5', price: 90000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad5 },
+        { id: 'product6', name: 'Nombre del Producto 6', price: 100000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad6 },
+        { id: 'product7', name: 'Nombre del Producto 7', price: 110000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad7 },
+        { id: 'product8', name: 'Nombre del Producto 8', price: 120000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad8 },
+        { id: 'product9', name: 'Nombre del Producto 9', price: 130000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: AmorAmistad9 },
     ];
 
     const descriptions = {
@@ -71,7 +86,7 @@ const ProductPage = () => {
 
     return (
         <div>
-            <Header />
+            {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
                 <aside className="sidebar">
                     <h2>
@@ -154,6 +169,15 @@ const ProductPage = () => {
                     </div>
                 )}
             </div>
+            {/* Botón de WhatsApp */}
+            <a 
+                href="https://wa.me/3222118028" 
+                className="whatsapp-btn" 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <FaWhatsapp size={30} />
+            </a>
             <Footer />
         </div>
     );
