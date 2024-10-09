@@ -7,7 +7,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { jwtDecode } from 'jwt-decode';
 
-const DetailProd = ({ addToCart }) => {
+const DetalleProducto = ({ addToCart }) => {
     const location = useLocation();
     const { product } = location.state || {};
     const navigate = useNavigate();
@@ -16,20 +16,21 @@ const DetailProd = ({ addToCart }) => {
     const [opcionAdicionalPrecio, setOpcionAdicionalPrecio] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedOption, setSelectedOption] = useState('ninguno');
-    
+    const [dedicatoria, setDedicatoria] = useState('');
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+                setIsAuthenticated(!!decoded.rol);
             } catch (e) {
                 console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
             }
         }
     }, []);
-    
+
     if (!product) {
         return (
             <div>
@@ -45,8 +46,16 @@ const DetailProd = ({ addToCart }) => {
 
     const handleOptionChange = (event) => {
         const option = event.target.value;
-        setOpcionAdicionalPrecio(option === 'chocolate' ? 30000 : option === 'vino' ? 86000 : 0);
         setSelectedOption(option);
+
+        // Establecer el precio adicional según la opción seleccionada
+        if (option === 'chocolate') {
+            setOpcionAdicionalPrecio(30000);
+        } else if (option === 'vino') {
+            setOpcionAdicionalPrecio(86000);
+        } else {
+            setOpcionAdicionalPrecio(0);
+        }
     };
 
     const handleQuantityChange = (event) => {
@@ -54,8 +63,19 @@ const DetailProd = ({ addToCart }) => {
         setQuantity(value > 0 ? value : 1);
     };
 
+    const handleDedicatoriaChange = (event) => {
+        setDedicatoria(event.target.value);
+    };
+
     const updateProductPrice = () => {
-        return (product.price + opcionAdicionalPrecio) * quantity;
+        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0; // Asegúrate de que sea un número
+        return (basePrice + opcionAdicionalPrecio) * quantity;
+    };
+
+    const handleAddToCart = () => {
+        const totalPrice = product.precio_producto + opcionAdicionalPrecio;
+        addToCart({ ...product, quantity, totalPrice, dedicatoria });
+        navigate('/ProductPage'); // Redirigir a la página de productos o donde sea necesario
     };
 
     return (
@@ -71,17 +91,17 @@ const DetailProd = ({ addToCart }) => {
                 </aside>
 
                 <section className="detalle-producto">
-                    <h2 className="descripcion">Descripción del Producto</h2>
+                    <h2 className="descripcion">Personalización</h2>
                     <div className="contenido-producto">
                         <div className="imagen-producto">
-                            <img src={product.imgSrc} alt={product.name} />
+                            <img src={product.foto_ProductoURL} alt={product.nombre_producto} />
                         </div>
                         <div className="info-producto">
-                            <h3>{product.name}</h3>
-                            <p>{product.description || 'Descripción no disponible.'}</p>
+                            <h3>{product.nombre_producto}</h3>
+                            <p>{product.descripcion_producto || 'Descripción no disponible.'}</p>
                             <div className="meta-producto">
-                                <p><strong>Precio base: ${product.price.toLocaleString()}</strong></p>
-                                <p><strong>Precio total: ${updateProductPrice().toLocaleString()}</strong></p>
+                                <p><strong>Precio base: ${product.precio_producto.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong></p>
+                                <p><strong>Precio total: ${updateProductPrice().toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong></p>
                             </div>
                             <div className="opciones-producto">
                                 <h4 className="opciones">Opciones disponibles</h4>
@@ -94,17 +114,18 @@ const DetailProd = ({ addToCart }) => {
 
                                 <label htmlFor="cantidad">Cantidad:</label>
                                 <input type="number" id="cantidad" value={quantity} min="1" onChange={handleQuantityChange} required />
+
+                                <label htmlFor="dedicatoria">Dedicatoria:</label>
+                                <input
+                                    type="text"
+                                    id="dedicatoria"
+                                    value={dedicatoria}
+                                    onChange={handleDedicatoriaChange}
+                                    placeholder="Escribe tu dedicatoria aquí"
+                                />
                             </div>
                             <div className="botones">
-                                <button className="btn-comprar-producto" onClick={() => {
-                                    addToCart({
-                                        img: product.imgSrc,
-                                        title: product.name,
-                                        price: updateProductPrice(),
-                                        quantity
-                                    });
-                                    alert('Producto añadido al carrito.');
-                                }}>Añadir al carrito</button>
+                                <button className="btn-comprar-producto" onClick={handleAddToCart}>Añadir al carrito</button>
                             </div>
                         </div>
                     </div>
@@ -115,4 +136,4 @@ const DetailProd = ({ addToCart }) => {
     );
 };
 
-export default DetailProd;
+export default DetalleProducto;

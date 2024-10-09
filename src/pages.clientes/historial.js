@@ -7,12 +7,7 @@ import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
 
 const OrderHistory = () => {
-  const orders = [
-    { id: 101, date: '2024-09-04', time: '14:35', details: '2x Arreglo floral Red Lila, 1x Escala de Amor' },
-    { id: 102, date: '2024-09-03', time: '09:15', details: '3x Amor Verdadero, 2x Amistad Sincera' },
-    { id: 103, date: '2024-09-01', time: '11:50', details: '1x Cariño Eterno, 1x Flor Azul' }
-  ];
-
+  const [orders, setOrders] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -20,7 +15,8 @@ const OrderHistory = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+        setIsAuthenticated(!!decoded.rol);
+        fetchOrderHistory(decoded.documento);
       } catch (e) {
         console.error('Error decodificando el token', e);
         localStorage.removeItem('token');
@@ -28,8 +24,18 @@ const OrderHistory = () => {
     }
   }, []);
 
-  const handleContinue = () => {
-    alert('Ir a la siguiente página');
+  const fetchOrderHistory = async (documento) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/historial/documento/${documento}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener el historial de pedidos');
+      }
+      const data = await response.json();
+      console.log('Respuesta del servidor:', data);
+      setOrders(data);
+    } catch (error) {
+      console.error('Error fetching order history:', error);
+    }
   };
 
   return (
@@ -44,19 +50,23 @@ const OrderHistory = () => {
             <table className="his5-historial-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Fecha</th>
-                  <th>Hora</th>
-                  <th>Detalles del Pedido</th>
+                  <th>Nombre del Producto</th>
+                  <th>Código del Producto</th>
+                  <th>Precio</th>
+                  <th>Cantidad</th>
+                  <th>Estado del Pedido</th>
+                  <th>Fecha de Cambio</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map(order => (
-                  <tr key={order.id}>
-                    <td>{order.id}</td>
-                    <td>{order.date}</td>
-                    <td>{order.time}</td>
-                    <td>{order.details}</td>
+                {orders.map((order, index) => (
+                  <tr key={`${order.id_historial}-${index}`}>
+                    <td>{order.nombre_producto}</td>
+                    <td>{order.codigo_producto}</td>
+                    <td>${parseFloat(order.precio).toFixed(2)}</td>
+                    <td>{order.cantidad}</td>
+                    <td>{order.estado_pedido}</td>
+                    <td>{new Date(order.fecha_cambio).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -64,13 +74,11 @@ const OrderHistory = () => {
           </div>
           <div className="his6-boton-container">
             <button className="his3-continuar-btn" onClick={() => window.location.href = '/'}>
-              Continuar
+              Volver
             </button>
           </div>
-
         </div>
       </main>
-      {/* Botón de WhatsApp */}
       <a
         href="https://wa.me/3222118028"
         className="whatsapp-btn"

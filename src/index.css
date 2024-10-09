@@ -2346,7 +2346,7 @@ li{
     /*background-image: url('../static/img/boda.jpg');*/
     background-size: cover;
     background-position: center;
-    padding: 50px 20px;
+    padding: 50px 10px;
     text-align: center;
 }
 
@@ -2365,9 +2365,9 @@ li{
 /* Sección de Tarjetas de Eventos */
 .eventos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 100px;
-    padding: 100px;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 100px; /* Espacio entre los recuadros */
+    padding: 100px; /* Espaciado interno */
     background-color: #fff;
 }
 
@@ -2385,41 +2385,41 @@ li{
 }
 
 .evento-img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
+    width: 100%; /* Ajusta la imagen al 100% del contenedor */
+    height: 450px; /* Altura fija para las imágenes */
+    object-fit: cover; /* Mantiene la relación de aspecto y cubre el área */
 }
 
 .evento-content {
-    padding: 15px;
-    text-align: center;
+    padding: 15px; /* Espaciado interno para el contenido */
+    text-align: center; /* Centra el texto */
 }
 
 .evento-content h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 24px; /* Tamaño del título */
+    margin-bottom: 10px; /* Espaciado inferior */
+    color: #333; /* Color del texto */
 }
 
 .evento-content p {
-    font-size: 16px;
-    color: #777;
-    margin-bottom: 20px;
+    font-size: 16px; /* Tamaño de la descripción */
+    color: #777; /* Color del texto */
+    margin-bottom: 20px; /* Espaciado inferior */
 }
 
 .evento-btn {
-    padding: 10px 20px;
-    background-color: #fdcae1;
-    color: #000000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+    padding: 10px 20px; /* Espaciado interno del botón */
+    background-color: #fdcae1; /* Color de fondo del botón */
+    color: #000000; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar el ratón */
+    font-size: 16px; /* Tamaño de fuente */
+    transition: background-color 0.3s ease; /* Transición para el hover */
 }
 
 .evento-btn:hover {
-    background-color: #fdcae1;
+    background-color: #fdcae1; /* Color al pasar el ratón (puedes cambiarlo) */
 }
 
 .whatsapp-btn {

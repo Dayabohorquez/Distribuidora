@@ -11,11 +11,6 @@ const ManageEventoModal = ({ onClose, onSave, eventoData }) => {
             formData.append('id_evento', eventoData.id_evento);
         }
 
-        // Verificar si se ha subido una nueva foto
-        if (!formData.get('foto_evento')) {
-            console.log('No se ha subido una nueva foto.');
-        }
-
         // Llamar a la función onSave pasada como prop
         if (typeof onSave === 'function') {
             onSave(formData);
@@ -37,8 +32,18 @@ const ManageEventoModal = ({ onClose, onSave, eventoData }) => {
                             required
                             className="admin-form-input"
                         />
-
                     </label>
+
+                    <label className="admin-form-label">
+                        Descripción:
+                        <textarea
+                            name="descripcion"
+                            defaultValue={eventoData ? eventoData.descripcion : ''}
+                            required
+                            className="admin-form-textarea"
+                        />
+                    </label>
+
                     <label className="admin-form-label">
                         Foto (opcional):
                         <input

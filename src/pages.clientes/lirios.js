@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Importar axios
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
-/* Importar imágenes */
-import Lirios1 from '../static/img/Lirios1.jpeg';
-import Lirios2 from '../static/img/Lirios2.jpeg';
-import Lirios3 from '../static/img/Lirios3.jpeg';
-import Lirios4 from '../static/img/Lirios4.jpeg';
-import Lirios5 from '../static/img/Lirios5.jpeg';
-import Lirios6 from '../static/img/Lirios6.jpeg';
-import Lirios7 from '../static/img/Lirios7.jpeg';
-import Lirios8 from '../static/img/Lirios8.jpeg';
-import Lirios9 from '../static/img/Lirios9.jpeg';
-
-
-const ProductPage = () => {
+const ProductPage = ({ addToCart }) => {
+    const [products, setProducts] = useState([]); // Estado para productos
     const [modalData, setModalData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
@@ -26,6 +17,8 @@ const ProductPage = () => {
         price: null,
         type: ''
     });
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -40,31 +33,31 @@ const ProductPage = () => {
         }
     }, []);
 
-    const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Lirios1 },
-        { id: 'product2', name: 'Nombre del Producto 2', price: 45000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios2 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios3 },
-        { id: 'product4', name: 'Nombre del Producto 4', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios4 },
-        { id: 'product5', name: 'Nombre del Producto 5', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios5 },
-        { id: 'product6', name: 'Nombre del Producto 6', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios6 },
-        { id: 'product7', name: 'Nombre del Producto 7', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios7 },
-        { id: 'product8', name: 'Nombre del Producto 8', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios8 },
-        { id: 'product9', name: 'Nombre del Producto 9', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Lirios9 },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/productos/5'); // Cambia el ID según el tipo de flor que desees
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
 
-    const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
-        'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
-    };
+        fetchProducts();
+    }, []);
 
     const handleDetailsClick = (product) => {
         setModalData({
-            imgSrc: product.imgSrc,
-            title: product.name,
-            price: `$${product.price.toLocaleString()}`,
-            description: descriptions[product.id] || 'Descripción del producto no disponible.'
+            imgSrc: product.foto_ProductoURL || '',
+            title: product.nombre_producto || 'Producto sin nombre',
+            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            description: product.descripcion_producto || 'Descripción del producto no disponible.',
+            id: product.id_producto // Agregar ID para usar en el carrito
         });
+    };
+
+    const handlePersonalizeClick = (product) => {
+        navigate(`/producto/${product.id_producto}`, { state: { product } });
     };
 
     const handleFilterChange = (e) => {
@@ -78,11 +71,28 @@ const ProductPage = () => {
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.price < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
-        const matchType = !type || product.type === type;
+        const matchPrice = !price || (product.precio_producto < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
+        const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
     });
+
+    const handleAddToCart = (product) => {
+        addToCart({
+            id: product.id_producto,
+            title: product.nombre_producto,
+            price: product.precio_producto,
+            img: product.foto_ProductoURL,
+            quantity: 1
+        });
+    };
+
+    const handleAddToCartFromModal = () => {
+        if (modalData) {
+            handleAddToCart(modalData);
+            setModalData(null); // Cerrar modal después de añadir
+        }
+    };
 
     return (
         <div>
@@ -121,13 +131,13 @@ const ProductPage = () => {
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card">
-                            <img src={product.imgSrc} alt={product.name} className="product-img" />
-                            <h3>{product.name}</h3>
-                            <p>${product.price.toLocaleString()}</p>
+                        <div key={product.id_producto} className="product-card">
+                            <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
+                            <h3>{product.nombre_producto}</h3>
+                            <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                            <a href="detalle_producto.html"><button className="btn-details personalizar">Personalizar</button></a>
-                            <button className="btn-cart">Añadir al carrito</button>
+                            <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -142,7 +152,7 @@ const ProductPage = () => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart">Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>

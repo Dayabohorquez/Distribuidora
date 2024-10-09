@@ -6,26 +6,15 @@ import Header from '../components/Header';
 import Headerc from '../components/Header.c';
 import '../index.css';
 import { jwtDecode } from 'jwt-decode';
-
-import Boda from '../static/img/boda.jpg';
-import Evento1 from '../static/img/Eventos1.jpeg';
-import Evento2 from '../static/img/Eventos2.jpeg';
-import Evento3 from '../static/img/Eventos3.jpeg';
-import Evento4 from '../static/img/Eventos4.jpeg';
+import axios from 'axios';
 
 const EventosPage = () => {
-    const eventos = [
-        { nombre: 'Matrimonios', descripcion: 'Celebra el día más especial con nosotros.', imgSrc: Boda, link: '/aniversario' },
-        { nombre: 'Primera Comunión', descripcion: 'Una ocasión espiritual que recordarán siempre.', imgSrc: Evento1, link: '/comunion' },
-        { nombre: 'Bautizo', descripcion: 'El inicio de un camino lleno de bendiciones.', imgSrc: Evento2, link: '/bautizo' },
-        { nombre: 'Cumpleaños', descripcion: 'Haz que cada año sea inolvidable.', imgSrc: Evento3, link: '/cumpleanos' },
-        { nombre: 'Graduación', descripcion: 'Celebra tus logros con estilo y elegancia.', imgSrc: Evento4, link: '/graduacion' }
-    ];
-
-    const navigate = useNavigate();
+    const [eventos, setEventos] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        // Verificar autenticación
         const token = localStorage.getItem('token');
         if (token) {
             try {
@@ -36,20 +25,19 @@ const EventosPage = () => {
                 localStorage.removeItem('token');
             }
         }
-    }, []);
 
-    const DropdownEventos = () => (
-        <ul className="dropdown special-dates-dropdown">
-            {eventos.map((evento, index) => (
-                <li key={index}>
-                    <Link to={evento.link}>
-                        <i className={`fa fa-${evento.nombre.toLowerCase().replace(/\s+/g, '-')}`} aria-hidden="true"></i>
-                        {evento.nombre}
-                    </Link>
-                </li>
-            ))}
-        </ul>
-    );
+        // Obtener eventos desde la API
+        const fetchEventos = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/eventos');
+                setEventos(response.data); // Asumiendo que la API devuelve un array de eventos
+            } catch (error) {
+                console.error('Error al obtener eventos:', error);
+            }
+        };
+
+        fetchEventos();
+    }, []);
 
     return (
         <div>
@@ -58,20 +46,27 @@ const EventosPage = () => {
                 <h1>Eventos Memorables</h1>
                 <p>Organizamos el evento perfecto para cualquier ocasión. ¡Hacemos realidad tus sueños!</p>
             </div>
-            <DropdownEventos />
             <div className="eventos-grid">
-                {eventos.map((evento, index) => (
-                    <div key={index} className="evento-card">
-                        <img src={evento.imgSrc} alt={evento.nombre} className="evento-img" />
-                        <div className="evento-content">
-                            <h3>{evento.nombre}</h3>
-                            <p>{evento.descripcion}</p>
-                            <Link to={evento.link}>
-                                <button className="btn-contact">Ver Más</button>
-                            </Link>
+                {eventos.length > 0 ? (
+                    eventos.map((evento) => (
+                        <div key={evento.id_evento} className="evento-card">
+                            {evento.foto_eventoURL ? (
+                                <img src={evento.foto_eventoURL} alt={evento.nombre_evento} className="evento-img" />
+                            ) : (
+                                <span>Sin imagen</span>
+                            )}
+                            <div className="evento-content">
+                                <h3>{evento.nombre_evento}</h3>
+                                <p>{evento.descripcion || 'Descripción no disponible'}</p>
+                                <Link to={`/evento/${evento.id_evento}`}>
+                                    <button className="evento-btn">Ver Más</button>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p>No hay eventos disponibles.</p>
+                )}
             </div>
 
             {/* Botón de WhatsApp */}

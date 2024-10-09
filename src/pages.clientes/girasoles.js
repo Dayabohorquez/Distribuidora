@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Importar axios
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
-/* Importar imágenes */
-import Girasoles1 from '../static/img/Girasoles1.jpeg';
-import Girasoles2 from '../static/img/Girasoles2.jpeg';
-import Girasoles3 from '../static/img/Girasoles3.jpeg';
-import Girasoles4 from '../static/img/Girasoles4.jpeg';
-import Girasoles5 from '../static/img/Girasoles5.jpeg';
-import Girasoles6 from '../static/img/Girasoles6.jpeg';
-import Girasoles7 from '../static/img/Girasoles7.jpeg';
-import Girasoles8 from '../static/img/Girasoles8.jpeg';
-import Girasoles9 from '../static/img/Girasoles9.jpeg';
-
-const ProductPage = () => {
+const ProductPage = ({ addToCart }) => {
+    const [products, setProducts] = useState([]); // Estado para productos
     const [modalData, setModalData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
@@ -25,6 +17,8 @@ const ProductPage = () => {
         price: null,
         type: ''
     });
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -39,56 +33,66 @@ const ProductPage = () => {
         }
     }, []);
 
-    const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Amor y Amistad', imgSrc: Girasoles1 },
-        { id: 'product2', name: 'Nombre del Producto 2', price: 45000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles2 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles3 },
-        { id: 'product4', name: 'Nombre del Producto 4', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles4 },
-        { id: 'product5', name: 'Nombre del Producto 5', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles5 },
-        { id: 'product6', name: 'Nombre del Producto 6', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles6 },
-        { id: 'product7', name: 'Nombre del Producto 7', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles7 },
-        { id: 'product8', name: 'Nombre del Producto 8', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles8 },
-        { id: 'product9', name: 'Nombre del Producto 9', price: 47000, type: 'Tropicales', occasion: 'Cumpleaños', imgSrc: Girasoles9 },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/productos/6'); // Cambia el ID según el tipo de flor que desees
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
 
-    const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para Amor y Amistad.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para Cumpleaños y celebraciones.',
-        'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
-        'product4': 'Descripción detallada del Producto 4. Ideal para sorpresas.',
-        'product5': 'Descripción detallada del Producto 5. Perfecto para alegrar el día.',
-        'product6': 'Descripción detallada del Producto 6. Un regalo único.',
-        'product7': 'Descripción detallada del Producto 7. Ideal para celebraciones.',
-        'product8': 'Descripción detallada del Producto 8. Perfecto para expresar amor.',
-        'product9': 'Descripción detallada del Producto 9. Un hermoso detalle.',
-    };
+        fetchProducts();
+    }, []);
 
     const handleDetailsClick = (product) => {
         setModalData({
-            imgSrc: product.imgSrc,
-            title: product.name,
-            price: `$${product.price.toLocaleString()}`,
-            description: descriptions[product.id] || 'Descripción del producto no disponible.'
+            imgSrc: product.foto_ProductoURL || '',
+            title: product.nombre_producto || 'Producto sin nombre',
+            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            description: product.descripcion_producto || 'Descripción del producto no disponible.',
+            id: product.id_producto // Agregar ID para usar en el carrito
         });
+    };
+
+    const handlePersonalizeClick = (product) => {
+        navigate(`/producto/${product.id_producto}`, { state: { product } });
     };
 
     const handleFilterChange = (e) => {
         const { id, checked } = e.target;
         setFilters(prevFilters => ({
             ...prevFilters,
-            [id]: checked
+            [id]: checked ? id : ''
         }));
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.price < price);
-        const matchType = !type || product.type === type;
+        const matchPrice = !price || (product.precio_producto < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
+        const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
     });
+
+    const handleAddToCart = (product) => {
+        addToCart({
+            id: product.id_producto,
+            title: product.nombre_producto,
+            price: product.precio_producto,
+            img: product.foto_ProductoURL,
+            quantity: 1
+        });
+    };
+
+    const handleAddToCartFromModal = () => {
+        if (modalData) {
+            handleAddToCart(modalData);
+            setModalData(null); // Cerrar modal después de añadir
+        }
+    };
 
     return (
         <div>
@@ -126,34 +130,20 @@ const ProductPage = () => {
                     <div className="filter">
                         <h3>Novedades</h3>
                         <ul>
-                            <li>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles1} alt="Arreglo floral Girasoles" className="Ramo1" />
-                                    Arreglo floral Girasoles - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles2} alt="Arreglo floral Girasoles" className="Ramo1" />
-                                    Arreglo floral Girasoles - $350,000
-                                </a>
-                                <a href="detalle_producto.html" className="filter1">
-                                    <img src={Girasoles3} alt="Arreglo floral Girasoles" className="Ramo1" />
-                                    Arreglo floral Girasoles - $350,000
-                                </a>
-                            </li>
-                            {/* Añadir más novedades aquí */}
+                            {/* Aquí podrías agregar novedades obtenidas desde la API también */}
                         </ul>
                     </div>
                 </aside>
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
-                            <img src={product.imgSrc} alt={product.name} className="product-img" />
-                            <h3>{product.name}</h3>
-                            <p>${product.price.toLocaleString()}</p>
+                        <div key={product.id_producto} className="product-card">
+                            <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
+                            <h3>{product.nombre_producto}</h3>
+                            <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                            <a href="detalle_producto.html"><button className="btn-details personalizar">Personalizar</button></a>
-                            <button className="btn-cart">Añadir al carrito</button>
+                            <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -168,7 +158,7 @@ const ProductPage = () => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart">Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>

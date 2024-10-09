@@ -95,6 +95,27 @@ const App = () => {
         }
     };
 
+    const handleUpdateRolUsuario = async (documento, nuevoRol) => {
+        if (!documento || !nuevoRol) {
+            console.error('El documento o el nuevo rol no están definidos');
+            return;
+        }
+
+        try {
+            const response = await axios.put(`http://localhost:4000/api/usuarios/${documento}/rol`, { rol_usuario: nuevoRol });
+            if (response.status === 200) {
+                fetchUsuarios(); // O la función que recarga la lista de usuarios
+                showNotification('Rol actualizado exitosamente.');
+            } else {
+                console.error('Error en la respuesta del servidor:', response.status);
+                showNotification('Error al actualizar el rol.');
+            }
+        } catch (error) {
+            console.error('Error al actualizar el rol:', error.response ? error.response.data : error.message);
+            showNotification('Error al actualizar el rol.');
+        }
+    };
+
     const handleToggleStatus = async (documento) => {
         if (!documento) {
             console.error('El documento no está definido');
@@ -724,15 +745,16 @@ const App = () => {
             showNotification('Error al obtener eventos.'); // Notificación de error
         }
     };
-
+    
     const handleAddEvento = async (eventoData) => {
         const formData = new FormData();
         formData.append('nombre_evento', eventoData.get('nombre_evento'));
-
+        formData.append('descripcion', eventoData.get('descripcion')); // Agregar descripción
+    
         if (eventoData.get('foto_evento')) {
             formData.append('foto_evento', eventoData.get('foto_evento'));
         }
-
+    
         try {
             const response = await axios.post('http://localhost:4000/api/eventos', formData, {
                 headers: {
@@ -748,21 +770,22 @@ const App = () => {
             showNotification('Error al agregar el evento: ' + (error.response ? error.response.data.message : error.message));
         }
     };
-
+    
     const handleEditEvento = async (eventoData) => {
         if (!currentEvento || !currentEvento.id_evento) {
             console.error('No se puede editar el evento, el evento no es válido.');
             showNotification('Evento no válido.');
             return;
         }
-
+    
         const formData = new FormData();
         formData.append('nombre_evento', eventoData.get('nombre_evento')); // Asegúrate de obtener el valor correctamente
-
+        formData.append('descripcion', eventoData.get('descripcion')); // Agregar descripción
+    
         if (eventoData.get('foto_evento')) {
             formData.append('foto_evento', eventoData.get('foto_evento'));
         }
-
+    
         try {
             await axios.put(`http://localhost:4000/api/eventos/${currentEvento.id_evento}`, formData, {
                 headers: {
@@ -777,7 +800,7 @@ const App = () => {
             showNotification('Error al actualizar el evento.');
         }
     };
-
+    
     const handleDeleteEvento = async (id_evento) => {
         try {
             await axios.delete(`http://localhost:4000/api/eventos/${id_evento}`);
@@ -787,7 +810,7 @@ const App = () => {
             console.error('Error al eliminar evento:', error.response ? error.response.data : error.message);
             showNotification('Error al eliminar el evento.'); // Notificación de error
         }
-    };
+    };    
 
     useEffect(() => {
         fetchEventos();
@@ -822,7 +845,7 @@ const App = () => {
             <div className="admin-container">
                 <div className="admin-header">
                     <h1 className="admin-title">¡Bienvenido Administrador!</h1>
-                    <p className="admin-description">Utilice el menú de navegación para gestionar los usuarios, productos, pedidos y envíos.</p>
+                    <p className="admin-description">Utilice el menú de navegación para gestionar los usuarios, productos, pedidos, envíos, tipos de flores, fechas especiales y eventos.</p>
                 </div>
                 <div className="admin-nav">
                     <button className="admin-nav-button" onClick={() => handleSectionChange('usuarios')}>Usuarios</button>
@@ -833,7 +856,6 @@ const App = () => {
                     <button className="admin-nav-button" onClick={() => handleSectionChange('fechasEspeciales')}>Fechas Especiales</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('eventos')}>Eventos</button>
                 </div>
-
 
                 {activeSection === 'usuarios' && (
                     <div className="admin-section">
@@ -872,7 +894,18 @@ const App = () => {
                                             <td>{usuario.correo_electronico_usuario}</td>
                                             <td>{usuario.direccion}</td>
                                             <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
-                                            <td>{usuario.rol_usuario}</td>
+                                            <td>
+                                                <select
+                                                    value={usuario.rol_usuario}
+                                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
+                                                    className="admin-role-select"
+                                                >
+                                                    <option value="Cliente">Cliente</option>
+                                                    <option value="Vendedor">Vendedor</option>
+                                                    <option value="Domiciliario">Domiciliario</option>
+                                                    <option value="Administrador">Administrador</option>
+                                                </select>
+                                            </td>
                                             <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
                                             <td>
                                                 <div className="admin-actions">
@@ -892,7 +925,7 @@ const App = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="8">No hay usuarios disponibles</td>
+                                        <td colSpan="9">No hay usuarios disponibles</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -1103,7 +1136,7 @@ const App = () => {
                                                 </select>
                                             </td>
                                             <td>
-                                                <div className="actions">
+                                                <div className="admin-actions">
                                                     <FontAwesomeIcon
                                                         icon={faEdit}
                                                         className="icon-edit"
@@ -1171,7 +1204,7 @@ const App = () => {
                                                 )}
                                             </td>
                                             <td>
-                                                <div className="actions">
+                                                <div className="admin-actions">
                                                     <FontAwesomeIcon
                                                         icon={faEdit}
                                                         className="icon-edit"
@@ -1246,7 +1279,7 @@ const App = () => {
                                                 )}
                                             </td>
                                             <td>
-                                                <div className="actions">
+                                                <div className="admin-actions">
                                                     <FontAwesomeIcon
                                                         icon={faEdit}
                                                         className="icon-edit"
@@ -1292,6 +1325,7 @@ const App = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
+                                    <th>Descripción</th> {/* Nueva columna para la descripción */}
                                     <th>Foto</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -1302,6 +1336,7 @@ const App = () => {
                                         <tr key={evento.id_evento}>
                                             <td>{evento.id_evento}</td>
                                             <td>{evento.nombre_evento}</td>
+                                            <td>{evento.descripcion || 'Sin descripción'}</td> {/* Mostrar descripción o mensaje */}
                                             <td>
                                                 {evento.foto_eventoURL ? (
                                                     <img
@@ -1314,7 +1349,7 @@ const App = () => {
                                                 )}
                                             </td>
                                             <td>
-                                                <div className="actions">
+                                                <div className="admin-actions">
                                                     <FontAwesomeIcon
                                                         icon={faEdit}
                                                         className="icon-edit"
@@ -1333,7 +1368,7 @@ const App = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="4" className="no-events-message">
+                                        <td colSpan="5" className="no-events-message"> {/* Cambiar colSpan a 5 */}
                                             No hay eventos disponibles
                                         </td>
                                     </tr>
