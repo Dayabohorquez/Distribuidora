@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import '../index.css';
 
 const ProductPage = ({ addToCart }) => {
     const [products, setProducts] = useState([]);
@@ -38,14 +38,22 @@ const ProductPage = ({ addToCart }) => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/productos/1');
-                setProducts(response.data);
+                console.log(response.data);  // Para verificar qué está devolviendo la API
+                if (Array.isArray(response.data)) {
+                    setProducts(response.data);  // Solo establece el estado si es un array
+                } else {
+                    console.error('Los datos no son un array:', response.data);
+                    setProducts([]);  // En caso de que no sea un array, establece products como un array vacío
+                }
             } catch (error) {
                 console.error('Error al obtener productos:', error);
+                setProducts([]);  // Maneja el error estableciendo un array vacío
             }
         };
-
+    
         fetchProducts();
     }, []);
+    
 
     const handleDetailsClick = (product) => {
         setModalData({
