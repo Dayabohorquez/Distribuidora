@@ -102,7 +102,7 @@ const App = () => {
         }
 
         try {
-            const response = await axios.put(`http://localhost:4000/api/usuarios/${documento}/rol`, { rol_usuario: nuevoRol });
+            const response = await axios.put(`http://localhost:4000/api/usuario/${documento}/rol`, { rol_usuario: nuevoRol });
             if (response.status === 200) {
                 fetchUsuarios(); // O la función que recarga la lista de usuarios
                 showNotification('Rol actualizado exitosamente.');

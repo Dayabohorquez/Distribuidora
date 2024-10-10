@@ -1,31 +1,101 @@
-// src/components/App.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css'; // Ajusta la ruta según sea necesario
+import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
+import EditPersonalInfoModal from '../components/EditPersonalInfoModal';
+import ChangePasswordModal from '../components/ChangePasswordModal';
+
+const API_URL = 'http://localhost:4000/api';
 
 const App = () => {
   const [isEditAccountModalOpen, setEditAccountModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isChangePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [isPersonalInfoModalOpen, setPersonalInfoModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+        setIsAuthenticated(!!decoded.rol);
+        fetchUsuario(decoded.documento);
       } catch (e) {
         console.error('Error decodificando el token', e);
         localStorage.removeItem('token');
       }
     }
   }, []);
-  
+
+  const fetchUsuario = async (documento) => {
+    try {
+      const response = await axios.get(`${API_URL}/usuario/${documento}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error al obtener el usuario:', error);
+      showNotification('Error al obtener el usuario.');
+    }
+  };
+
+  const handleUpdateUsuario = async (updatedUsuario) => {
+    if (!userData?.documento) {
+      console.error('El documento no está definido');
+      return;
+    }
+
+    try {
+      const response = await axios.put(`${API_URL}/usuario/${userData.documento}`, updatedUsuario);
+      if (response.status === 200) {
+        fetchUsuario(userData.documento);
+        showNotification('Información actualizada correctamente.');
+      } else {
+        console.error('Error en la respuesta del servidor:', response.status);
+        showNotification('Error al actualizar el usuario.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error.response ? error.response.data : error.message);
+      showNotification('Error al actualizar el usuario.');
+    }
+  };
+
+  const handleChangePassword = async (oldPassword, newPassword) => {
+    if (!userData?.documento) {
+      console.error('El documento no está definido');
+      return;
+    }
+
+    try {
+      const response = await axios.patch(`${API_URL}/usuarios/${userData.documento}/cambiar-contrasena`, {
+        oldPassword,
+        newPassword
+      });
+
+      if (response.status === 200) {
+        showNotification('Contraseña cambiada exitosamente.');
+      } else {
+        console.error('Error en la respuesta del servidor:', response.status);
+        showNotification('Error al cambiar la contraseña.');
+      }
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error.response ? error.response.data : error.message);
+      showNotification('Error al cambiar la contraseña.');
+    } finally {
+      setChangePasswordModalOpen(false);
+    }
+  };
+
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(''), 3000);
+  };
+
   return (
     <div>
       {isAuthenticated ? <Headerc /> : <Header
@@ -34,7 +104,7 @@ const App = () => {
       />}
       <main className="container2">
         <h2>
-          <Link to="index.html" className="home-link">
+          <Link to="#" className="home-link">
             <i className="fa-solid fa-house"></i>
           </Link> / Tu Cuenta
         </h2>
@@ -42,12 +112,12 @@ const App = () => {
           <p><strong>Detalles de tu cuenta</strong></p>
           <p><Link to="#" onClick={() => setEditAccountModalOpen(true)}>Editar la información de tu cuenta</Link></p>
           <p><Link to="#" onClick={() => setChangePasswordModalOpen(true)}>Cambiar la contraseña</Link></p>
+          <p><Link to="#" onClick={() => setPersonalInfoModalOpen(true)}>Ver información personal</Link></p>
           <br /><br />
           <p><strong>Detalles de tus pedidos</strong></p>
           <p><Link to="/orderhistory">Historial</Link></p>
         </section>
       </main>
-      {/* Botón de WhatsApp */}
       <a
         href="https://wa.me/3222118028"
         className="whatsapp-btn"
@@ -58,39 +128,57 @@ const App = () => {
       </a>
       <Footer />
 
-      {isEditAccountModalOpen && (
-        <Modal onClose={() => setEditAccountModalOpen(false)}>
-          <h2>Editar Información de la Cuenta</h2>
-          <form>
-            <input type="text" placeholder="Tipo de Documento" required />
-            <input type="text" placeholder="Número de Documento" required />
-            <input type="text" placeholder="Nombre" required />
-            <input type="text" placeholder="Apellido" required />
-            <input type="email" placeholder="Correo" required />
-            <input type="password" placeholder="Contraseña" required />
-            <input type="password" placeholder="Confirmar Contraseña" required />
-            <button type="submit">Guardar Cambios</button>
-          </form>
+      {isEditAccountModalOpen && userData && (
+        <Modal
+          isOpen={isEditAccountModalOpen}
+          onClose={() => setEditAccountModalOpen(false)}
+        >
+          <EditPersonalInfoModal
+            userData={userData}
+            onClose={() => setEditAccountModalOpen(false)}
+            onSave={handleUpdateUsuario}
+          />
         </Modal>
       )}
 
       {isChangePasswordModalOpen && (
-        <Modal onClose={() => setChangePasswordModalOpen(false)}>
-          <h2>Cambiar Contraseña</h2>
-          <form>
-            <input type="password" placeholder="Contraseña Antigua" required />
-            <input type="password" placeholder="Nueva Contraseña" required />
-            <input type="password" placeholder="Confirmar Nueva Contraseña" required />
-            <button type="submit">Cambiar Contraseña</button>
-          </form>
+        <Modal
+          isOpen={isChangePasswordModalOpen}
+          onClose={() => setChangePasswordModalOpen(false)}
+        >
+          <ChangePasswordModal
+            onClose={() => setChangePasswordModalOpen(false)}
+            onSave={handleChangePassword}
+          />
         </Modal>
       )}
+
+      {isPersonalInfoModalOpen && userData && (
+        <Modal
+          isOpen={isPersonalInfoModalOpen}
+          onClose={() => setPersonalInfoModalOpen(false)}
+        >
+          <h2 className="modal-header">Información Personal</h2>
+          <div className="modal-content">
+            <p className="modal-detail"><strong>Documento:</strong> {userData.documento}</p>
+            <p className="modal-detail"><strong>Nombre:</strong> {userData.nombre_usuario}</p>
+            <p className="modal-detail"><strong>Apellido:</strong> {userData.apellido_usuario}</p>
+            <p className="modal-detail"><strong>Correo Electrónico:</strong> {userData.correo_electronico_usuario}</p>
+            <p className="modal-detail"><strong>Dirección:</strong> {userData.direccion}</p>
+          </div>
+          <div className="modal-buttons">
+            <button className="admin-modal-button" onClick={() => setPersonalInfoModalOpen(false)}>Cerrar</button>
+          </div>
+        </Modal>
+      )}
+
+      {notification && <div className="notification">{notification}</div>}
     </div>
   );
 }
 
-const Modal = ({ onClose, children }) => (
-  <div className="modal-custom" onClick={onClose}>
+const Modal = ({ onClose, children, isOpen }) => (
+  <div className={`modal-custom ${isOpen ? 'show' : ''}`} onClick={onClose}>
     <div className="modal-content-custom" onClick={(e) => e.stopPropagation()}>
       <span className="close-custom" onClick={onClose}>&times;</span>
       {children}

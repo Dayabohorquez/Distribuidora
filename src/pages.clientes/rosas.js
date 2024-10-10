@@ -8,7 +8,7 @@ import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
-const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
+const ProductPage = ({ addToCart }) => {
     const [products, setProducts] = useState([]);
     const [modalData, setModalData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +17,7 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
         price: null,
         type: ''
     });
+    const [notification, setNotification] = useState(''); // Estado para las notificaciones
 
     const navigate = useNavigate();
 
@@ -50,9 +51,9 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
             title: product.nombre_producto || 'Producto sin nombre',
-            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            price: Math.floor(product.precio_producto),
             description: product.descripcion_producto || 'Descripción del producto no disponible.',
-            id: product.id_producto // Asegúrate de tener el id en modalData
+            id: product.id_producto
         });
     };
 
@@ -78,16 +79,38 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
         return matchOccasion && matchPrice && matchType;
     });
 
-    const handleAddToCartFromModal = () => {
-        if (modalData) {
-            addToCart({
-                id: modalData.id,
-                title: modalData.title,
-                price: modalData.price,
-                img: modalData.imgSrc,
-                quantity: 1
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            console.error('Documento no encontrado.');
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
             });
-            setModalData(null); // Cerrar modal después de añadir
+
+            console.log('Response from API:', response);
+
+            if (response.status === 200 || response.status === 201) {
+                addToCart({
+                    id: product.id_producto,
+                    title: product.nombre_producto,
+                    price: product.precio_producto,
+                    img: product.foto_ProductoURL,
+                    quantity: 1
+                });
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
         }
     };
 
@@ -95,12 +118,14 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Rosas
                     </h2>
+                    {/* Filtros */}
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
@@ -134,7 +159,7 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
                             <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
                             <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
-                            <button className="btn-cart" onClick={() => addToCart({ id: product.id_producto, title: product.nombre_producto, price: product.precio_producto, img: product.foto_ProductoURL, quantity: 1 })}>Añadir al carrito</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -149,17 +174,17 @@ const ProductPage = ({ addToCart }) => { // Recibe addToCart como prop
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={() => handleAddToCart(modalData)}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-            <a 
-                href="https://wa.me/3222118028" 
-                className="whatsapp-btn" 
-                target="_blank" 
+            <a
+                href="https://wa.me/3222118028"
+                className="whatsapp-btn"
+                target="_blank"
                 rel="noopener noreferrer"
             >
                 <FaWhatsapp size={30} />

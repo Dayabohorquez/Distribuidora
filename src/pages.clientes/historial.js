@@ -26,7 +26,7 @@ const OrderHistory = () => {
 
   const fetchOrderHistory = async (documento) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/historial/documento/${documento}`);
+      const response = await fetch(`http://localhost:4000/api/usuarios/${documento}/historial`);
       if (!response.ok) {
         throw new Error('Error al obtener el historial de pedidos');
       }
@@ -55,19 +55,20 @@ const OrderHistory = () => {
                   <th>Precio</th>
                   <th>Cantidad</th>
                   <th>Estado del Pedido</th>
-                  <th>Fecha de Cambio</th>
+                  <th>Total Pagado</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order, index) => (
                   <tr key={`${order.id_historial}-${index}`}>
-                    <td>{order.nombre_producto}</td>
-                    <td>{order.codigo_producto}</td>
-                    <td>${parseFloat(order.precio).toFixed(2)}</td>
-                    <td>{order.cantidad}</td>
-                    <td>{order.estado_pedido}</td>
-                    <td>{new Date(order.fecha_cambio).toLocaleDateString()}</td>
-                  </tr>
+                  <td>{order.nombre_producto}</td>
+                  <td>{order.codigo_producto}</td>
+                  <td>${Math.floor(order.precio)}</td> {/* O puedes usar parseInt(order.precio) */}
+                  <td>{order.cantidad}</td>
+                  <td>{order.estado_pedido}</td>
+                  <td>${Math.floor(order.total_pagado)}</td> {/* O puedes usar parseInt(order.total_pagado) */}
+              </tr>
+              
                 ))}
               </tbody>
             </table>

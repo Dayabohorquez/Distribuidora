@@ -26,23 +26,31 @@ import Admin from "./pages/admin";
 import Myaccount from "./pages.clientes/micuenta";
 import Car from "./pages.clientes/carro";
 import DetalleProducto from "./pages.clientes/detalleprod";
-import ProtectedRoute from './pages/ProtectedRoute'; // Asegúrate de que esta ruta sea correcta
+import ProtectedRoute from './pages/ProtectedRoute';
 import Terminos from './pages.clientes/TerminsAndConditions';
 import Politica from './pages.clientes/PolityPrivacity';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   const [cart, setCart] = useState([]);
 
   // Función para añadir productos al carrito
   const addToCart = (product) => {
-    setCart(prevCart => [...prevCart, product]);
-    // Aquí puedes añadir lógica de notificación si lo deseas
-    alert('Producto añadido al carrito.');
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
   };
 
   return (
     <div className="App">
       <main>
+        <ScrollToTop />
         <Routes>
           {/* Rutas públicas */}
           <Route path="/" element={<Main />} />
@@ -51,22 +59,22 @@ function App() {
           <Route path="/OrderHistory" element={<OrderHistory />} />
           <Route path="/purchase-page" element={<PurchasePage />} />
           <Route path="/payment-method" element={<PaymentMethod />} />
-          <Route path="/car" element={<Car cart={cart} />} /> {/* Asegúrate de pasar el carrito si lo necesitas */}
+          <Route path="/car" element={<Car cart={cart} />} />
           <Route path="/producto/:id" element={<DetalleProducto addToCart={addToCart} />} />
 
           {/* Rutas adicionales */}
-          <Route path="/diamujer" element={<DiaMujer />} />
-          <Route path="/diamadre" element={<DiaMadre />} />
-          <Route path="/AmorAmistad" element={<AmorAmistad />} />
-          <Route path="/aniversario" element={<Aniversario />} />
-          <Route path="/condolencias" element={<Condolencias />} />
-          <Route path="/cumpleanos" element={<Cumpleaños />} />
-          <Route path="/anturios" element={<Anturios />} />
-          <Route path="/chirosas" element={<Chirosas />} />
-          <Route path="/gerberas" element={<Gerberas />} />
-          <Route path="/girasoles" element={<Girasoles />} />
-          <Route path="/lirios" element={<Lirios />} />
-          <Route path="/rosas" element={<Rosas />} />
+          <Route path="/diamujer" element={<DiaMujer addToCart={addToCart} />} />
+          <Route path="/diamadre" element={<DiaMadre addToCart={addToCart} />} />
+          <Route path="/AmorAmistad" element={<AmorAmistad addToCart={addToCart} />} />
+          <Route path="/aniversario" element={<Aniversario addToCart={addToCart} />} />
+          <Route path="/condolencias" element={<Condolencias addToCart={addToCart} />} />
+          <Route path="/Cumpleaños" element={<Cumpleaños addToCart={addToCart}  />} />
+          <Route path="/anturios" element={<Anturios addToCart={addToCart} />} />
+          <Route path="/chirosas" element={<Chirosas addToCart={addToCart} />} />
+          <Route path="/gerberas" element={<Gerberas addToCart={addToCart} />} />
+          <Route path="/girasoles" element={<Girasoles addToCart={addToCart} />} />
+          <Route path="/lirios" element={<Lirios addToCart={addToCart} />} />
+          <Route path="/rosas" element={<Rosas addToCart={addToCart} />} />
           <Route path="/eventos" element={<Eventos />} />
           <Route path="/quienessomos" element={<QuienesSomos />} />
           <Route path="/myaccount" element={<Myaccount />} />

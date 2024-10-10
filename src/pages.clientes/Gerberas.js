@@ -17,6 +17,7 @@ const ProductPage = ({ addToCart }) => {
         price: null,
         type: ''
     });
+    const [notification, setNotification] = useState(''); // Estado para las notificaciones
 
     const navigate = useNavigate();
 
@@ -50,9 +51,9 @@ const ProductPage = ({ addToCart }) => {
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
             title: product.nombre_producto || 'Producto sin nombre',
-            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            price: product.precio_producto,
             description: product.descripcion_producto || 'Descripción del producto no disponible.',
-            id: product.id_producto // Asegúrate de tener el id en modalData
+            id: product.id_producto
         });
     };
 
@@ -92,6 +93,7 @@ const ProductPage = ({ addToCart }) => {
                 quantity: 1
             });
             setModalData(null); // Cerrar modal después de añadir
+            setNotification(`Producto ${modalData.title} agregado al carrito!`); // Mensaje de notificación
         }
     };
 
@@ -99,6 +101,7 @@ const ProductPage = ({ addToCart }) => {
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
@@ -152,7 +155,7 @@ const ProductPage = ({ addToCart }) => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-price">{modalData.price}</p>
+                                    <p id="modal-price">${modalData.price.toLocaleString()}</p>
                                     <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>

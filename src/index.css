@@ -1572,7 +1572,7 @@ h2 {
 /* Imágenes de productos */
 .product-img {
     width: 100%; /* Asegura que la imagen ocupe todo el ancho disponible */
-    max-width: 150px; /* Tamaño máximo razonable */
+    max-width: 225px; /* Tamaño máximo razonable */
     height: auto; /* Mantiene la proporción */
     display: block;
     margin: 20px auto; /* Añadir margen superior e inferior */
@@ -1726,12 +1726,27 @@ h2 {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
-    width: 70%;
+    width: 100%;
     max-width: 800px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
     position: relative;
     text-align: center; /* Centra el texto dentro del modal */
     font-size: 19px;
+    flex-direction: column; /* Asegura que los detalles se apilen verticalmente */
+}
+
+/* Estilos para el encabezado del modal */
+.modal-header {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+/* Detalles del modal */
+.modal-detail {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #131313;
 }
 
 .close-btn {
@@ -1922,7 +1937,7 @@ li{
     flex: 3;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 100px;
+    gap: 50px;
     padding: 40px;
 }
 
@@ -1977,8 +1992,8 @@ li{
 }
 
 .product-card img {
-    width: 100%;
-    height: 70%;
+    width: 120%;
+    height: 65%;
     border-radius: 10px;
 }
 
@@ -2017,15 +2032,14 @@ li{
 }
 
 .modal-content {
-    background-color: white;
+    background: #ffffff; /* Fondo blanco */
     padding: 20px;
-    border-radius: 10px;
-    max-width: 80%; /* Ajusta el ancho máximo del modal */
-    max-height: 80vh; /* Ajusta la altura máxima del modal */
-    overflow-y: auto; /* Agrega scroll si el contenido es demasiado grande */
-    text-align: center;
-    position: relative;
-    display: flex; /* Flexbox para alinear elementos */
+    border-radius: 12px; /* Bordes redondeados */
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column; /* Apilar elementos verticalmente */
 }
 
 .modal-body {
@@ -2140,68 +2154,148 @@ li{
         width: 50px;
     }
 }
+
 /* Carrito */
-.cart-content {
-    display: none; /* Ocultar por defecto */
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 100%;
-    background-color: white;
-    box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+.cart-page {
     padding: 20px;
-    overflow-y: auto;
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
-.cart-header {
+.cart-title {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.empty-cart {
+    text-align: center;
+    font-size: 1.5em;             
+    margin-top: 30px;
+    padding: 20px;      
+    background-color: #f6a5b4;     
+    border-radius: 8px;       
+}
+
+/* Contenido del carrito */
+.cart-content {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-header h2 {
-    margin: 0;
-    font-size: 24px; /* Tamaño de fuente ajustado */
-}
-
-.close-cart {
-    cursor: pointer;
-    font-size: 24px;
+    flex-direction: column;
+    gap: 20px; /* Espacio entre los ítems */
 }
 
 .cart-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.cart-item img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px; /* Espacio entre imagen y texto */
+.cart-item-image {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
 }
 
 .cart-item-details {
-    flex-grow: 1; /* Permite que los detalles ocupen el espacio disponible */
+    flex-grow: 1;
+    margin-left: 15px; /* Espaciado entre imagen y detalles */
 }
 
-.cart-footer {
-    margin-top: 20px;
+.cart-item-name {
+    font-size: 1.2em;
+    margin-bottom: 10px;
 }
 
-.cart-footer button {
-    background-color: #fdcae1;
-    color: #000000;
-    font-size: 18px;
-    border: none;
-    padding: 10px 20px;
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaciado entre input y botón */
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    margin-top: 20px;
+}
+
+.remove-button {
+    background: transparent;
+    border: none;
     cursor: pointer;
-    width: 100%; /* Botón ocupa el ancho completo */
+    font-size: 18px;
+}
+
+/* Estilos del pie de página del carrito */
+.cart-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.cart-total {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.cart-actions {
+    display: flex;
+    gap: 10px; /* Espaciado entre botones */
+}
+
+/* Botones */
+.empty-cart-button,
+.checkout-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.empty-cart-button {
+    background-color: #f6a5b4;
+}
+
+.checkout-button {
+    background-color: #f6a5b4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column; /* Cambia a columna en pantallas pequeñas */
+        align-items: flex-start; /* Alinea a la izquierda */
+    }
+
+    .cart-item-image {
+        width: 100%; /* Imagen ocupa todo el ancho */
+        height: auto; /* Mantiene la proporción */
+    }
+
+    .cart-actions {
+        flex-direction: column; /* Coloca botones uno debajo del otro */
+        gap: 5px; /* Espacio reducido entre botones */
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-title {
+        font-size: 1.5em; /* Reduce el tamaño del título */
+    }
+
+    .cart-total {
+        font-size: 1.2em; /* Ajuste para el total */
+    }
+
+    .quantity-input {
+        width: 40px; /* Ajuste del input en pantallas pequeñas */
+    }
 }
 
 .notification {
@@ -2216,7 +2310,6 @@ li{
     font-size: 16px;
     z-index: 1000;
 }
-
 
 /*detalle_producto*/
 .contenedor-detalle {
@@ -2285,7 +2378,6 @@ li{
 
 .btn-comprar-producto {
     background-color: #fdcae1;
-    color: white;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
@@ -2525,8 +2617,7 @@ li{
 }
 
 .container2 a:hover {
-    color: #fdcae1;
-    text-decoration: underline;
+    color: #ffdfed;
 }
 
 .container2 .home-link i {
@@ -2536,7 +2627,7 @@ li{
 
 /* Historial link */
 .container2 a:last-child {
-    color: #555;
+    color: #131313;
     font-weight: normal;
     font-size: 16px;
 }
@@ -2559,12 +2650,18 @@ li{
     align-items: center;
 }
 
+.modal-custom.show {
+    display: flex;
+}
+
 .modal-content-custom {
     background-color: #fff;
     padding: 30px;
     border-radius: 5px;
     width: 450px;
-    max-width: 100%;
+    max-width: 90%; /* Cambiar a 90% para que sea más responsive */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: auto; /* Añadir overflow para pantallas pequeñas */
 }
 
 .close-custom {
@@ -2575,7 +2672,7 @@ li{
 }
 
 .close-custom:hover, .close-custom:focus {
-    color: black;
+    color: #fdcae1;
     text-decoration: none;
     cursor: pointer;
 }
@@ -2585,11 +2682,20 @@ li{
     flex-direction: column;
 }
 
+.modal-custom form div {
+    margin-bottom: 5px; /* Espacio entre los campos */
+}
+
+.modal-custom form label {
+    margin-bottom: 5px; /* Espacio entre la etiqueta y el input */
+}
+
 .modal-custom form input {
-    margin-bottom: 20px;
     padding: 12px;
     font-size: 14px;
-    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%; /* Asegurar que los inputs ocupen el 100% del ancho */
 }
 
 .modal-custom form button {
@@ -2598,45 +2704,51 @@ li{
     color: #000000;
     border: none;
     cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s; /* Transición suave */
 }
 
 .modal-custom form button:hover {
-    background-color: #fdcae1;
+    background-color: #e5b3d1; /* Color al pasar el mouse */
 }
 
+/* Estilos responsivos */
 @media (max-width: 768px) {
     .modal-content-custom {
-        width: 95%;
+        width: 95%; /* Para pantallas más pequeñas */
+        padding: 20px; /* Reducir padding en pantallas pequeñas */
     }
 
-    .modal-content-custom input[type="text"],
-    .modal-content-custom input[type="email"],
-    .modal-content-custom input[type="password"] {
-        padding: 8px;
+    .modal-custom form input {
+        padding: 10px; /* Reducir padding en inputs */
     }
 
-    .modal-content-custom button {
-        padding: 8px;
-        font-size: 0.9em;
+    .modal-custom form button {
+        padding: 8px; /* Reducir padding en el botón */
+        font-size: 14px; /* Tamaño de fuente más pequeño */
     }
 }
 
 @media (max-width: 480px) {
     .modal-content-custom {
-        width: 98%;
+        width: 98%; /* Para pantallas muy pequeñas */
     }
 
-    .modal-content-custom input[type="text"],
-    .modal-content-custom input[type="email"],
-    .modal-content-custom input[type="password"] {
-        padding: 6px;
+    .modal-custom form input {
+        padding: 8px; /* Ajustar padding en inputs para pantallas pequeñas */
     }
 
-    .modal-content-custom button {
-        padding: 6px;
-        font-size: 0.8em;
+    .modal-custom form button {
+        padding: 6px; /* Ajustar padding en el botón */
+        font-size: 12px; /* Tamaño de fuente más pequeño */
+    }
+
+    .close-custom {
+        font-size: 24px; /* Ajustar el tamaño de la 'X' */
     }
 }
+
 
 /* Cierre Domiciliario */
 
@@ -2732,20 +2844,20 @@ li{
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8); /* Fondo oscuro */
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Asegurarse de que esté por encima de otros elementos */
-    overflow: auto; /* Permitir desplazamiento si es necesario */
+    z-index: 1000;
+    overflow: auto;
 }
 
 .admin-modal-content {
     background: #ffffff; /* Fondo blanco */
-    padding: 30px; /* Espaciado interno más ajustado */
+    padding: 20px; /* Espaciado interno más ajustado */
     border-radius: 12px; /* Bordes más redondeados */
-    width: 90%; /* Ancho responsivo */
-    max-width: 600px; /* Ancho máximo */
+    width: 45%; /* Ancho responsivo */
+    max-width: 500px; /* Ancho máximo */
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
     position: relative; /* Para posicionar el botón de cerrar */
     overflow-y: auto; /* Permitir desplazamiento vertical */
@@ -2758,8 +2870,8 @@ li{
     font-size: 28px; /* Tamaño de fuente mayor */
     color: #333; /* Color más oscuro */
     position: absolute;
-    top: 20px; /* Ajustar posición */
-    right: 20px; /* Ajustar posición */
+    top: 15px; /* Ajustar posición */
+    right: 15px; /* Ajustar posición */
 }
 
 .admin-modal-close:hover {
@@ -2776,10 +2888,10 @@ li{
 .admin-modal-button {
     background-color: #fdcae1; /* Color de fondo */
     border: none; /* Sin borde */
-    padding: 12px 25px; /* Espaciado interno */
+    padding: 12px 20px; /* Espaciado interno */
     border-radius: 8px; /* Bordes redondeados */
     color: #000; /* Color del texto */
-    font-size: 18px; /* Tamaño de fuente */
+    font-size: 16px; /* Tamaño de fuente más pequeño para mejor ajuste */
     cursor: pointer; /* Cambiar cursor */
     transition: background-color 0.3s; /* Transición suave */
     margin: 0 10px; /* Espaciado entre botones */

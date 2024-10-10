@@ -34,7 +34,7 @@ const DetalleProducto = ({ addToCart }) => {
     if (!product) {
         return (
             <div>
-                <Header />
+                {isAuthenticated ? <Headerc /> : <Header />}
                 <div className="contenedor-detalle">
                     <h2>Producto no encontrado</h2>
                     <button onClick={() => navigate('/ProductPage')}>Volver a la página de productos</button>
@@ -68,14 +68,14 @@ const DetalleProducto = ({ addToCart }) => {
     };
 
     const updateProductPrice = () => {
-        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0; // Asegúrate de que sea un número
+        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0; 
         return (basePrice + opcionAdicionalPrecio) * quantity;
     };
 
     const handleAddToCart = () => {
-        const totalPrice = product.precio_producto + opcionAdicionalPrecio;
+        const totalPrice = updateProductPrice(); // Cambié esto para usar la función correcta
         addToCart({ ...product, quantity, totalPrice, dedicatoria });
-        navigate('/ProductPage'); // Redirigir a la página de productos o donde sea necesario
+        navigate('/myaccount'); 
     };
 
     return (
@@ -84,7 +84,7 @@ const DetalleProducto = ({ addToCart }) => {
             <div className="contenedor-detalle">
                 <aside className="sidebar">
                     <h2>
-                        <a href="/ProductPage" className="home-link">
+                        <a href="#" className="home-link" onClick={() => navigate(-1)}>
                             <FontAwesomeIcon icon={faArrowLeft} />
                         </a> / Personalización
                     </h2>

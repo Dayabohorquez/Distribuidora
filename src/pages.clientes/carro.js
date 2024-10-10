@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaTrash } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
@@ -7,7 +7,7 @@ import '../index.css';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const CartPage = ({ userId }) => {
+const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,18 +17,24 @@ const CartPage = ({ userId }) => {
             const documento = localStorage.getItem('documento');
             if (!documento) {
                 console.error('Documento no encontrado.');
-                return; 
+                return;
             }
             try {
                 const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
-                console.log('Carrito obtenido:', response.data);
-                setCartItems(response.data); // Actualiza el estado con los items del carrito
+                if (response.status === 200) {
+                    // Manejo del éxito
+                }
             } catch (error) {
-                console.error('Error al obtener el carrito:', error);
+                if (error.response && error.response.status === 404) {
+                    console.error('Carrito no encontrado:', error);
+                } else {
+                    console.error('Error al obtener el carrito:', error);
+                }
             }
-        };
+        };            
+
         fetchCart();
-    }, [userId]);
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -48,7 +54,7 @@ const CartPage = ({ userId }) => {
             await axios.put(`http://localhost:4000/api/carritos/${itemId}`, { cantidad: newQuantity });
             setCartItems(prevItems =>
                 prevItems.map(item =>
-                    item.id_carrito === itemId ? { ...item, cantidad: newQuantity } : item // Asegúrate de usar el campo correcto
+                    item.id_carrito === itemId ? { ...item, cantidad: newQuantity } : item
                 )
             );
             setNotification('Cantidad actualizada.');
@@ -62,7 +68,7 @@ const CartPage = ({ userId }) => {
     const removeFromCart = async (itemId) => {
         try {
             await axios.delete(`http://localhost:4000/api/carritos/${itemId}`);
-            setCartItems(prevItems => prevItems.filter(item => item.id_carrito !== itemId)); // Asegúrate de usar el campo correcto
+            setCartItems(prevItems => prevItems.filter(item => item.id_carrito !== itemId));
             setNotification('Producto eliminado del carrito.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
@@ -88,45 +94,62 @@ const CartPage = ({ userId }) => {
         }
     };
 
-    const cartTotal = cartItems.reduce((total, item) => total + (item.precio_producto * item.cantidad), 0); // Asegúrate de usar el campo correcto
+    const cartTotal = cartItems.reduce((total, item) => total + (item.precio_producto * item.cantidad), 0);
 
     return (
-        <div>
+        <div className="admin-app">
             {isAuthenticated ? <Headerc /> : <Header />}
-            <h2>Carrito de Compras</h2>
-            {notification && <div className="notification">{notification}</div>}
-            {cartItems.length === 0 ? (
-                <p>El carrito está vacío.</p>
-            ) : (
-                <div className="cart-content">
-                    {cartItems.map(item => (
-                        <div key={item.id_carrito} className="cart-item"> {/* Asegúrate de usar el campo correcto */}
-                            <img src={item.foto_ProductoURL} alt={item.nombre_producto} />
-                            <p>{item.nombre_producto} - ${item.precio_producto.toLocaleString()} (x{item.cantidad})</p>
-                            <input
-                                type="number"
-                                min="1"
-                                value={item.cantidad}
-                                onChange={(e) => updateQuantity(item.id_carrito, parseInt(e.target.value))} // Asegúrate de usar el campo correcto
-                            />
-                            <button onClick={() => removeFromCart(item.id_carrito)}>Eliminar</button> {/* Asegúrate de usar el campo correcto */}
-                        </div>
-                    ))}
-                    <div className="cart-footer">
-                        <p>Total: ${cartTotal.toLocaleString()}</p>
-                        <button onClick={emptyCart}>Vaciar Carrito</button>
-                        <button id="checkout-button">Comprar</button>
+            <div className="cart-page">
+                <h2 className="cart-title">Carrito de Compras</h2>
+                {notification && <div className="notification">{notification}</div>}
+                {cartItems.length === 0 ? (
+                    <div className="empty-cart">
+                        <p className="empty-cart-message">El carrito está vacío.</p>
                     </div>
-                </div>
-            )}
-            <a 
-                href="https://wa.me/3222118028" 
-                className="whatsapp-btn" 
-                target="_blank" 
-                rel="noopener noreferrer"
-            >
-                <FaWhatsapp size={30} />
-            </a>
+                ) : (
+                    <div className="cart-content">
+                        {cartItems.map(item => (
+                            <div key={item.id_carrito} className="cart-item">
+                                <img
+                                    src={item.foto_ProductoURL || 'path/to/default/image.jpg'}
+                                    alt={item.nombre_producto}
+                                    className="cart-item-image"
+                                />
+                                <div className="cart-item-details">
+                                    <h3 className="cart-item-name">{item.nombre_producto}</h3>
+                                    <p className="cart-item-price">${item.precio_producto.toLocaleString()}</p>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={item.cantidad}
+                                        onChange={(e) => updateQuantity(item.id_carrito, parseInt(e.target.value))}
+                                        className="quantity-input"
+                                    />
+                                    <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
+                                        <FaTrash />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+
+                        <div className="cart-footer">
+                            <p className="cart-total">Total: ${cartTotal.toLocaleString()}</p>
+                            <div className="cart-actions">
+                                <button className="empty-cart-button" onClick={emptyCart}>Vaciar Carrito</button>
+                                <button className="checkout-button" id="checkout-button">Comprar</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                <a
+                    href="https://wa.me/3222118028"
+                    className="whatsapp-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <FaWhatsapp size={30} />
+                </a>
+            </div>
             <Footer />
         </div>
     );

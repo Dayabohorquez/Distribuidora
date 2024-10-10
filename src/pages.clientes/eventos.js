@@ -30,7 +30,7 @@ const EventosPage = () => {
         const fetchEventos = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/eventos');
-                setEventos(response.data); // Asumiendo que la API devuelve un array de eventos
+                setEventos(response.data);
             } catch (error) {
                 console.error('Error al obtener eventos:', error);
             }
@@ -38,6 +38,13 @@ const EventosPage = () => {
 
         fetchEventos();
     }, []);
+
+    // Mapeo de rutas
+    const routeMap = {
+        'aniversario': '/aniversario',
+        'funeral': '/condolencias',
+        'cumpleaños': '/Cumpleaños',
+    };
 
     return (
         <div>
@@ -48,32 +55,35 @@ const EventosPage = () => {
             </div>
             <div className="eventos-grid">
                 {eventos.length > 0 ? (
-                    eventos.map((evento) => (
-                        <div key={evento.id_evento} className="evento-card">
-                            {evento.foto_eventoURL ? (
-                                <img src={evento.foto_eventoURL} alt={evento.nombre_evento} className="evento-img" />
-                            ) : (
-                                <span>Sin imagen</span>
-                            )}
-                            <div className="evento-content">
-                                <h3>{evento.nombre_evento}</h3>
-                                <p>{evento.descripcion || 'Descripción no disponible'}</p>
-                                <Link to={`/evento/${evento.id_evento}`}>
-                                    <button className="evento-btn">Ver Más</button>
-                                </Link>
+                    eventos.map((evento) => {
+                        console.log('Nombre del evento:', evento.nombre_evento);
+                        return (
+                            <div key={evento.id_evento} className="evento-card">
+                                {evento.foto_eventoURL ? (
+                                    <img src={evento.foto_eventoURL} alt={evento.nombre_evento} className="evento-img" />
+                                ) : (
+                                    <span>Sin imagen</span>
+                                )}
+                                <div className="evento-content">
+                                    <h3>{evento.nombre_evento}</h3>
+                                    <p>{evento.descripcion || 'Descripción no disponible'}</p>
+                                    <Link to={routeMap[evento.nombre_evento.toLowerCase()] || `/evento/${evento.id_evento}`}>
+                                        <button className="evento-btn">Ver Más</button>
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <p>No hay eventos disponibles.</p>
                 )}
             </div>
 
             {/* Botón de WhatsApp */}
-            <a 
-                href="https://wa.me/3222118028" 
-                className="whatsapp-btn" 
-                target="_blank" 
+            <a
+                href="https://wa.me/3222118028"
+                className="whatsapp-btn"
+                target="_blank"
                 rel="noopener noreferrer"
             >
                 <FaWhatsapp size={30} />

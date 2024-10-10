@@ -26,7 +26,8 @@ const Login = () => {
     
             const { token, Usuario } = response.data;
             localStorage.setItem('token', token);
-    
+            localStorage.setItem('documento', Usuario.documento); // Asegúrate de que 'documento' exista en la respuesta
+
             switch (Usuario.rol_usuario) {
                 case 'Administrador':
                     navigate('/Admin');
