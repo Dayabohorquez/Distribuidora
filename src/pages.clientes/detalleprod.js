@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
-const DetalleProducto = ({ addToCart }) => {
+const DetalleProducto = () => {
     const location = useLocation();
     const { product } = location.state || {};
     const navigate = useNavigate();
@@ -48,7 +49,6 @@ const DetalleProducto = ({ addToCart }) => {
         const option = event.target.value;
         setSelectedOption(option);
 
-        // Establecer el precio adicional según la opción seleccionada
         if (option === 'chocolate') {
             setOpcionAdicionalPrecio(30000);
         } else if (option === 'vino') {
@@ -72,10 +72,21 @@ const DetalleProducto = ({ addToCart }) => {
         return (basePrice + opcionAdicionalPrecio) * quantity;
     };
 
-    const handleAddToCart = () => {
-        const totalPrice = updateProductPrice(); // Cambié esto para usar la función correcta
-        addToCart({ ...product, quantity, totalPrice, dedicatoria });
-        navigate('/myaccount'); 
+    const handleAddToCart = async () => {
+        const totalPrice = updateProductPrice(); 
+        const documento = localStorage.getItem('documento');
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento,
+                id_producto: product.id_producto,
+                cantidad: quantity,
+                dedicatoria: dedicatoria,
+                opcionAdicional: selectedOption
+            });
+        } catch (error) {
+            console.error('Error al agregar al carrito:', error);
+        }
     };
 
     return (
@@ -84,9 +95,9 @@ const DetalleProducto = ({ addToCart }) => {
             <div className="contenedor-detalle">
                 <aside className="sidebar">
                     <h2>
-                        <a href="#" className="home-link" onClick={() => navigate(-1)}>
+                        <Link to="#" className="home-link" onClick={() => navigate(-1)}>
                             <FontAwesomeIcon icon={faArrowLeft} />
-                        </a> / Personalización
+                        </Link> / Personalización
                     </h2>
                 </aside>
 

@@ -1,18 +1,19 @@
-import { faEdit, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import CreateProductModal from '../components/createprodmodal';
+import '../index.css';
+import Headerc from '../components/Header.c';
+import Footer from '../components/Footer';
 import EditModal from '../components/editmodal';
 import EditProdModal from '../components/editprodmodal';
-import EnvioModal from '../components/enviomodal';
-import Footer from '../components/Footer';
-import Headerc from '../components/Header.c';
-import ManageEventoModal from '../components/ManageEventoModal';
-import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
+import CreateProductModal from '../components/createprodmodal';
+import { faEdit, faToggleOff, faToggleOn } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ManageOrderModal from '../components/ManageOrderModal';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import EnvioModal from '../components/enviomodal';
+import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
+import ManageEventoModal from '../components/ManageEventoModal';
 import ManageTipoFlorModal from '../components/ManageTipoFlorModal';
-import '../index.css';
 
 const App = () => {
     const [activeSection, setActiveSection] = useState('usuarios');
@@ -313,11 +314,7 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
-<<<<<<< HEAD
             id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
-=======
-            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')),
->>>>>>> cbb4f75f94fc51e042b423fe22117bfd3fdd83d3
         };
     
         const fotoFile = formData.get('campo_foto');
@@ -356,11 +353,7 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
-<<<<<<< HEAD
             id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
-=======
-            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')),
->>>>>>> cbb4f75f94fc51e042b423fe22117bfd3fdd83d3
         };
     
         const fotoFile = formData.get('campo_foto');
