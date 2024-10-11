@@ -47,6 +47,10 @@ const CreateProductModal = ({ onClose, onSave }) => {
                         <input type="number" name="campo_idEvento" className="admin-form-input" required />
                     </label>
                     <label className="admin-form-label">
+                        Fecha Especial:
+                        <input type="number" name="campo_idFechaEspecial" className="admin-form-input" required />
+                    </label>
+                    <label className="admin-form-label">
                         Foto:
                         <input type="file" name="campo_foto" accept="image/*" className="admin-form-input" required />
                     </label>

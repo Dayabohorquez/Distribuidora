@@ -1,74 +1,134 @@
-// src/pages/PaymentMethod.js
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const PaymentMethod = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
+  const { cartItems, subtotal } = location.state || { cartItems: [], subtotal: 0 };
+  const [paymentMethod, setPaymentMethod] = useState('nequi');
+  const [notification, setNotification] = useState({ message: '', type: '' });
 
   useEffect(() => {
-    const paymentOptions = document.querySelectorAll('input[name="payment-method"]');
-  
-    paymentOptions.forEach(option => {
-      option.addEventListener('change', () => {
-        document.querySelectorAll('.payment-details-content').forEach(content => {
-          content.style.display = 'none';
-        });
-        document.getElementById(option.value + '-details').style.display = 'block';
-      });
-    });
-
-    const closeDropdowns = (dropdowns) => {
-      dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
-    };
-
-    const account = document.querySelector('.account');
-    const specialDates = document.querySelector('.special-dates');
-
-    const toggleDropdown = (dropdown) => {
-      dropdown.classList.toggle('active');
-      closeDropdowns([account, specialDates].filter(d => d !== dropdown));
-    };
-
-    account.addEventListener('click', (event) => {
-      event.stopPropagation();
-      toggleDropdown(account);
-    });
-
-    specialDates.addEventListener('click', (event) => {
-      event.stopPropagation();
-      toggleDropdown(specialDates);
-    });
-
-    document.addEventListener('click', () => closeDropdowns([account, specialDates]));
-
-    return () => {
-      paymentOptions.forEach(option => option.removeEventListener('change', () => {}));
-      account.removeEventListener('click', () => {});
-      specialDates.removeEventListener('click', () => {});
-    };
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setIsAuthenticated(!!decoded.rol);
+      } catch (e) {
+        console.error('Error decodificando el token', e);
+        localStorage.removeItem('token');
+      }
+    }
   }, []);
+
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const numberField = document.getElementById(`${paymentMethod}-number`).value;
+    if (!numberField) {
+      setNotification({ message: 'Por favor, completa todos los campos.', type: 'error' });
+      return;
+    }
+
+    const documento = localStorage.getItem('documento');
+    if (!documento) {
+      setNotification({ message: 'Documento no encontrado. Inicie sesión nuevamente.', type: 'error' });
+      return;
+    }
+
+    const iva = subtotal * 0.19;
+    const total = subtotal + iva;
+
+    // Verificar si hay artículos en el carrito
+    if (!cartItems.length) {
+      setNotification({ message: 'El carrito está vacío.', type: 'error' });
+      return;
+    }
+
+    const id_carrito = cartItems[0]?.id_carrito; // Asegúrate de que este id exista
+    if (!id_carrito) {
+      setNotification({ message: 'El ID del carrito no está disponible.', type: 'error' });
+      return;
+    }
+
+    try {
+      // Crear el pago
+      const paymentData = {
+        nombre_pago: `Pago por ${paymentMethod}`,
+        fecha_pago: new Date().toISOString(), // Asegúrate de que la fecha sea correcta
+        iva: parseFloat(iva.toFixed(2)),
+        metodo_pago: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
+        subtotal_pago: parseFloat(subtotal.toFixed(2)),
+        total_pago: parseFloat(total.toFixed(2)),
+        documento,
+        id_carrito,
+      };
+
+      const { data: { id: paymentId } } = await axios.post('http://localhost:4000/api/pago', paymentData);
+
+      // Crear el pedido
+      const pedidoData = {
+        fecha_pedido: new Date().toISOString(),
+        total_pagado: parseFloat(total.toFixed(2)),
+        documento,
+        pago_id: paymentId, // Asegúrate de que paymentId esté correctamente obtenido
+        id_carrito,
+      };
+
+      // Agregar la verificación de la respuesta del pedido
+      const response = await axios.post('http://localhost:4000/api/pedido', pedidoData);
+      if (response.data.message !== "Pedido creado exitosamente") {
+        throw new Error("Error al crear el pedido");
+      }
+
+      // Vaciar el carrito
+      await axios.put(`http://localhost:4000/api/carritos/vaciar/${documento}`, { id_carrito });
+
+      setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
+
+    } catch (error) {
+      console.error('Error al procesar el pago:', error);
+      const errorMessage = error.response?.data?.message || 'Error al procesar el pago. Inténtalo de nuevo.';
+      setNotification({ message: errorMessage, type: 'error' });
+    }
+  };
+
+  const iva = subtotal * 0.19;
+  const total = subtotal + iva;
 
   return (
     <>
       {isAuthenticated ? <Headerc /> : <Header />}
       <main className="payment-method-container">
         <h1>Método de Pago</h1>
+        {notification.message && (
+          <div className={`notification ${notification.type}`}>
+            {notification.message}
+          </div>
+        )}
         <section className="section payment-method">
           <h2>Selecciona tu Método de Pago</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             {['nequi', 'bancolombia', 'efectivo'].map(method => (
               <div className="payment-option" key={method}>
-                <input 
-                  type="radio" 
-                  id={method} 
-                  name="payment-method" 
-                  value={method} 
-                  defaultChecked={method === 'nequi'} 
+                <input
+                  type="radio"
+                  id={method}
+                  name="payment-method"
+                  value={method}
+                  checked={paymentMethod === method}
+                  onChange={handlePaymentMethodChange}
                 />
                 <label htmlFor={method}>{method.charAt(0).toUpperCase() + method.slice(1)}</label>
               </div>
@@ -76,10 +136,10 @@ const PaymentMethod = () => {
             <div className="payment-details">
               <h3>Detalles del Pago</h3>
               {['nequi', 'bancolombia', 'efectivo'].map(method => (
-                <div 
-                  id={`${method}-details`} 
-                  className="payment-details-content" 
-                  style={{ display: method === 'nequi' ? 'block' : 'none' }} 
+                <div
+                  id={`${method}-details`}
+                  className="payment-details-content"
+                  style={{ display: paymentMethod === method ? 'block' : 'none' }}
                   key={method}
                 >
                   <label htmlFor={`${method}-number`}>
@@ -89,15 +149,26 @@ const PaymentMethod = () => {
                 </div>
               ))}
             </div>
+            <div className="cart-summary">
+              <h3>Resumen de la Compra</h3>
+              <p>Total: ${total.toFixed(2).toLocaleString()}</p>
+              <h4>Productos:</h4>
+              <ul>
+                {cartItems.map(item => (
+                  <li key={item.id_carrito}>
+                    {item.nombre_producto} (x{item.cantidad}) - ${Number(item.precio_producto).toFixed(2).toLocaleString()}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <button className="submit-btn" type="submit">Realizar Pago</button>
           </form>
         </section>
       </main>
-      {/* Botón de WhatsApp */}
-      <a 
-        href="https://wa.me/3222118028" 
-        className="whatsapp-btn" 
-        target="_blank" 
+      <a
+        href="https://wa.me/3222118028"
+        className="whatsapp-btn"
+        target="_blank"
         rel="noopener noreferrer"
       >
         <FaWhatsapp size={30} />

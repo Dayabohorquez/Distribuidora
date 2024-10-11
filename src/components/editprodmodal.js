@@ -86,6 +86,16 @@ const EditProdModal = ({ producto, onClose, onSave }) => {
                         />
                     </label>
                     <label className="admin-form-label">
+                        Fecha Especial:
+                        <input 
+                            type="number" 
+                            name="campo_idFechaEspecial" 
+                            className="admin-form-input" 
+                            defaultValue={producto.id_fecha_especial} 
+                            required 
+                        />
+                    </label>
+                    <label className="admin-form-label">
                         Foto Actual:
                         <img 
                             src={producto.foto_ProductoURL} 

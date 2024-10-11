@@ -17,6 +17,7 @@ const ProductPage = ({ addToCart }) => {
         price: null,
         type: ''
     });
+    const [notification, setNotification] = useState(''); // Estado para notificaciones
 
     const navigate = useNavigate();
 
@@ -50,7 +51,7 @@ const ProductPage = ({ addToCart }) => {
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
             title: product.nombre_producto || 'Producto sin nombre',
-            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            price: product.precio_producto,
             description: product.descripcion_producto || 'Descripción del producto no disponible.',
             id: product.id_producto // Agregar ID para usar en el carrito
         });
@@ -71,26 +72,45 @@ const ProductPage = ({ addToCart }) => {
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.precio_producto < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
+        const matchPrice = !price || (
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000)
+        );
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
     });
 
-    const handleAddToCart = (product) => {
-        addToCart({
-            id: product.id_producto,
-            title: product.nombre_producto,
-            price: product.precio_producto,
-            img: product.foto_ProductoURL,
-            quantity: 1
-        });
-    };
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
 
-    const handleAddToCartFromModal = () => {
-        if (modalData) {
-            handleAddToCart(modalData);
-            setModalData(null); // Cerrar modal después de añadir
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                addToCart({
+                    id: product.id_producto,
+                    title: product.nombre_producto,
+                    price: product.precio_producto,
+                    img: product.foto_ProductoURL,
+                    quantity: 1
+                });
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
         }
     };
 
@@ -98,6 +118,7 @@ const ProductPage = ({ addToCart }) => {
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
@@ -157,8 +178,8 @@ const ProductPage = ({ addToCart }) => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
+                                    <p id="modal-price">${modalData.price.toLocaleString()}</p>
+                                    <button className="btn-cart" onClick={handleAddToCart}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>

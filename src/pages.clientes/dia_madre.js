@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import { useNavigate } from 'react-router-dom';
 import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
-/* Importar imágenes */
-import DiaMadre1 from '../static/img/DiaMadre1.jpeg';
-import DiaMadre2 from '../static/img/DiaMadre2.jpeg';
-import DiaMadre3 from '../static/img/DiaMadre3.jpeg';
-import DiaMadre4 from '../static/img/DiaMadre4.jpeg';
-import DiaMadre5 from '../static/img/DiaMadre5.jpeg';
-import DiaMadre6 from '../static/img/DiaMadre6.jpeg';
-import DiaMadre7 from '../static/img/DiaMadre7.jpeg';
-import DiaMadre8 from '../static/img/DiaMadre8.jpeg';
-import DiaMadre9 from '../static/img/DiaMadre9.jpeg';
-
-const ProductPage = () => {
-    const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+const ProductPage = ({ addToCart }) => {
+    const [products, setProducts] = useState([]); 
     const [modalData, setModalData] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
+    const [notification, setNotification] = useState(''); 
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+                setIsAuthenticated(!!decoded.rol);
             } catch (e) {
                 console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
@@ -41,63 +34,109 @@ const ProductPage = () => {
         }
     }, []);
 
-    const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Día de la Madre', imgSrc: DiaMadre1 },
-        { id: 'product2', name: 'Nombre del Producto 2', price: 60000, type: 'Rosas', occasion: 'Día de la Madre', imgSrc: DiaMadre2 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 70000, type: 'Rosas', occasion: 'Día de la Madre', imgSrc: DiaMadre3 },
-        // Añadir más productos aquí
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/productos/fechaEspecial/2'); // Cambia el ID según sea necesario
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
 
-    const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para el Día de la Madre.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para celebraciones.',
-        'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
-    };
+        fetchProducts();
+    }, []);
 
     const handleDetailsClick = (product) => {
         setModalData({
-            imgSrc: product.imgSrc,
-            title: product.name,
-            price: `$${product.price.toLocaleString()}`,
-            description: descriptions[product.id] || 'Descripción del producto no disponible.'
+            imgSrc: product.foto_ProductoURL || '',
+            title: product.nombre_producto || 'Producto sin nombre',
+            price: product.precio_producto,
+            description: product.descripcion_producto || 'Descripción del producto no disponible.',
+            id: product.id_producto 
         });
+    };
+
+    const handlePersonalizeClick = (product) => {
+        navigate(`/producto/${product.id_producto}`, { state: { product } });
     };
 
     const handleFilterChange = (e) => {
         const { id, checked } = e.target;
         setFilters(prevFilters => ({
             ...prevFilters,
-            [id]: checked
+            [id]: checked ? id : ''
         }));
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-        const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.price < price);
-        const matchType = !type || product.type === type;
+        const matchOccasion = !occasion || product.ocasion === occasion;
+        const matchPrice = !price || 
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000);
+        const matchType = !type || product.tipo_flor === type;
+
         return matchOccasion && matchPrice && matchType;
     });
 
-    const handleProductClick = (product) => {
-        navigate(`/producto/${product.id}`);
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                addToCart({
+                    id: product.id_producto,
+                    title: product.nombre_producto,
+                    price: product.precio_producto,
+                    img: product.foto_ProductoURL,
+                    quantity: 1
+                });
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
+        }
+    };
+
+    const handleAddToCartFromModal = () => {
+        if (modalData) {
+            handleAddToCart(modalData);
+            setModalData(null); 
+        }
     };
 
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} 
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
                             <i className="fa-solid fa-house"></i>
-                        </a> / Día de la Madre
+                        </a> / Fechas Especiales
                     </h2>
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
                             <li><input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} /> Amor y Amistad</li>
                             <li><input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} /> Cumpleaños</li>
+                            <li><input type="checkbox" id="Dia de la Madre" onChange={handleFilterChange} /> Día de la Madre</li>
                         </ul>
                     </div>
                     <div className="filter">
@@ -111,22 +150,22 @@ const ProductPage = () => {
                     <div className="filter">
                         <h3>Tipo de Flor</h3>
                         <ul>
-                            <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
-                            <li><input type="checkbox" id="tropicales" onChange={handleFilterChange} /> Flores Tropicales</li>
-                            <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
+                            <li><input type="checkbox" id="Rosas" onChange={handleFilterChange} /> Rosas</li>
+                            <li><input type="checkbox" id="Tropical" onChange={handleFilterChange} /> Flores Tropicales</li>
+                            <li><input type="checkbox" id="Surtido" onChange={handleFilterChange} /> Flores Surtidas</li>
                         </ul>
                     </div>
                 </aside>
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card" data-precio={product.price} data-tipo={product.type} data-ocasion={product.occasion}>
-                            <img src={product.imgSrc} alt={product.name} className="product-img" />
-                            <h3>{product.name}</h3>
-                            <p>${product.price.toLocaleString()}</p>
+                        <div key={product.id_producto} className="product-card">
+                            <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
+                            <h3>{product.nombre_producto}</h3>
+                            <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                            <button className="btn-details personalizar" onClick={() => handleProductClick(product)}>Personalizar</button>
-                            <button className="btn-cart">Añadir al carrito</button>
+                            <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -140,15 +179,14 @@ const ProductPage = () => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart">Añadir al carrito</button>
+                                    <p id="modal-price">${modalData.price?.toLocaleString()}</p>
+                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-            {/* Botón de WhatsApp */}
             <a 
                 href="https://wa.me/3222118028" 
                 className="whatsapp-btn" 

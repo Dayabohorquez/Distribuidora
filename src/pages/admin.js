@@ -43,7 +43,9 @@ const App = () => {
     const [notification, setNotification] = useState('');
     const [eventoModalOpen, setEventoModalOpen] = useState(null);
     const [tipoFlorModalOpen, setTipoFlorModalOpen] = useState(false);
+    const [pagos, setPagos] = useState([]); // Define el estado para los pagos
 
+    // Llama a fetchPagos en useEffect
     useEffect(() => {
         fetchUsuarios();
         fetchProductos();
@@ -52,6 +54,7 @@ const App = () => {
         fetchTiposFlor();
         fetchFechasEspeciales();
         fetchEventos();
+        fetchPagos(); // Agregar esta línea
     }, []);
 
     useEffect(() => {
@@ -62,7 +65,33 @@ const App = () => {
         if (activeSection === 'tiposFlor') fetchTiposFlor();
         if (activeSection === 'fechasEspeciales') fetchFechasEspeciales();
         if (activeSection === 'eventos') fetchEventos();
+        if (activeSection === 'pagos') fetchPagos();
     }, [activeSection]);
+
+    const fetchPagos = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/pagos');
+            setPagos(response.data); // Asumiendo que tienes un estado para guardar los pagos
+        } catch (error) {
+            console.error('Error al obtener los pagos:', error);
+        }
+    };
+
+    const handleUpdateEstadoPago = async (id_pago, nuevoEstado) => {
+        try {
+            const response = await axios.put(`http://localhost:4000/api/pagos/${id_pago}/estado`, { estado_pago: nuevoEstado });
+            showNotification('Estado de pago actualizado exitosamente.');
+
+            // Actualiza solo el pago que se ha cambiado
+            setPagos((prevPagos) =>
+                prevPagos.map((pago) =>
+                    pago.id_pago === id_pago ? { ...pago, estado_pago: nuevoEstado } : pago
+                )
+            );
+        } catch (error) {
+            console.error('Error al actualizar el estado del pago:', error);
+        }
+    };
 
     const fetchUsuarios = async () => {
         try {
@@ -195,7 +224,7 @@ const App = () => {
             showNotification('Error al obtener los productos.');
         }
     };
-
+    
     const fetchImages = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/images/producto');
@@ -205,11 +234,11 @@ const App = () => {
             showNotification('Error al obtener imágenes.');
         }
     };
-
+    
     useEffect(() => {
         fetchImages();
     }, []);
-
+    
     const handleUpdateProducto = async (idProducto, formData) => {
         if (!idProducto) {
             console.error('El id Producto no está definido');
@@ -230,22 +259,22 @@ const App = () => {
             showNotification('Error al actualizar el producto.');
         }
     };
-
+    
     const handleToggleProductStatus = async (idProducto) => {
         if (!idProducto) {
             console.error('El ID del producto no está definido');
             return;
         }
-
+    
         if (window.confirm('¿Estás seguro de que deseas cambiar el estado?')) {
             try {
                 const productoActual = productos.find(p => p.id_producto === idProducto);
                 const nuevoEstado = !productoActual.estado_producto;
-
+    
                 const response = await axios.patch(`http://localhost:4000/api/productos/${idProducto}/estado`, {
                     estado: nuevoEstado
                 });
-
+    
                 if (response.status === 200) {
                     fetchProductos();
                     showNotification('Estado del producto cambiado exitosamente.');
@@ -259,24 +288,24 @@ const App = () => {
             }
         }
     };
-
+    
     const openEditProductModal = (producto) => {
         setCurrentProduct(producto);
         setIsEditModalOpen(true);
     };
-
+    
     const closeEditProductModal = () => {
         setIsEditModalOpen(false);
         setCurrentProduct(null);
     };
-
+    
     const openCreateProductModal = () => setShowCreateProductModal(true);
     const closeCreateProductModal = () => setShowCreateProductModal(false);
-
+    
     const handleCreateProducto = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-
+    
         const productoData = {
             codigo_producto: formData.get('campo_codigo'),
             nombre_producto: formData.get('campo_nombre'),
@@ -285,17 +314,18 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
+            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
         };
-
+    
         const fotoFile = formData.get('campo_foto');
         if (fotoFile) {
             formData.append('foto_Producto', fotoFile);
         }
-
+    
         for (const key in productoData) {
             formData.append(key, productoData[key]);
         }
-
+    
         try {
             const response = await axios.post('http://localhost:4000/api/productos', formData, {
                 headers: {
@@ -310,11 +340,11 @@ const App = () => {
             showNotification('Error al crear el producto.');
         }
     };
-
+    
     const handleEditProducto = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-
+    
         const updatedProducto = {
             codigo_producto: formData.get('campo_codigo'),
             nombre_producto: formData.get('campo_nombre'),
@@ -323,17 +353,18 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
+            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
         };
-
+    
         const fotoFile = formData.get('campo_foto');
         if (fotoFile) {
             formData.append('foto_Producto', fotoFile);
         }
-
+    
         Object.entries(updatedProducto).forEach(([key, value]) => {
             formData.append(key, value);
         });
-
+    
         try {
             await handleUpdateProducto(currentProducto.id_producto, formData);
             closeEditProductModal();
@@ -341,12 +372,12 @@ const App = () => {
             console.error('Error al actualizar el producto:', error.response ? error.response.data : error.message);
         }
     };
-
+    
     const filteredProductos = productos.filter(producto =>
         producto.nombre_producto.toLowerCase().includes(searchQuery.toLowerCase()) ||
         producto.id_producto.toString().includes(searchQuery) ||
         producto.codigo_producto.toString().includes(searchQuery)
-    );
+    );    
 
     const fetchPedidos = async () => {
         try {
@@ -745,16 +776,16 @@ const App = () => {
             showNotification('Error al obtener eventos.'); // Notificación de error
         }
     };
-    
+
     const handleAddEvento = async (eventoData) => {
         const formData = new FormData();
         formData.append('nombre_evento', eventoData.get('nombre_evento'));
         formData.append('descripcion', eventoData.get('descripcion')); // Agregar descripción
-    
+
         if (eventoData.get('foto_evento')) {
             formData.append('foto_evento', eventoData.get('foto_evento'));
         }
-    
+
         try {
             const response = await axios.post('http://localhost:4000/api/eventos', formData, {
                 headers: {
@@ -770,22 +801,22 @@ const App = () => {
             showNotification('Error al agregar el evento: ' + (error.response ? error.response.data.message : error.message));
         }
     };
-    
+
     const handleEditEvento = async (eventoData) => {
         if (!currentEvento || !currentEvento.id_evento) {
             console.error('No se puede editar el evento, el evento no es válido.');
             showNotification('Evento no válido.');
             return;
         }
-    
+
         const formData = new FormData();
         formData.append('nombre_evento', eventoData.get('nombre_evento')); // Asegúrate de obtener el valor correctamente
         formData.append('descripcion', eventoData.get('descripcion')); // Agregar descripción
-    
+
         if (eventoData.get('foto_evento')) {
             formData.append('foto_evento', eventoData.get('foto_evento'));
         }
-    
+
         try {
             await axios.put(`http://localhost:4000/api/eventos/${currentEvento.id_evento}`, formData, {
                 headers: {
@@ -800,7 +831,7 @@ const App = () => {
             showNotification('Error al actualizar el evento.');
         }
     };
-    
+
     const handleDeleteEvento = async (id_evento) => {
         try {
             await axios.delete(`http://localhost:4000/api/eventos/${id_evento}`);
@@ -810,7 +841,7 @@ const App = () => {
             console.error('Error al eliminar evento:', error.response ? error.response.data : error.message);
             showNotification('Error al eliminar el evento.'); // Notificación de error
         }
-    };    
+    };
 
     useEffect(() => {
         fetchEventos();
@@ -845,7 +876,7 @@ const App = () => {
             <div className="admin-container">
                 <div className="admin-header">
                     <h1 className="admin-title">¡Bienvenido Administrador!</h1>
-                    <p className="admin-description">Utilice el menú de navegación para gestionar los usuarios, productos, pedidos, envíos, tipos de flores, fechas especiales y eventos.</p>
+                    <p className="admin-description">Utilice el menú de navegación para gestionar los usuarios, productos, pedidos, envíos, tipos de flores, fechas especiales, eventos y pagos.</p>
                 </div>
                 <div className="admin-nav">
                     <button className="admin-nav-button" onClick={() => handleSectionChange('usuarios')}>Usuarios</button>
@@ -855,6 +886,8 @@ const App = () => {
                     <button className="admin-nav-button" onClick={() => handleSectionChange('tiposFlor')}>Tipos de Flores</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('fechasEspeciales')}>Fechas Especiales</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('eventos')}>Eventos</button>
+                    <button className="admin-nav-button" onClick={() => handleSectionChange('pagos')}>Pagos</button>
+
                 </div>
 
                 {activeSection === 'usuarios' && (
@@ -1377,6 +1410,65 @@ const App = () => {
                         </table>
                     </div>
                 )}
+                {activeSection === 'pagos' && (
+                    <div className="admin-section">
+                        <div className="admin-section-header">
+                            <h2>Pagos</h2>
+                            <input
+                                type="text"
+                                id="search-pagos"
+                                className="admin-search"
+                                placeholder="Buscar pago por método o número..."
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
+                        </div>
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Pago</th>
+                                    <th>Nombre</th>
+                                    <th>Fecha</th>
+                                    <th>Método de Pago</th>
+                                    <th>Subtotal</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pagos.length > 0 ? (
+                                    pagos.map(pago => (
+                                        <tr key={pago.id_pago}>
+                                            <td>{pago.id_pago}</td>
+                                            <td>{pago.nombre_pago}</td>
+                                            <td>{new Date(pago.fecha_pago).toLocaleDateString()}</td>
+                                            <td>{pago.metodo_pago}</td>
+                                            <td>${pago.subtotal_pago.toLocaleString()}</td>
+                                            <td>${pago.total_pago.toLocaleString()}</td>
+                                            <td>
+                                                <select
+                                                    value={pago.estado_pago}
+                                                    onChange={(e) => handleUpdateEstadoPago(pago.id_pago, e.target.value)}
+                                                    className="admin-status-select"
+                                                >
+                                                    <option value="Exitoso">Exitoso</option>
+                                                    <option value="Pendiente">Pendiente</option>
+                                                    <option value="Fallido">Fallido</option>
+                                                    <option value="Cancelado">Cancelado</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7">No hay pagos disponibles</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
 
             </div>
             <Footer />

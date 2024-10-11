@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from "react-router-dom";
 import { FaWhatsapp, FaTrash } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
@@ -11,6 +12,7 @@ const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCart = async () => {
@@ -21,17 +23,13 @@ const CartPage = () => {
             }
             try {
                 const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
-                if (response.status === 200) {
-                    // Manejo del éxito
-                }
+                const items = Array.isArray(response.data) ? response.data : Object.values(response.data);
+                setCartItems(items);
             } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    console.error('Carrito no encontrado:', error);
-                } else {
-                    console.error('Error al obtener el carrito:', error);
-                }
+                console.error('Error al obtener el carrito:', error);
+                setNotification('Error al obtener el carrito.');
             }
-        };            
+        };
 
         fetchCart();
     }, []);
@@ -49,7 +47,8 @@ const CartPage = () => {
         }
     }, []);
 
-    const updateQuantity = async (itemId, newQuantity) => {
+    const updateQuantity = useCallback(async (itemId, newQuantity) => {
+        if (newQuantity < 1) return;
         try {
             await axios.put(`http://localhost:4000/api/carritos/${itemId}`, { cantidad: newQuantity });
             setCartItems(prevItems =>
@@ -63,9 +62,9 @@ const CartPage = () => {
             console.error('Error al actualizar la cantidad:', error);
             setNotification('Error al actualizar la cantidad.');
         }
-    };
+    }, []);
 
-    const removeFromCart = async (itemId) => {
+    const removeFromCart = useCallback(async (itemId) => {
         try {
             await axios.delete(`http://localhost:4000/api/carritos/${itemId}`);
             setCartItems(prevItems => prevItems.filter(item => item.id_carrito !== itemId));
@@ -75,9 +74,9 @@ const CartPage = () => {
             console.error('Error al eliminar el producto:', error);
             setNotification('Error al eliminar el producto.');
         }
-    };
+    }, []);
 
-    const emptyCart = async () => {
+    const emptyCart = useCallback(async () => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
             console.error('Documento no encontrado para vaciar el carrito.');
@@ -92,9 +91,20 @@ const CartPage = () => {
             console.error('Error al vaciar el carrito:', error);
             setNotification('Error al vaciar el carrito.');
         }
-    };
+    }, []);
 
     const cartTotal = cartItems.reduce((total, item) => total + (item.precio_producto * item.cantidad), 0);
+
+    const handleCheckout = () => {
+        const cartData = cartItems.map(({ id_carrito, nombre_producto, precio_producto, cantidad }) => ({
+            id_carrito,
+            nombre_producto,
+            precio_producto,
+            cantidad,
+        }));
+
+        navigate('/payment-method', { state: { cartItems: cartData, subtotal: cartTotal } });
+    };
 
     return (
         <div className="admin-app">
@@ -122,7 +132,7 @@ const CartPage = () => {
                                         type="number"
                                         min="1"
                                         value={item.cantidad}
-                                        onChange={(e) => updateQuantity(item.id_carrito, parseInt(e.target.value))}
+                                        onChange={(e) => updateQuantity(item.id_carrito, parseInt(e.target.value) || 1)}
                                         className="quantity-input"
                                     />
                                     <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
@@ -131,12 +141,11 @@ const CartPage = () => {
                                 </div>
                             </div>
                         ))}
-
                         <div className="cart-footer">
                             <p className="cart-total">Total: ${cartTotal.toLocaleString()}</p>
                             <div className="cart-actions">
                                 <button className="empty-cart-button" onClick={emptyCart}>Vaciar Carrito</button>
-                                <button className="checkout-button" id="checkout-button">Comprar</button>
+                                <button className="checkout-button" onClick={handleCheckout}>Comprar</button>
                             </div>
                         </div>
                     </div>

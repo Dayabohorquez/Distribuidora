@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../index.css';
@@ -9,6 +10,9 @@ import { jwtDecode } from 'jwt-decode';
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -20,21 +24,28 @@ const OrderHistory = () => {
       } catch (e) {
         console.error('Error decodificando el token', e);
         localStorage.removeItem('token');
+        navigate('/login');
       }
+    } else {
+      navigate('/login');
     }
-  }, []);
+  }, [navigate]);
 
   const fetchOrderHistory = async (documento) => {
+    setLoading(true);
+    setError('');
     try {
       const response = await fetch(`http://localhost:4000/api/usuarios/${documento}/historial`);
       if (!response.ok) {
         throw new Error('Error al obtener el historial de pedidos');
       }
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
       setOrders(data);
     } catch (error) {
       console.error('Error fetching order history:', error);
+      setError('No se pudo cargar el historial de pedidos. Inténtalo más tarde.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,34 +58,39 @@ const OrderHistory = () => {
             <h2>Historial de Pedidos</h2>
           </div>
           <div className="his4-historial-content">
-            <table className="his5-historial-table">
-              <thead>
-                <tr>
-                  <th>Nombre del Producto</th>
-                  <th>Código del Producto</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
-                  <th>Estado del Pedido</th>
-                  <th>Total Pagado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order, index) => (
-                  <tr key={`${order.id_historial}-${index}`}>
-                  <td>{order.nombre_producto}</td>
-                  <td>{order.codigo_producto}</td>
-                  <td>${Math.floor(order.precio)}</td> {/* O puedes usar parseInt(order.precio) */}
-                  <td>{order.cantidad}</td>
-                  <td>{order.estado_pedido}</td>
-                  <td>${Math.floor(order.total_pagado)}</td> {/* O puedes usar parseInt(order.total_pagado) */}
-              </tr>
-              
-                ))}
-              </tbody>
-            </table>
+            {loading ? (
+              <p>Cargando historial de pedidos...</p>
+            ) : error ? (
+              <p className="error-message">{error}</p>
+            ) : (
+              <table className="his5-historial-table">
+                <thead>
+                  <tr>
+                    <th>Nombre del Producto</th>
+                    <th>Código del Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Estado del Pedido</th>
+                    <th>Total Pagado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order, index) => (
+                    <tr key={`${order.id_pedido}-${index}`}>
+                      <td>{order.nombre_producto}</td>
+                      <td>{order.codigo_producto}</td>
+                      <td>${order.precio ? order.precio.toLocaleString() : 'N/A'}</td>
+                      <td>{order.cantidad}</td>
+                      <td>{order.estado_pedido}</td>
+                      <td>${order.total_pagado ? order.total_pagado.toLocaleString() : 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
           <div className="his6-boton-container">
-            <button className="his3-continuar-btn" onClick={() => window.location.href = '/'}>
+            <button className="his3-continuar-btn" onClick={() => navigate('/')}>
               Volver
             </button>
           </div>

@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
+import { FaWhatsapp } from 'react-icons/fa';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
+import '../index.css';
 import { useNavigate } from 'react-router-dom';
 
-/* Importar imágenes */
-import Cumpleaños1 from '../static/img/Cumpleaños1.jpeg';
-import Cumpleaños2 from '../static/img/Cumpleaños2.jpeg';
-import Cumpleaños3 from '../static/img/Cumpleaños3.jpeg';
-
 const ProductPage = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [products, setProducts] = useState([]);
     const [modalData, setModalData] = useState(null);
-    const [cart, setCart] = useState([]);
     const [filters, setFilters] = useState({
         occasion: '',
         price: null,
         type: ''
     });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [notification, setNotification] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,34 +33,27 @@ const ProductPage = () => {
         }
     }, []);
 
-    const products = [
-        { id: 'product1', name: 'Nombre del Producto 1', price: 50000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños1 },
-        { id: 'product2', name: 'Nombre del Producto 2', price: 60000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños2 },
-        { id: 'product3', name: 'Nombre del Producto 3', price: 70000, type: 'Rosas', occasion: 'Cumpleaños', imgSrc: Cumpleaños3 },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/productos/fechaEspecial/5'); // Cambia el ID según sea necesario
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
 
-    const descriptions = {
-        'product1': 'Descripción detallada del Producto 1. Perfecto para Cumpleaños.',
-        'product2': 'Descripción detallada del Producto 2. Ideal para celebraciones.',
-        'product3': 'Descripción detallada del Producto 3. Excelente para cualquier ocasión especial.',
-    };
+        fetchProducts();
+    }, []);
 
     const handleDetailsClick = (product) => {
         setModalData({
-            imgSrc: product.imgSrc,
-            title: product.name,
-            price: `$${product.price.toLocaleString()}`,
-            description: descriptions[product.id] || 'Descripción del producto no disponible.'
+            imgSrc: product.foto_ProductoURL || '',
+            title: product.nombre_producto || 'Producto sin nombre',
+            price: `$${product.precio_producto.toLocaleString()}`,
+            description: product.descripcion_producto || 'Descripción del producto no disponible.',
+            id: product.id_producto
         });
-    };
-
-    const handlePersonalizarClick = (product) => {
-        navigate('/producto/' + product.id, { state: { product } });
-    };
-
-    const handleAddToCart = (product) => {
-        setCart(prevCart => [...prevCart, product]);
-        alert(`${product.name} añadido al carrito.`);
     };
 
     const handleFilterChange = (e) => {
@@ -77,19 +67,57 @@ const ProductPage = () => {
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
 
-        const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.price < price);
-        const matchType = !type || product.type === type;
+        const matchOccasion = !occasion || product.ocasion === occasion;
+        const matchPrice = !price || 
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000);
+        const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
     });
 
-    const cartTotal = cart.reduce((total, item) => total + item.price, 0);
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
+        }
+    };
+
+    const handleAddToCartFromModal = () => {
+        if (modalData) {
+            handleAddToCart(modalData);
+            setModalData(null);
+        }
+    };
+
+    const handlePersonalizeClick = (product) => {
+        navigate(`/producto/${product.id_producto}`, { state: { product } });
+    };
 
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
@@ -113,19 +141,21 @@ const ProductPage = () => {
                     <div className="filter">
                         <h3>Tipo de Flor</h3>
                         <ul>
-                            <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
+                            <li><input type="checkbox" id="Rosas" onChange={handleFilterChange} /> Rosas</li>
+                            <li><input type="checkbox" id="Tropical" onChange={handleFilterChange} /> Flores Tropicales</li>
+                            <li><input type="checkbox" id="Surtido" onChange={handleFilterChange} /> Flores Surtidas</li>
                         </ul>
                     </div>
                 </aside>
 
                 <main className="product-grid2">
                     {filteredProducts.map(product => (
-                        <div key={product.id} className="product-card">
-                            <img src={product.imgSrc} alt={product.name} className="product-img" />
-                            <h3>{product.name}</h3>
-                            <p>${product.price.toLocaleString()}</p>
+                        <div key={product.id_producto} className="product-card">
+                            <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
+                            <h3>{product.nombre_producto}</h3>
+                            <p>${product.precio_producto.toLocaleString()}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
-                            <button className="btn-details personalizar" onClick={() => handlePersonalizarClick(product)}>Personalizar</button>
+                            <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
                             <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
@@ -141,7 +171,7 @@ const ProductPage = () => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">{modalData.price}</p>
-                                    <button className="btn-cart" onClick={() => handleAddToCart({ ...modalData, price: Number(modalData.price.replace(/\D/g, '')) })}>Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +179,6 @@ const ProductPage = () => {
                 )}
             </div>
 
-            {/* Botón de WhatsApp */}
             <a 
                 href="https://wa.me/3222118028" 
                 className="whatsapp-btn" 

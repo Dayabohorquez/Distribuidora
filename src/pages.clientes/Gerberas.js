@@ -71,7 +71,6 @@ const ProductPage = ({ addToCart }) => {
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-
         const matchOccasion = !occasion || product.occasion === occasion;
         const matchPrice = !price || (
             (price === 'below-100' && product.precio_producto < 100000) ||
@@ -83,17 +82,35 @@ const ProductPage = ({ addToCart }) => {
         return matchOccasion && matchPrice && matchType;
     });
 
-    const handleAddToCartFromModal = () => {
-        if (modalData) {
-            addToCart({
-                id: modalData.id,
-                title: modalData.title,
-                price: modalData.price,
-                img: modalData.imgSrc,
-                quantity: 1
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
             });
-            setModalData(null); // Cerrar modal después de añadir
-            setNotification(`Producto ${modalData.title} agregado al carrito!`); // Mensaje de notificación
+
+            if (response.status === 200 || response.status === 201) {
+                addToCart({
+                    id: product.id_producto,
+                    title: product.nombre_producto,
+                    price: product.precio_producto,
+                    img: product.foto_ProductoURL,
+                    quantity: 1
+                });
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
         }
     };
 
@@ -141,7 +158,7 @@ const ProductPage = ({ addToCart }) => {
                             <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
                             <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
-                            <button className="btn-cart" onClick={() => addToCart({ id: product.id_producto, title: product.nombre_producto, price: product.precio_producto, img: product.foto_ProductoURL, quantity: 1 })}>Añadir al carrito</button>
+                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
                         </div>
                     ))}
                 </main>
@@ -156,7 +173,7 @@ const ProductPage = ({ addToCart }) => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={handleAddToCart}>Añadir al carrito</button>
                                 </div>
                             </div>
                         </div>

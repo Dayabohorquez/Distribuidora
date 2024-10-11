@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Importar axios
+import axios from 'axios'; 
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import '../index.css';
@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
 const ProductPage = ({ addToCart }) => {
-    const [products, setProducts] = useState([]); // Estado para productos
+    const [products, setProducts] = useState([]); 
     const [modalData, setModalData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
@@ -17,6 +17,7 @@ const ProductPage = ({ addToCart }) => {
         price: null,
         type: ''
     });
+    const [notification, setNotification] = useState(''); // Para notificaciones
 
     const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ const ProductPage = ({ addToCart }) => {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+                setIsAuthenticated(!!decoded.rol);
             } catch (e) {
                 console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
@@ -36,7 +37,7 @@ const ProductPage = ({ addToCart }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/productos/5'); // Cambia el ID según el tipo de flor que desees
+                const response = await axios.get('http://localhost:4000/api/productos/5'); 
                 setProducts(response.data);
             } catch (error) {
                 console.error('Error al obtener productos:', error);
@@ -50,9 +51,9 @@ const ProductPage = ({ addToCart }) => {
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
             title: product.nombre_producto || 'Producto sin nombre',
-            price: `$${product.precio_producto?.toLocaleString() || '0'}`,
+            price: product.precio_producto,
             description: product.descripcion_producto || 'Descripción del producto no disponible.',
-            id: product.id_producto // Agregar ID para usar en el carrito
+            id: product.id_producto 
         });
     };
 
@@ -71,26 +72,51 @@ const ProductPage = ({ addToCart }) => {
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.precio_producto < (price === 'below-100' ? 100000 : price === 'between-100-200' ? 200000 : Infinity));
+        const matchPrice = !price || 
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000);
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
     });
 
-    const handleAddToCart = (product) => {
-        addToCart({
-            id: product.id_producto,
-            title: product.nombre_producto,
-            price: product.precio_producto,
-            img: product.foto_ProductoURL,
-            quantity: 1
-        });
+    const handleAddToCart = async (product) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/carritos', {
+                documento: documento,
+                id_producto: product.id_producto,
+                cantidad: 1
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                addToCart({
+                    id: product.id_producto,
+                    title: product.nombre_producto,
+                    price: product.precio_producto,
+                    img: product.foto_ProductoURL,
+                    quantity: 1
+                });
+                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
+            } else {
+                throw new Error('Error inesperado al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
+        }
     };
 
     const handleAddToCartFromModal = () => {
         if (modalData) {
             handleAddToCart(modalData);
-            setModalData(null); // Cerrar modal después de añadir
+            setModalData(null); 
         }
     };
 
@@ -98,6 +124,7 @@ const ProductPage = ({ addToCart }) => {
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
+                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
@@ -151,7 +178,7 @@ const ProductPage = ({ addToCart }) => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-price">{modalData.price}</p>
+                                    <p id="modal-price">${modalData.price?.toLocaleString()}</p>
                                     <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
                                 </div>
                             </div>
@@ -159,7 +186,6 @@ const ProductPage = ({ addToCart }) => {
                     </div>
                 )}
             </div>
-            {/* Botón de WhatsApp */}
             <a 
                 href="https://wa.me/3222118028" 
                 className="whatsapp-btn" 
