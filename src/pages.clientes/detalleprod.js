@@ -13,11 +13,11 @@ const DetalleProducto = () => {
     const { product } = location.state || {};
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     const [opcionAdicionalPrecio, setOpcionAdicionalPrecio] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedOption, setSelectedOption] = useState('ninguno');
     const [dedicatoria, setDedicatoria] = useState('');
+    const [notification, setNotification] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -48,19 +48,12 @@ const DetalleProducto = () => {
     const handleOptionChange = (event) => {
         const option = event.target.value;
         setSelectedOption(option);
-
-        if (option === 'chocolate') {
-            setOpcionAdicionalPrecio(30000);
-        } else if (option === 'vino') {
-            setOpcionAdicionalPrecio(86000);
-        } else {
-            setOpcionAdicionalPrecio(0);
-        }
+        setOpcionAdicionalPrecio(option === 'chocolate' ? 30000 : option === 'vino' ? 86000 : 0);
     };
 
     const handleQuantityChange = (event) => {
-        const value = parseInt(event.target.value, 10);
-        setQuantity(value > 0 ? value : 1);
+        const value = Math.max(parseInt(event.target.value, 10), 1);
+        setQuantity(value);
     };
 
     const handleDedicatoriaChange = (event) => {
@@ -68,25 +61,60 @@ const DetalleProducto = () => {
     };
 
     const updateProductPrice = () => {
-        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0; 
+        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0;
         return (basePrice + opcionAdicionalPrecio) * quantity;
     };
 
     const handleAddToCart = async () => {
-        const totalPrice = updateProductPrice(); 
+        const totalPrice = updateProductPrice();
         const documento = localStorage.getItem('documento');
+        const direccion = localStorage.getItem('direccion') || 'Dirección predeterminada';
+
+        if (!documento) {
+            setNotification('Documento no encontrado. Asegúrate de estar autenticado.');
+            return;
+        }
 
         try {
-            const response = await axios.post('http://localhost:4000/api/carritos', {
+            const cartResponse = await axios.post('http://localhost:4000/api/carritos', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: quantity,
                 dedicatoria: dedicatoria,
-                opcionAdicional: selectedOption
+                opcionAdicional: selectedOption === 'chocolate' ? 'Chocolates' : selectedOption
             });
+
+            if (cartResponse.status === 200 || cartResponse.status === 201) {
+                const idPedido = cartResponse.data?.id_pedido;
+
+                if (idPedido) {
+                    const detallePedidoParams = {
+                        id_pedido: idPedido,
+                        nombre_producto: product.nombre_producto,
+                        codigo_producto: product.codigo_producto,
+                        precio: totalPrice,
+                        direccion: direccion,
+                        cantidad: quantity,
+                        opciones_adicionales: selectedOption === 'chocolate' ? 'Chocolates' : selectedOption,
+                        dedicatoria: dedicatoria
+                    };
+
+                    const response = await axios.post('http://localhost:4000/api/detalles-pedidos', detallePedidoParams);
+
+                    if (response.status === 201) {
+                        setNotification('Producto añadido al carrito exitosamente.');
+                    }
+                }
+            }
         } catch (error) {
-            console.error('Error al agregar al carrito:', error);
+            console.error('Error al agregar al carrito:', error.response ? error.response.data : error.message);
+            setNotification('Error al agregar el producto al carrito.');
         }
+
+        // Ocultar la notificación después de 3 segundos
+        setTimeout(() => {
+            setNotification('');
+        }, 3000);
     };
 
     return (
@@ -103,6 +131,7 @@ const DetalleProducto = () => {
 
                 <section className="detalle-producto">
                     <h2 className="descripcion">Personalización</h2>
+                    {notification && <div className="notification">{notification}</div>}
                     <div className="contenido-producto">
                         <div className="imagen-producto">
                             <img src={product.foto_ProductoURL} alt={product.nombre_producto} />

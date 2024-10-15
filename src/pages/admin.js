@@ -43,8 +43,8 @@ const App = () => {
     const [notification, setNotification] = useState('');
     const [eventoModalOpen, setEventoModalOpen] = useState(null);
     const [tipoFlorModalOpen, setTipoFlorModalOpen] = useState(false);
-    const [pagos, setPagos] = useState([]); // Define el estado para los pagos
-
+    const [pagos, setPagos] = useState([]); 
+    
     // Llama a fetchPagos en useEffect
     useEffect(() => {
         fetchUsuarios();
@@ -501,11 +501,16 @@ const App = () => {
         setCurrentOrder(null);
     };
 
-    const filteredPedidos = pedidos.filter(pedido =>
-        pedido.fecha_pedido.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pedido.id_pedido.toString().includes(searchQuery)
-    );
-
+    const filteredPedidos = pedidos.filter(pedido => {
+        const fechaPedidoStr = pedido.fecha_pedido ? new Date(pedido.fecha_pedido).toLocaleDateString() : "";
+        const idPedidoStr = pedido.id_pedido ? pedido.id_pedido.toString() : "";
+    
+        return (
+            fechaPedidoStr.includes(searchQuery) ||
+            idPedidoStr.includes(searchQuery)
+        );
+    });
+    
     const fetchEnvios = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/envios');

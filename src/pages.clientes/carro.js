@@ -12,6 +12,7 @@ const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,13 +22,16 @@ const CartPage = () => {
                 console.error('Documento no encontrado.');
                 return;
             }
+            setLoading(true);
             try {
                 const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
                 const items = Array.isArray(response.data) ? response.data : Object.values(response.data);
                 setCartItems(items);
             } catch (error) {
                 console.error('Error al obtener el carrito:', error);
-                setNotification('Error al obtener el carrito.');
+                setNotification('Error al obtener el carrito. Intenta de nuevo más tarde.');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -83,7 +87,7 @@ const CartPage = () => {
             return;
         }
         try {
-            await axios.delete(`http://localhost:4000/api/carritos/usuario/${documento}`);
+            await axios.delete(`http://localhost:4000/api/carritos/vaciar/${documento}`);
             setCartItems([]);
             setNotification('Carrito vacío.');
             setTimeout(() => setNotification(''), 3000);
@@ -94,6 +98,9 @@ const CartPage = () => {
     }, []);
 
     const cartTotal = cartItems.reduce((total, item) => total + (item.precio_producto * item.cantidad), 0);
+    const ivaRate = 0.19;
+    const ivaTotal = cartTotal * ivaRate;
+    const totalConIva = cartTotal + ivaTotal;
 
     const handleCheckout = () => {
         const cartData = cartItems.map(({ id_carrito, nombre_producto, precio_producto, cantidad }) => ({
@@ -112,7 +119,9 @@ const CartPage = () => {
             <div className="cart-page">
                 <h2 className="cart-title">Carrito de Compras</h2>
                 {notification && <div className="notification">{notification}</div>}
-                {cartItems.length === 0 ? (
+                {loading ? (
+                    <div className="loading">Cargando...</div>
+                ) : cartItems.length === 0 ? (
                     <div className="empty-cart">
                         <p className="empty-cart-message">El carrito está vacío.</p>
                     </div>
@@ -132,7 +141,12 @@ const CartPage = () => {
                                         type="number"
                                         min="1"
                                         value={item.cantidad}
-                                        onChange={(e) => updateQuantity(item.id_carrito, parseInt(e.target.value) || 1)}
+                                        onChange={(e) => {
+                                            const value = parseInt(e.target.value);
+                                            if (value >= 1) {
+                                                updateQuantity(item.id_carrito, value);
+                                            }
+                                        }}
                                         className="quantity-input"
                                     />
                                     <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
@@ -142,7 +156,9 @@ const CartPage = () => {
                             </div>
                         ))}
                         <div className="cart-footer">
-                            <p className="cart-total">Total: ${cartTotal.toLocaleString()}</p>
+                            <p className="cart-total">Subtotal: ${cartTotal.toLocaleString()}</p>
+                            <p className="cart-iva">IVA (19%): ${ivaTotal.toLocaleString()}</p>
+                            <p className="cart-total-con-iva">Total con IVA: ${totalConIva.toLocaleString()}</p>
                             <div className="cart-actions">
                                 <button className="empty-cart-button" onClick={emptyCart}>Vaciar Carrito</button>
                                 <button className="checkout-button" onClick={handleCheckout}>Comprar</button>
