@@ -50,52 +50,50 @@ const PaymentMethod = () => {
     const iva = subtotal * 0.19;
     const total = subtotal + iva;
 
-    // Verificar si hay artículos en el carrito
     if (!cartItems.length) {
       setNotification({ message: 'El carrito está vacío.', type: 'error' });
       return;
     }
 
-    const id_carrito = cartItems[0]?.id_carrito; // Asegúrate de que este id exista
+    const id_carrito = cartItems[0]?.id_carrito;
     if (!id_carrito) {
       setNotification({ message: 'El ID del carrito no está disponible.', type: 'error' });
       return;
     }
 
     try {
-      // Crear el pago
-      const paymentData = {
-        nombre_pago: `Pago por ${paymentMethod}`,
-        fecha_pago: new Date().toISOString(), // Asegúrate de que la fecha sea correcta
-        iva: parseFloat(iva.toFixed(2)),
-        metodo_pago: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
-        subtotal_pago: parseFloat(subtotal.toFixed(2)),
-        total_pago: parseFloat(total.toFixed(2)),
-        documento,
-        id_carrito,
+      const paymentAndOrderData = {
+        pagoData: {
+          nombre_pago: `Pago por ${paymentMethod}`,
+          fecha_pago: new Date().toISOString(),
+          iva: parseFloat(iva.toFixed(2)),
+          metodo_pago: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
+          subtotal_pago: parseFloat(subtotal.toFixed(2)),
+          total_pago: parseFloat(total.toFixed(2)),
+          documento,
+          id_carrito,
+        },
+        pedidoData: {
+          fecha_pedido: new Date().toISOString(),
+          total_pagado: parseFloat(total.toFixed(2)),
+          documento,
+          id_carrito,
+        }
       };
 
-      const { data: { id: paymentId } } = await axios.post('http://localhost:4000/api/pago', paymentData);
+      const response = await axios.post('http://localhost:4000/api/pago-y-pedido', paymentAndOrderData);
 
-      // Crear el pedido
-      const pedidoData = {
-        fecha_pedido: new Date().toISOString(),
-        total_pagado: parseFloat(total.toFixed(2)),
-        documento,
-        pago_id: paymentId, // Asegúrate de que paymentId esté correctamente obtenido
-        id_carrito,
-      };
-
-      // Agregar la verificación de la respuesta del pedido
-      const response = await axios.post('http://localhost:4000/api/pedido', pedidoData);
-      if (response.data.message !== "Pedido creado exitosamente") {
-        throw new Error("Error al crear el pedido");
+      if (response.data.message === "Pago y pedido creados exitosamente") {
+        // Vaciar el carrito
+        const vaciarResponse = await axios.delete(`http://localhost:4000/api/carritos/vaciar/${documento}`);
+        if (vaciarResponse.status === 200) {
+          setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
+        } else {
+          throw new Error("Error al vaciar el carrito");
+        }
+      } else {
+        throw new Error("Error al crear el pago y el pedido");
       }
-
-      // Vaciar el carrito
-      await axios.put(`http://localhost:4000/api/carritos/vaciar/${documento}`, { id_carrito });
-
-      setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
 
     } catch (error) {
       console.error('Error al procesar el pago:', error);

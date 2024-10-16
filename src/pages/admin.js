@@ -43,8 +43,8 @@ const App = () => {
     const [notification, setNotification] = useState('');
     const [eventoModalOpen, setEventoModalOpen] = useState(null);
     const [tipoFlorModalOpen, setTipoFlorModalOpen] = useState(false);
-    const [pagos, setPagos] = useState([]); 
-    
+    const [pagos, setPagos] = useState([]);
+
     // Llama a fetchPagos en useEffect
     useEffect(() => {
         fetchUsuarios();
@@ -150,21 +150,18 @@ const App = () => {
             console.error('El documento no está definido');
             return;
         }
-
-        if (window.confirm('¿Estás seguro de que deseas cambiar el estado?')) {
-            try {
-                const response = await axios.patch(`http://localhost:4000/api/usuario/${documento}/estado`);
-                if (response.status === 200) {
-                    fetchUsuarios();
-                    showNotification('Estado del usuario cambiado exitosamente.');
-                } else {
-                    console.error('Error en la respuesta del servidor:', response.status);
-                    showNotification('Error al cambiar el estado del usuario.');
-                }
-            } catch (error) {
-                console.error('Error al cambiar el estado del usuario:', error);
+        try {
+            const response = await axios.patch(`http://localhost:4000/api/usuario/${documento}/estado`);
+            if (response.status === 200) {
+                fetchUsuarios();
+                showNotification('Estado del usuario cambiado exitosamente.');
+            } else {
+                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al cambiar el estado del usuario.');
             }
+        } catch (error) {
+            console.error('Error al cambiar el estado del usuario:', error);
+            showNotification('Error al cambiar el estado del usuario.');
         }
     };
 
@@ -224,7 +221,7 @@ const App = () => {
             showNotification('Error al obtener los productos.');
         }
     };
-    
+
     const fetchImages = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/images/producto');
@@ -234,11 +231,11 @@ const App = () => {
             showNotification('Error al obtener imágenes.');
         }
     };
-    
+
     useEffect(() => {
         fetchImages();
     }, []);
-    
+
     const handleUpdateProducto = async (idProducto, formData) => {
         if (!idProducto) {
             console.error('El id Producto no está definido');
@@ -259,53 +256,51 @@ const App = () => {
             showNotification('Error al actualizar el producto.');
         }
     };
-    
+
     const handleToggleProductStatus = async (idProducto) => {
         if (!idProducto) {
             console.error('El ID del producto no está definido');
             return;
         }
-    
-        if (window.confirm('¿Estás seguro de que deseas cambiar el estado?')) {
-            try {
-                const productoActual = productos.find(p => p.id_producto === idProducto);
-                const nuevoEstado = !productoActual.estado_producto;
-    
-                const response = await axios.patch(`http://localhost:4000/api/productos/${idProducto}/estado`, {
-                    estado: nuevoEstado
-                });
-    
-                if (response.status === 200) {
-                    fetchProductos();
-                    showNotification('Estado del producto cambiado exitosamente.');
-                } else {
-                    console.error('Error en la respuesta del servidor:', response.status);
-                    showNotification('Error al cambiar el estado del producto.');
-                }
-            } catch (error) {
-                console.error('Error al cambiar el estado del producto:', error);
+
+        try {
+            const productoActual = productos.find(p => p.id_producto === idProducto);
+            const nuevoEstado = !productoActual.estado_producto;
+
+            const response = await axios.patch(`http://localhost:4000/api/productos/${idProducto}/estado`, {
+                estado: nuevoEstado
+            });
+
+            if (response.status === 200) {
+                fetchProductos();
+                showNotification('Estado del producto cambiado exitosamente.');
+            } else {
+                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al cambiar el estado del producto.');
             }
+        } catch (error) {
+            console.error('Error al cambiar el estado del producto:', error);
+            showNotification('Error al cambiar el estado del producto.');
         }
     };
-    
+
     const openEditProductModal = (producto) => {
         setCurrentProduct(producto);
         setIsEditModalOpen(true);
     };
-    
+
     const closeEditProductModal = () => {
         setIsEditModalOpen(false);
         setCurrentProduct(null);
     };
-    
+
     const openCreateProductModal = () => setShowCreateProductModal(true);
     const closeCreateProductModal = () => setShowCreateProductModal(false);
-    
+
     const handleCreateProducto = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-    
+
         const productoData = {
             codigo_producto: formData.get('campo_codigo'),
             nombre_producto: formData.get('campo_nombre'),
@@ -316,16 +311,16 @@ const App = () => {
             id_evento: parseInt(formData.get('campo_idEvento')),
             id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
         };
-    
+
         const fotoFile = formData.get('campo_foto');
         if (fotoFile) {
             formData.append('foto_Producto', fotoFile);
         }
-    
+
         for (const key in productoData) {
             formData.append(key, productoData[key]);
         }
-    
+
         try {
             const response = await axios.post('http://localhost:4000/api/productos', formData, {
                 headers: {
@@ -340,11 +335,11 @@ const App = () => {
             showNotification('Error al crear el producto.');
         }
     };
-    
+
     const handleEditProducto = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
-    
+
         const updatedProducto = {
             codigo_producto: formData.get('campo_codigo'),
             nombre_producto: formData.get('campo_nombre'),
@@ -355,16 +350,16 @@ const App = () => {
             id_evento: parseInt(formData.get('campo_idEvento')),
             id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
         };
-    
+
         const fotoFile = formData.get('campo_foto');
         if (fotoFile) {
             formData.append('foto_Producto', fotoFile);
         }
-    
+
         Object.entries(updatedProducto).forEach(([key, value]) => {
             formData.append(key, value);
         });
-    
+
         try {
             await handleUpdateProducto(currentProducto.id_producto, formData);
             closeEditProductModal();
@@ -372,12 +367,12 @@ const App = () => {
             console.error('Error al actualizar el producto:', error.response ? error.response.data : error.message);
         }
     };
-    
+
     const filteredProductos = productos.filter(producto =>
         producto.nombre_producto.toLowerCase().includes(searchQuery.toLowerCase()) ||
         producto.id_producto.toString().includes(searchQuery) ||
         producto.codigo_producto.toString().includes(searchQuery)
-    );    
+    );
 
     const fetchPedidos = async () => {
         try {
@@ -504,13 +499,13 @@ const App = () => {
     const filteredPedidos = pedidos.filter(pedido => {
         const fechaPedidoStr = pedido.fecha_pedido ? new Date(pedido.fecha_pedido).toLocaleDateString() : "";
         const idPedidoStr = pedido.id_pedido ? pedido.id_pedido.toString() : "";
-    
+
         return (
             fechaPedidoStr.includes(searchQuery) ||
             idPedidoStr.includes(searchQuery)
         );
     });
-    
+
     const fetchEnvios = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/envios');

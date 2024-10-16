@@ -17,7 +17,7 @@ const ProductPage = ({ addToCart }) => {
         price: null,
         type: ''
     });
-    const [notification, setNotification] = useState(''); // Estado para las notificaciones
+    const [notification, setNotification] = useState('');
 
     const navigate = useNavigate();
 
@@ -38,22 +38,21 @@ const ProductPage = ({ addToCart }) => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/productos/1');
-                console.log(response.data);  // Para verificar qué está devolviendo la API
+                console.log(response.data);
                 if (Array.isArray(response.data)) {
-                    setProducts(response.data);  // Solo establece el estado si es un array
+                    setProducts(response.data);
                 } else {
                     console.error('Los datos no son un array:', response.data);
-                    setProducts([]);  // En caso de que no sea un array, establece products como un array vacío
+                    setProducts([]);
                 }
             } catch (error) {
                 console.error('Error al obtener productos:', error);
-                setProducts([]);  // Maneja el error estableciendo un array vacío
+                setProducts([]);
             }
         };
-    
+
         fetchProducts();
     }, []);
-    
 
     const handleDetailsClick = (product) => {
         setModalData({
@@ -81,7 +80,9 @@ const ProductPage = ({ addToCart }) => {
         const { occasion, price, type } = filters;
 
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (product.precio_producto < price);
+        const matchPrice = !price || (price === 'below-100' && product.precio_producto < 100000) ||
+                           (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+                           (price === 'above-200' && product.precio_producto > 200000);
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
@@ -89,51 +90,41 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
+        console.log('Documento recuperado:', documento); // Agrega este log
+    
         if (!documento) {
-            console.error('Documento no encontrado.');
+            console.error('Documento no encontrado en localStorage');
             setNotification('Por favor, inicie sesión para agregar productos al carrito.');
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:4000/api/carritos', {
                 documento: documento,
                 id_producto: product.id_producto,
                 cantidad: 1
             });
-
-            console.log('Response from API:', response);
-
-            if (response.status === 200 || response.status === 201) {
-                addToCart({
-                    id: product.id_producto,
-                    title: product.nombre_producto,
-                    price: product.precio_producto,
-                    img: product.foto_ProductoURL,
-                    quantity: 1
-                });
-                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
-            } else {
-                throw new Error('Error inesperado al agregar al carrito');
-            }
+            
+            console.log('Response:', response.data);
+            // Resto del código...
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
-            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
+            // Resto del código...
         }
     };
-
+     
+    
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
             <div className="container">
-                {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
+                {notification && <div className="notification">{notification}</div>}
                 <aside className="sidebar">
                     <h2>
                         <a href="index.html" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Rosas
                     </h2>
-                    {/* Filtros */}
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
@@ -182,7 +173,14 @@ const ProductPage = ({ addToCart }) => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={() => handleAddToCart(modalData)}>Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={() => handleAddToCart({
+                                        id_producto: modalData.id,
+                                        nombre_producto: modalData.title,
+                                        precio_producto: modalData.price,
+                                        foto_ProductoURL: modalData.imgSrc
+                                    })}>
+                                        Añadir al carrito
+                                    </button>
                                 </div>
                             </div>
                         </div>

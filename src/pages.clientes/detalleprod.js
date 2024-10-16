@@ -62,13 +62,12 @@ const DetalleProducto = () => {
 
     const updateProductPrice = () => {
         const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0;
-        return (basePrice + opcionAdicionalPrecio) * quantity;
+        return basePrice + opcionAdicionalPrecio; // Asegúrate de que `opcionAdicionalPrecio` se esté actualizando correctamente
     };
 
     const handleAddToCart = async () => {
-        const totalPrice = updateProductPrice();
+        const totalPrice = updateProductPrice() * quantity;
         const documento = localStorage.getItem('documento');
-        const direccion = localStorage.getItem('direccion') || 'Dirección predeterminada';
 
         if (!documento) {
             setNotification('Documento no encontrado. Asegúrate de estar autenticado.');
@@ -76,42 +75,21 @@ const DetalleProducto = () => {
         }
 
         try {
-            const cartResponse = await axios.post('http://localhost:4000/api/carritos', {
+            await axios.post('http://localhost:4000/api/carritos', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: quantity,
-                dedicatoria: dedicatoria,
-                opcionAdicional: selectedOption === 'chocolate' ? 'Chocolates' : selectedOption
+                dedicatoria,
+                opcion_adicional: selectedOption === 'ninguno' ? undefined : selectedOption,
+                precio_adicional: opcionAdicionalPrecio,  // Asegúrate de enviar el precio adicional
+                total: totalPrice,
             });
-
-            if (cartResponse.status === 200 || cartResponse.status === 201) {
-                const idPedido = cartResponse.data?.id_pedido;
-
-                if (idPedido) {
-                    const detallePedidoParams = {
-                        id_pedido: idPedido,
-                        nombre_producto: product.nombre_producto,
-                        codigo_producto: product.codigo_producto,
-                        precio: totalPrice,
-                        direccion: direccion,
-                        cantidad: quantity,
-                        opciones_adicionales: selectedOption === 'chocolate' ? 'Chocolates' : selectedOption,
-                        dedicatoria: dedicatoria
-                    };
-
-                    const response = await axios.post('http://localhost:4000/api/detalles-pedidos', detallePedidoParams);
-
-                    if (response.status === 201) {
-                        setNotification('Producto añadido al carrito exitosamente.');
-                    }
-                }
-            }
+            setNotification('Producto añadido al carrito exitosamente.');
         } catch (error) {
             console.error('Error al agregar al carrito:', error.response ? error.response.data : error.message);
-            setNotification('Error al agregar el producto al carrito.');
+            setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
         }
 
-        // Ocultar la notificación después de 3 segundos
         setTimeout(() => {
             setNotification('');
         }, 3000);
@@ -140,8 +118,10 @@ const DetalleProducto = () => {
                             <h3>{product.nombre_producto}</h3>
                             <p>{product.descripcion_producto || 'Descripción no disponible.'}</p>
                             <div className="meta-producto">
-                                <p><strong>Precio base: ${product.precio_producto.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong></p>
-                                <p><strong>Precio total: ${updateProductPrice().toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong></p>
+                                <p><strong>Precio base: ${product.precio_producto ? parseFloat(product.precio_producto).toLocaleString() : '0'}</strong></p>
+                                <p><strong>Precio adicional: ${opcionAdicionalPrecio.toLocaleString()}</strong></p>
+                                <p><strong>Precio total: ${updateProductPrice().toLocaleString()}</strong></p>
+                                <p><strong>Precio total (con cantidad): ${updateProductPrice() * quantity.toLocaleString()}</strong></p>
                             </div>
                             <div className="opciones-producto">
                                 <h4 className="opciones">Opciones disponibles</h4>
@@ -151,6 +131,7 @@ const DetalleProducto = () => {
                                     <option value="chocolate">Chocolate Ferrero Rocher (caja x 8Und) (+$30,000)</option>
                                     <option value="vino">Vino (+$86,000)</option>
                                 </select>
+
 
                                 <label htmlFor="cantidad">Cantidad:</label>
                                 <input type="number" id="cantidad" value={quantity} min="1" onChange={handleQuantityChange} required />

@@ -8,35 +8,21 @@ import '../index.css';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+// Interceptor para agregar el token
+axios.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, error => Promise.reject(error));
+
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchCart = async () => {
-            const documento = localStorage.getItem('documento');
-            if (!documento) {
-                console.error('Documento no encontrado.');
-                return;
-            }
-            setLoading(true);
-            try {
-                const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
-                const items = Array.isArray(response.data) ? response.data : Object.values(response.data);
-                setCartItems(items);
-            } catch (error) {
-                console.error('Error al obtener el carrito:', error);
-                setNotification('Error al obtener el carrito. Intenta de nuevo más tarde.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCart();
-    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -51,15 +37,42 @@ const CartPage = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const fetchCart = async () => {
+            const documento = localStorage.getItem('documento');
+            if (!documento) {
+                setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
+                return;
+            }
+            setLoading(true);
+            try {
+                const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
+                setCartItems(Array.isArray(response.data) ? response.data : Object.values(response.data));
+            } catch (error) {
+                console.error('Error al obtener el carrito:', error);
+                setNotification('Error al obtener el carrito. Intenta de nuevo más tarde.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (isAuthenticated) {
+            fetchCart();
+        }
+    }, [isAuthenticated]);
+
     const updateQuantity = useCallback(async (itemId, newQuantity) => {
         if (newQuantity < 1) return;
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
+            return;
+        }
         try {
             await axios.put(`http://localhost:4000/api/carritos/${itemId}`, { cantidad: newQuantity });
-            setCartItems(prevItems =>
-                prevItems.map(item =>
-                    item.id_carrito === itemId ? { ...item, cantidad: newQuantity } : item
-                )
-            );
+            setCartItems(prevItems => prevItems.map(item =>
+                item.id_carrito === itemId ? { ...item, cantidad: newQuantity } : item
+            ));
             setNotification('Cantidad actualizada.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
@@ -69,6 +82,11 @@ const CartPage = () => {
     }, []);
 
     const removeFromCart = useCallback(async (itemId) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
+            return;
+        }
         try {
             await axios.delete(`http://localhost:4000/api/carritos/${itemId}`);
             setCartItems(prevItems => prevItems.filter(item => item.id_carrito !== itemId));
@@ -83,7 +101,7 @@ const CartPage = () => {
     const emptyCart = useCallback(async () => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
-            console.error('Documento no encontrado para vaciar el carrito.');
+            setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
             return;
         }
         try {
@@ -97,17 +115,33 @@ const CartPage = () => {
         }
     }, []);
 
-    const cartTotal = cartItems.reduce((total, item) => total + (item.precio_producto * item.cantidad), 0);
-    const ivaRate = 0.19;
+    const calcularPrecioAdicional = (opcion) => {
+        switch (opcion) {
+            case 'Chocolates':
+                return 30000;
+            case 'Vino':
+                return 86000;
+            default:
+                return 0;
+        }
+    };
+
+    const cartTotal = cartItems.reduce((total, item) => {
+        const precioAdicional = calcularPrecioAdicional(item.opcion_adicional);
+        return total + ((parseFloat(item.precio_producto) + precioAdicional) * item.cantidad || 0);
+    }, 0);
+
+    const ivaRate = 0.19; // 19%
     const ivaTotal = cartTotal * ivaRate;
     const totalConIva = cartTotal + ivaTotal;
 
     const handleCheckout = () => {
-        const cartData = cartItems.map(({ id_carrito, nombre_producto, precio_producto, cantidad }) => ({
+        const cartData = cartItems.map(({ id_carrito, nombre_producto, precio_producto, cantidad, opcion_adicional }) => ({
             id_carrito,
             nombre_producto,
             precio_producto,
             cantidad,
+            opcion_adicional,
         }));
 
         navigate('/payment-method', { state: { cartItems: cartData, subtotal: cartTotal } });
@@ -127,34 +161,41 @@ const CartPage = () => {
                     </div>
                 ) : (
                     <div className="cart-content">
-                        {cartItems.map(item => (
-                            <div key={item.id_carrito} className="cart-item">
-                                <img
-                                    src={item.foto_ProductoURL || 'path/to/default/image.jpg'}
-                                    alt={item.nombre_producto}
-                                    className="cart-item-image"
-                                />
-                                <div className="cart-item-details">
-                                    <h3 className="cart-item-name">{item.nombre_producto}</h3>
-                                    <p className="cart-item-price">${item.precio_producto.toLocaleString()}</p>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={item.cantidad}
-                                        onChange={(e) => {
-                                            const value = parseInt(e.target.value);
-                                            if (value >= 1) {
-                                                updateQuantity(item.id_carrito, value);
-                                            }
-                                        }}
-                                        className="quantity-input"
+                        {cartItems.map(item => {
+                            const precioAdicional = calcularPrecioAdicional(item.opcion_adicional);
+                            const total = (parseFloat(item.precio_producto) + precioAdicional) * item.cantidad;
+
+                            return (
+                                <div key={item.id_carrito} className="cart-item">
+                                    <img
+                                        src={item.foto_ProductoURL || 'path/to/default/image.jpg'}
+                                        alt={item.nombre_producto}
+                                        className="cart-item-image"
                                     />
-                                    <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
-                                        <FaTrash />
-                                    </button>
+                                    <div className="cart-item-details">
+                                        <h3 className="cart-item-name">{item.nombre_producto}</h3>
+                                        <p className="cart-item-price">Precio base: ${parseFloat(item.precio_producto).toLocaleString()}</p>
+                                        <p className="cart-item-adicional">Precio adicional: ${precioAdicional.toLocaleString()}</p>
+                                        <p className="cart-item-total">Total: ${total.toLocaleString()}</p>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={item.cantidad}
+                                            onChange={(e) => {
+                                                const value = parseInt(e.target.value);
+                                                if (value >= 1) {
+                                                    updateQuantity(item.id_carrito, value);
+                                                }
+                                            }}
+                                            className="quantity-input"
+                                        />
+                                        <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
+                                            <FaTrash />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                         <div className="cart-footer">
                             <p className="cart-total">Subtotal: ${cartTotal.toLocaleString()}</p>
                             <p className="cart-iva">IVA (19%): ${ivaTotal.toLocaleString()}</p>
