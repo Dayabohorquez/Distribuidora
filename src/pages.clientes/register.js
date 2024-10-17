@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import '../index.css';
+import { faEnvelope, faKey, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faKey, faUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 const Register = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -26,17 +26,17 @@ const Register = () => {
         // Validaciones
         const validations = [
             { condition: !documentNumber || !/^\d+$/.test(documentNumber) || documentNumber.length < 6,
-              message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
-            { condition: !name || !/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
-              message: 'El nombre debe contener solo letras y ciertos caracteres especiales.' },
-            { condition: !lastName || !/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
-              message: 'El apellido debe contener solo letras y ciertos caracteres especiales.' },
+                message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
+            { condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
+                message: 'El nombre debe contener solo letras y al menos una letra válida.' },
+            { condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
+                message: 'El apellido debe contener solo letras y al menos una letra válida.' },
             { condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-              message: 'El correo electrónico no es válido.' },
-            { condition: !password || !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(password),
-              message: 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.' },
+                message: 'El correo electrónico no es válido.' },
+            { condition: !password || !/^(?=.[A-Z])(?=.[a-z])(?=.\d)[A-Za-z\d@$!%?&]{8,}$/.test(password),
+                message: 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.' },
             { condition: password !== confirmPassword,
-              message: 'Las contraseñas no coinciden.' },
+                message: 'Las contraseñas no coinciden.' },
         ];
 
         for (const { condition, message } of validations) {
@@ -47,6 +47,27 @@ const Register = () => {
         }
 
         return true;
+    };
+
+    const handleChangeDocumentNumber = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // Solo números
+            setDocumentNumber(value);
+        }
+    };
+
+    const handleChangeName = (e) => {
+        const value = e.target.value;
+        if (/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]*$/.test(value)) { // Solo letras y caracteres permitidos
+            setName(value);
+        }
+    };
+
+    const handleChangeLastName = (e) => {
+        const value = e.target.value;
+        if (/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]*$/.test(value)) { // Solo letras y caracteres permitidos
+            setLastName(value);
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -101,7 +122,7 @@ const Register = () => {
                                         placeholder="Ingrese su número de documento aquí:"
                                         required
                                         value={documentNumber}
-                                        onChange={(e) => setDocumentNumber(e.target.value)}
+                                        onChange={handleChangeDocumentNumber}
                                         autoFocus
                                     />
                                 </div>
@@ -120,7 +141,7 @@ const Register = () => {
                                         placeholder="Ingrese su nombre aquí:"
                                         required
                                         value={name}
-                                        onChange={(e) => setName(e.target.value)}
+                                        onChange={handleChangeName}
                                     />
                                 </div>
                             </div>
@@ -138,7 +159,7 @@ const Register = () => {
                                         placeholder="Ingrese su apellido aquí:"
                                         required
                                         value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
+                                        onChange={handleChangeLastName}
                                     />
                                 </div>
                             </div>

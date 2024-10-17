@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
 import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 
 // Importar imágenes
 import funebreImg from '../static/img/Funebre.jpeg';
@@ -150,7 +150,7 @@ const HomePage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMain((prevIndex) => (prevIndex + 1) % totalSlides);
+      setMain((prevIndex) => (prevIndex + 1) % (totalSlides * 2));
     }, 3000);
 
     return () => clearInterval(interval);
@@ -159,10 +159,10 @@ const HomePage = () => {
   useEffect(() => {
     const slides = slidesRef.current;
     if (slides) {
-      slides.style.transform = `translateX(-${main * 100}%)`;
-      slides.style.transition = 'transform 0.5s ease-in-out';
+      slides.style.transform = `translateX(-${(main % totalSlides) * 100}%)`;
+      slides.style.transition = main % totalSlides === 0? 'none' : 'transform 0.5s ease-in-out';
     }
-  }, [main]);
+  }, [main, totalSlides]);
 
   return (
     <div>
