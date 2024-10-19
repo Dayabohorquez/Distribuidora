@@ -69,20 +69,31 @@ const ProductPage = ({ addToCart }) => {
     };
 
     const handleFilterChange = (e) => {
-        const { id, checked } = e.target;
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [id]: checked ? id : ''
-        }));
+        const { id, checked, name } = e.target;
+
+        // Si es un filtro de precio, desmarcar otros filtros de precio
+        if (name === 'price') {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                price: checked ? id : null // Solo permite un filtro de precio activo a la vez
+            }));
+        } else {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                [id]: checked ? id : '' // Si está marcado, activar filtro, si no, desactivar
+            }));
+        }
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
 
+        // Filtros de ocasión, precio y tipo
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (price === 'below-100' && product.precio_producto < 100000) ||
-                           (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
-                           (price === 'above-200' && product.precio_producto > 200000);
+        const matchPrice = !price || 
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000);
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
@@ -90,30 +101,29 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-        console.log('Documento recuperado:', documento); // Agrega este log
-    
+        console.log('Documento recuperado:', documento);
+
         if (!documento) {
             console.error('Documento no encontrado en localStorage');
             setNotification('Por favor, inicie sesión para agregar productos al carrito.');
             return;
         }
-    
+
         try {
             const response = await axios.post('http://localhost:4000/api/carritos', {
                 documento: documento,
                 id_producto: product.id_producto,
                 cantidad: 1
             });
-            
+
             console.log('Response:', response.data);
-            // Resto del código...
+            setNotification('Producto añadido al carrito.');
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
-            // Resto del código...
+            setNotification('Error al agregar producto al carrito.');
         }
     };
-     
-    
+
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}
@@ -128,24 +138,48 @@ const ProductPage = ({ addToCart }) => {
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
-                            <li><input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} /> Amor y Amistad</li>
-                            <li><input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} /> Cumpleaños</li>
+                            <li>
+                                <input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} />
+                                Amor y Amistad
+                            </li>
+                            <li>
+                                <input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} />
+                                Cumpleaños
+                            </li>
                         </ul>
                     </div>
                     <div className="filter">
                         <h3>Precio</h3>
                         <ul>
-                            <li><input type="checkbox" id="below-100" onChange={handleFilterChange} /> Inferior a $100.000</li>
-                            <li><input type="checkbox" id="between-100-200" onChange={handleFilterChange} /> Entre $100.000 - $200.000</li>
-                            <li><input type="checkbox" id="above-200" onChange={handleFilterChange} /> Superior a $200.000</li>
+                            <li>
+                                <input type="checkbox" id="below-100" name="price" onChange={handleFilterChange} />
+                                Inferior a $100.000
+                            </li>
+                            <li>
+                                <input type="checkbox" id="between-100-200" name="price" onChange={handleFilterChange} />
+                                Entre $100.000 - $200.000
+                            </li>
+                            <li>
+                                <input type="checkbox" id="above-200" name="price" onChange={handleFilterChange} />
+                                Superior a $200.000
+                            </li>
                         </ul>
                     </div>
                     <div className="filter">
                         <h3>Tipo de Flor</h3>
                         <ul>
-                            <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
-                            <li><input type="checkbox" id="tropicales" onChange={handleFilterChange} /> Flores Tropicales</li>
-                            <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
+                            <li>
+                                <input type="checkbox" id="rosas" onChange={handleFilterChange} />
+                                Rosas
+                            </li>
+                            <li>
+                                <input type="checkbox" id="tropicales" onChange={handleFilterChange} />
+                                Flores Tropicales
+                            </li>
+                            <li>
+                                <input type="checkbox" id="surtidas" onChange={handleFilterChange} />
+                                Flores Surtidas
+                            </li>
                         </ul>
                     </div>
                 </aside>
