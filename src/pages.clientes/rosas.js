@@ -79,18 +79,15 @@ const ProductPage = ({ addToCart }) => {
         } else {
             setFilters((prevFilters) => ({
                 ...prevFilters,
-                [id]: checked ? id : '' // Si está marcado, activar filtro, si no, desactivar
+                [id]: checked ? id : '' // Si está marcado, activar filtro; si no, desactivar
             }));
         }
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-<<<<<<< HEAD
-=======
 
         // Filtros de ocasión, precio y tipo
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         const matchOccasion = !occasion || product.occasion === occasion;
         const matchPrice = !price || 
             (price === 'below-100' && product.precio_producto < 100000) ||
@@ -103,12 +100,9 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-<<<<<<< HEAD
-        
-=======
+
         console.log('Documento recuperado:', documento);
 
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         if (!documento) {
             console.error('Document not found in localStorage');
             setNotification('Please log in to add products to the cart.');
@@ -121,19 +115,10 @@ const ProductPage = ({ addToCart }) => {
                 id_producto: product.id_producto,
                 cantidad: 1
             });
-<<<<<<< HEAD
             setNotification('Product added to cart successfully.');
         } catch (error) {
             console.error('Error adding product to cart:', error);
             setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
-=======
-
-            console.log('Response:', response.data);
-            setNotification('Producto añadido al carrito.');
-        } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
-            setNotification('Error al agregar producto al carrito.');
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         }
     };
 

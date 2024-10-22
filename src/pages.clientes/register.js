@@ -26,19 +26,12 @@ const Register = () => {
         // Validaciones
         const validations = [
             { condition: !documentNumber || !/^\d+$/.test(documentNumber) || documentNumber.length < 6,
-<<<<<<< HEAD
               message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
             { condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
               message: 'El nombre debe contener solo letras y al menos una letra válida.' },
             { condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
               message: 'El apellido debe contener solo letras y al menos una letra válida.' },
-=======
-                message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
-            { condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
-                message: 'El nombre debe contener solo letras y al menos una letra válida.' },
-            { condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
-                message: 'El apellido debe contener solo letras y al menos una letra válida.' },
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
+
             { condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
                 message: 'El correo electrónico no es válido.' },
             { condition: !password || !/^(?=.[A-Z])(?=.[a-z])(?=.\d)[A-Za-z\d@$!%?&]{8,}$/.test(password),

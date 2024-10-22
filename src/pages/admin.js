@@ -173,15 +173,6 @@ const App = () => {
         }
     };
 
-<<<<<<< HEAD
-    // Manejar cambios en la barra de búsqueda
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
-
-    // Cambiar la sección activa
-=======
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
     const handleSectionChange = (section) => {
         setActiveSection(section);
     };
@@ -223,14 +214,7 @@ const App = () => {
         setTimeout(() => setNotification(''), 3000);
     };
 
-<<<<<<< HEAD
     // Filtrar usuarios según la búsqueda
-    const filteredUsuarios = usuarios.filter(usuario =>
-        usuario.nombre_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        usuario.apellido_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        usuario.documento.toString().includes(searchQuery)
-    );
-=======
     const filteredAndSortedUsuarios = filteredUsuarios.filter((usuario) => {
         const query = searchQuery.toLowerCase();
         return (
@@ -270,8 +254,6 @@ const App = () => {
         setSortColumn(column);
         setSortDirection(direction);
     };
-
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
 
     const fetchProductos = async () => {
         try {
@@ -370,7 +352,7 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
-            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), 
+            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')),
         };
 
         const fotoFile = formData.get('campo_foto');
@@ -441,7 +423,7 @@ const App = () => {
             (producto.estado_producto ? 'activo' : 'inactivo').includes(query)
         );
     });
-    
+
     // Ordenar usuarios
     const sortedProductos = [...filteredAndSortedProductos].sort((a, b) => {
         const aValue = a[sortColumn];
@@ -591,13 +573,11 @@ const App = () => {
         setCurrentOrder(null);
     };
 
-<<<<<<< HEAD
 
     const filteredPedidos = pedidos.filter(pedido =>
         new Date(pedido.fecha_pedido).toLocaleDateString().includes(searchQuery) ||
         pedido.id_pedido.toString().includes(searchQuery)
     );
-=======
     const filteredAndSortedPedidos = pedidos.filter((pedido) => {
         const query = searchQuery.toLowerCase();
         return (
@@ -609,7 +589,6 @@ const App = () => {
             (pedido.estado_pedido || '').toLowerCase().includes(query)
         );
     });
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
 
     // Ordenar usuarios
     const sortedPedidos = [...filteredAndSortedPedidos].sort((a, b) => {
@@ -657,13 +636,13 @@ const App = () => {
             showNotification('Error al agregar envío.');
         }
     };
-    
+
     const handleEditEnvio = async (envioData) => {
         if (!currentEnvio || !currentEnvio.id_envio) {
             console.error('No se puede editar el envío, el envío no es válido.');
             return;
         }
-    
+
         try {
             // Asegúrate de que envioData contenga fecha_envio y pedido_id
             await axios.put(`http://localhost:4000/api/envios/${currentEnvio.id_envio}`, envioData);
@@ -674,7 +653,7 @@ const App = () => {
             console.error('Error al actualizar envío:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el envío.');
         }
-    };    
+    };
 
     const handleEstadoChange = async (id_envio, nuevoEstado) => {
         try {
@@ -685,7 +664,7 @@ const App = () => {
             console.error('Error al actualizar el estado del envío:', error);
             showNotification('Error al actualizar el estado del envío.');
         }
-    };    
+    };
 
     const handleDeleteEnvio = async (id_envio) => {
         try {
@@ -1040,7 +1019,7 @@ const App = () => {
 
     const filteredAndSortedEventos = eventos.filter((evento) => {
         const lowerCaseQuery = searchQuery.toLowerCase();
-    
+
         return (
             evento.id_evento.toString().includes(lowerCaseQuery) ||
             evento.nombre_evento.toLowerCase().includes(lowerCaseQuery) ||
@@ -1083,24 +1062,24 @@ const App = () => {
     });
 
     const filteredAndSortedPagos = pagos.filter((pago) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const formattedid_pago = pago.id_pago.toString();
-    const formattedmetodo_pago = pago.metodo_pago.toString();
-    const formattednombre_pago = pago.nombre_pago.toString();
-    const formattedFecha = new Date(pago.fecha_pago).toLocaleDateString();
-    const formattedSubtotal = pago.subtotal_pago.toString();
-    const formattedTotal = pago.total_pago.toString();
-    const formattedestado_pago = pago.estado_pago.toString();
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const formattedid_pago = pago.id_pago.toString();
+        const formattedmetodo_pago = pago.metodo_pago.toString();
+        const formattednombre_pago = pago.nombre_pago.toString();
+        const formattedFecha = new Date(pago.fecha_pago).toLocaleDateString();
+        const formattedSubtotal = pago.subtotal_pago.toString();
+        const formattedTotal = pago.total_pago.toString();
+        const formattedestado_pago = pago.estado_pago.toString();
 
-    return (
-        formattedid_pago.includes(lowerCaseQuery) ||
-        formattedmetodo_pago.includes(lowerCaseQuery) ||
-        formattednombre_pago.includes(lowerCaseQuery) ||
-        formattedFecha.includes(lowerCaseQuery) ||
-        formattedSubtotal.includes(lowerCaseQuery) ||
-        formattedTotal.includes(lowerCaseQuery) ||
-        formattedestado_pago.includes(lowerCaseQuery)
-    );
+        return (
+            formattedid_pago.includes(lowerCaseQuery) ||
+            formattedmetodo_pago.includes(lowerCaseQuery) ||
+            formattednombre_pago.includes(lowerCaseQuery) ||
+            formattedFecha.includes(lowerCaseQuery) ||
+            formattedSubtotal.includes(lowerCaseQuery) ||
+            formattedTotal.includes(lowerCaseQuery) ||
+            formattedestado_pago.includes(lowerCaseQuery)
+        );
     });
 
     // Ordenar usuarios
@@ -1181,95 +1160,95 @@ const App = () => {
                 </div>
 
                 {activeSection === 'usuarios' && (
-    <div className="admin-section">
-        <div className="admin-section-header">
-            <h2>Usuarios</h2>
-            <input
-                type="text"
-                id="search-usuarios"
-                className="admin-search"
-                placeholder="Buscar usuario"
-                value={searchQuery}
-                onChange={handleSearchChange}
-            />
-            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-            </select>
-        </div>
-        <table className="admin-table">
-            <thead>
-                <tr>
-                    {['documento', 'nombre', 'apellido', 'correo', 'direccion', 'fecha_registro', 'rol', 'estado'].map((col) => (
-                        <th key={col} onClick={() => handleSort(col)} style={{ cursor: 'pointer' }}>
-                            {col.charAt(0).toUpperCase() + col.slice(1)}
-                            {sortColumn === col && (
-                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                            )}
-                        </th>
-                    ))}
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {paginatedUsuarios.length > 0 ? (
-                    paginatedUsuarios.map(usuario => (
-                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
-                            <td>{usuario.documento}</td>
-                            <td>{usuario.nombre_usuario}</td>
-                            <td>{usuario.apellido_usuario}</td>
-                            <td>{usuario.correo_electronico_usuario}</td>
-                            <td>{usuario.direccion}</td>
-                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
-                            <td>
-                                <select
-                                    value={usuario.rol_usuario}
-                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
-                                    className="admin-role-select"
-                                >
-                                    <option value="Cliente">Cliente</option>
-                                    <option value="Vendedor">Vendedor</option>
-                                    <option value="Domiciliario">Domiciliario</option>
-                                    <option value="Administrador">Administrador</option>
-                                </select>
-                            </td>
-                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
-                            <td>
-                                <div className="admin-actions">
-                                    <FontAwesomeIcon
-                                        icon={faEdit}
-                                        className="admin-icon-edit"
-                                        onClick={() => openEditModal(usuario)}
-                                    />
-                                    <FontAwesomeIcon
-                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
-                                        className="icon-toggle"
-                                        onClick={() => handleToggleStatus(usuario.documento)}
-                                    />
-                                </div>
-                            </td>
-                        </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan="9">No hay usuarios disponibles</td>
-                    </tr>
+                    <div className="admin-section">
+                        <div className="admin-section-header">
+                            <h2>Usuarios</h2>
+                            <input
+                                type="text"
+                                id="search-usuarios"
+                                className="admin-search"
+                                placeholder="Buscar usuario"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                            />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
+                        </div>
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    {['documento', 'nombre', 'apellido', 'correo', 'direccion', 'fecha_registro', 'rol', 'estado'].map((col) => (
+                                        <th key={col} onClick={() => handleSort(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedUsuarios.length > 0 ? (
+                                    paginatedUsuarios.map(usuario => (
+                                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
+                                            <td>{usuario.documento}</td>
+                                            <td>{usuario.nombre_usuario}</td>
+                                            <td>{usuario.apellido_usuario}</td>
+                                            <td>{usuario.correo_electronico_usuario}</td>
+                                            <td>{usuario.direccion}</td>
+                                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
+                                            <td>
+                                                <select
+                                                    value={usuario.rol_usuario}
+                                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
+                                                    className="admin-role-select"
+                                                >
+                                                    <option value="Cliente">Cliente</option>
+                                                    <option value="Vendedor">Vendedor</option>
+                                                    <option value="Domiciliario">Domiciliario</option>
+                                                    <option value="Administrador">Administrador</option>
+                                                </select>
+                                            </td>
+                                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
+                                            <td>
+                                                <div className="admin-actions">
+                                                    <FontAwesomeIcon
+                                                        icon={faEdit}
+                                                        className="admin-icon-edit"
+                                                        onClick={() => openEditModal(usuario)}
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
+                                                        className="icon-toggle"
+                                                        onClick={() => handleToggleStatus(usuario.documento)}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="9">No hay usuarios disponibles</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPages}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
                 )}
-            </tbody>
-        </table>
-        <div className="pagination">
-            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                Anterior
-            </button>
-            <span>Página {currentPage} de {totalPages}</span>
-            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                Siguiente
-            </button>
-        </div>
-    </div>
-)}
 
 
                 {activeSection === 'productos' && (
@@ -1300,19 +1279,19 @@ const App = () => {
                             />
                         )}
                         <table className="admin-table">
-                        <thead>
-                            <tr>
-                                {['ID', 'Código', 'Nombre', 'Precio', 'Stock', 'Descripción', 'Foto', 'Estado'].map((col) => (
-                                    <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+                            <thead>
+                                <tr>
+                                    {['ID', 'Código', 'Nombre', 'Precio', 'Stock', 'Descripción', 'Foto', 'Estado'].map((col) => (
+                                        <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {paginatedProductos.length > 0 ? (
                                     paginatedProductos.map(producto => (
@@ -1391,39 +1370,22 @@ const App = () => {
                         </div>
                         <button className="admin-add-button" onClick={openCreateModal}>Crear Nuevo Pedido</button>
                         <table className="admin-table">
-<<<<<<< HEAD
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Documento Cliente</th>
-                                    <th>Nombre Cliente</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
+                                    {['ID', 'Fecha', 'Documento Cliente', 'Nombre Cliente', 'Total', 'Estado', 'Foto'].map((col) => (
+                                        <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredPedidos.length > 0 ? (
-                                    filteredPedidos.map(pedido => (
-=======
-                        <thead>
-                            <tr>
-                                {['ID', 'Fecha','Documento Cliente', 'Nombre Cliente', 'Total', 'Estado', 'Foto'].map((col) => (
-                                    <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                            <tbody>
                                 {Array.isArray(paginatedPedidos) && paginatedPedidos.length > 0 ? (
                                     paginatedPedidos.map(pedido => (
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                         <tr key={pedido.id_pedido} className={pedido.estado_pedido === 'Cancelado' ? 'inactive' : ''}>
                                             <td>{pedido.id_pedido}</td>
                                             <td>{pedido.fecha_pedido}</td>
@@ -1492,19 +1454,19 @@ const App = () => {
                         </div>
                         <button className="admin-add-button" onClick={openEnvioModal}>Agregar Nuevo Envío</button>
                         <table className="admin-table">
-                        <thead>
-                            <tr>
-                                {['ID', 'Fecha', 'Estado'].map((col) => (
-                                    <th key={col} onClick={() => handleSortEnvios(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+                            <thead>
+                                <tr>
+                                    {['ID', 'Fecha', 'Estado'].map((col) => (
+                                        <th key={col} onClick={() => handleSortEnvios(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {paginatedEnvios.length > 0 ? (
                                     paginatedEnvios.map(envio => (
@@ -1580,29 +1542,19 @@ const App = () => {
                             Agregar Nuevo Tipo de Flor
                         </button>
                         <table className="admin-table">
-<<<<<<< HEAD
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
+                                    {['ID', 'Nombre', 'Foto'].map((col) => (
+                                        <th key={col} onClick={() => handleSortTiposFlor(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-=======
-                        <thead>
-                            <tr>
-                                {['ID', 'Nombre', 'Foto'].map((col) => (
-                                    <th key={col} onClick={() => handleSortTiposFlor(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                             <tbody>
                                 {paginatedTiposFlor.length > 0 ? (
                                     paginatedTiposFlor.map(tipoFlor => (
@@ -1672,37 +1624,25 @@ const App = () => {
                             Agregar Nueva Fecha Especial
                         </button>
                         <table className="admin-table">
-<<<<<<< HEAD
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
+                                    {['ID', 'Nombre', 'Fecha', 'Foto'].map((col) => (
+                                        <th key={col} onClick={() => handleSortFechasEspeciales(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-=======
-                        <thead>
-                            <tr>
-                                {['ID', 'Nombre', 'Fecha', 'Foto'].map((col) => (
-                                    <th key={col} onClick={() => handleSortFechasEspeciales(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                             <tbody>
                                 {paginatedFechasEspeciales.length > 0 ? (
                                     paginatedFechasEspeciales.map(fecha => (
                                         <tr key={fecha.id_fecha_especial}>
                                             <td>{fecha.id_fecha_especial}</td>
                                             <td>{fecha.nombre_fecha_especial}</td>
-<<<<<<< HEAD
-=======
                                             <td>{new Date(fecha.fecha).toLocaleDateString()}</td>
                                             <td>
                                                 {fecha.foto_fecha_especialURL ? (
@@ -1715,7 +1655,6 @@ const App = () => {
                                                     <span>No disponible</span>
                                                 )}
                                             </td>
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                             <td>
                                                 <div className="admin-actions">
                                                     <FontAwesomeIcon
@@ -1774,19 +1713,19 @@ const App = () => {
                             Agregar Nuevo Evento
                         </button>
                         <table className="admin-table">
-                        <thead>
-                            <tr>
-                                {['ID', 'Nombre', 'Descripción', 'Foto'].map((col) => (
-                                    <th key={col} onClick={() => handleSortEventos(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+                            <thead>
+                                <tr>
+                                    {['ID', 'Nombre', 'Descripción', 'Foto'].map((col) => (
+                                        <th key={col} onClick={() => handleSortEventos(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {paginatedEventos.length > 0 ? (
                                     paginatedEventos.map(evento => (
@@ -1864,7 +1803,6 @@ const App = () => {
                             </select>
                         </div>
                         <table className="admin-table">
-<<<<<<< HEAD
                             <thead>
                                 <tr>
                                     <th>ID Pago</th>
@@ -1878,24 +1816,7 @@ const App = () => {
                             </thead>
                             <tbody>
                                 {filteredPagos.length > 0 ? (
-                                    filteredPagos.map(pago => (
-=======
-                        <thead>
-                            <tr>
-                                {['ID Pago', 'Nombre', 'Fecha', 'Método de Pago', 'Subtotal', 'Total', 'Estado'].map((col) => (
-                                    <th key={col} onClick={() => handleSortPagos(col)} style={{ cursor: 'pointer' }}>
-                                        {col.charAt(0).toUpperCase() + col.slice(1)}
-                                        {sortColumn === col && (
-                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                        )}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                            <tbody>
-                                {paginatedPagos.length > 0 ? (
                                     paginatedPagos.map(pago => (
->>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                         <tr key={pago.id_pago}>
                                             <td>{pago.id_pago}</td>
                                             <td>{pago.documento}</td>
@@ -1935,7 +1856,6 @@ const App = () => {
                         </div>
                     </div>
                 )}
-
 
             </div>
             <Footer />

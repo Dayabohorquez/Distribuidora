@@ -59,7 +59,7 @@ const CartPage = () => {
             }
             try {
                 const response = await axios.get(`http://localhost:4000/api/carrito/completo/${documento}`);
-                localStorage.setItem('id_carrito', response.data.id_carrito); // Asegúrate de que esto exista en la respuesta
+                localStorage.setItem('id_carrito', response.data.id_carrito);
                 setCartItems(response.data);
                 updateCartTotal(response.data);
             } catch (error) {
@@ -74,24 +74,6 @@ const CartPage = () => {
     }, [isAuthenticated]);
 
     // Calcular totales
-    const calculateCartTotal = () => {
-        const total = cartItems.reduce((acc, item) => {
-            const precioBase = parseFloat(item.precio_producto) || 0;
-            const precioAdicional = parseFloat(item.precio_adicional) || 0;
-            const cantidad = parseInt(item.cantidad) || 0;
-            return acc + ((precioBase + precioAdicional) * cantidad);
-        }, 0);
-
-        const ivaRate = 0.19; // 19%
-        return {
-            subtotal: total,
-            iva: total * ivaRate,
-            totalConIva: total + (total * ivaRate)
-        };
-    };
-
-
-    // Actualizar el total del carrito
     const updateCartTotal = (items) => {
         const total = items.reduce((acc, item) => {
             const precioBase = parseFloat(item.precio_producto) || 0;
@@ -102,6 +84,7 @@ const CartPage = () => {
         setCartTotal({ subtotal: total, iva: total * ivaRate });
     };
 
+    // Actualizar el total en la base de datos
     const updateTotalInDatabase = useCallback(async () => {
         const id_carrito = localStorage.getItem('id_carrito');
         if (!id_carrito) {
@@ -109,7 +92,7 @@ const CartPage = () => {
             return;
         }
 
-        const { totalConIva } = calculateCartTotal();
+        const totalConIva = cartTotal.subtotal + cartTotal.iva;
         try {
             await axios.put(`http://localhost:4000/api/actualizarTotal/${id_carrito}`, { total: totalConIva });
             setNotification('Total actualizado en la base de datos.');
@@ -118,7 +101,7 @@ const CartPage = () => {
             console.error('Error al actualizar el total en la base de datos:', error);
             setNotification('Error al actualizar el total.');
         }
-    }, []);
+    }, [cartTotal]);
 
     // Actualizar cantidad del producto en el carrito
     const updateQuantity = useCallback(async (itemId, newQuantity) => {
@@ -193,14 +176,19 @@ const CartPage = () => {
         }
         try {
             await axios.delete(`http://localhost:4000/api/carrito/eliminar/${itemId}`);
-            setCartItems(prevItems => prevItems.filter(item => item.id_carrito_item !== itemId));
+            setCartItems(prevItems => {
+                const updatedItems = prevItems.filter(item => item.id_carrito_item !== itemId);
+                updateCartTotal(updatedItems); // Actualiza el total después de eliminar
+                updateTotalInDatabase(); // Actualiza el total en la base de datos
+                return updatedItems;
+            });
             setNotification('Producto eliminado del carrito.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
             setNotification('Error al eliminar el producto.');
         }
-    }, []);
+    }, [updateTotalInDatabase]);
 
     // Vaciar carrito completo
     const emptyCart = useCallback(async () => {
@@ -212,19 +200,21 @@ const CartPage = () => {
         try {
             await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
             setCartItems([]);
+            setCartTotal({ subtotal: 0, iva: 0 }); // Reinicia el total
+            updateTotalInDatabase(); // Actualiza el total en la base de datos
             setNotification('Carrito vacío.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al vaciar el carrito:', error);
             setNotification('Error al vaciar el carrito.');
         }
-    }, []);
+    }, [updateTotalInDatabase]);
 
     // Opciones adicionales para el desplegable
     const additionalOptions = Object.keys(additionalOptionPrices);
 
     const handleCheckout = () => {
-        updateTotalInDatabase();
+        updateTotalInDatabase(); // Asegúrate de que se actualice antes de proceder
 
         const cartData = cartItems.map(({ id_carrito_item, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria }) => ({
             id_carrito_item,
