@@ -68,15 +68,29 @@ const ProductPage = ({ addToCart }) => {
     };
 
     const handleFilterChange = (e) => {
-        const { id, checked } = e.target;
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [id]: checked ? id : ''
-        }));
+        const { id, checked, name } = e.target;
+
+        // Si es un filtro de precio, desmarcar otros filtros de precio
+        if (name === 'price') {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                price: checked ? id : null // Solo permite un filtro de precio activo a la vez
+            }));
+        } else {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                [id]: checked ? id : '' // Si está marcado, activar filtro, si no, desactivar
+            }));
+        }
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
+<<<<<<< HEAD
+=======
+
+        // Filtros de ocasión, precio y tipo
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         const matchOccasion = !occasion || product.occasion === occasion;
         const matchPrice = !price || 
             (price === 'below-100' && product.precio_producto < 100000) ||
@@ -89,7 +103,12 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
+<<<<<<< HEAD
         
+=======
+        console.log('Documento recuperado:', documento);
+
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         if (!documento) {
             console.error('Document not found in localStorage');
             setNotification('Please log in to add products to the cart.');
@@ -102,10 +121,19 @@ const ProductPage = ({ addToCart }) => {
                 id_producto: product.id_producto,
                 cantidad: 1
             });
+<<<<<<< HEAD
             setNotification('Product added to cart successfully.');
         } catch (error) {
             console.error('Error adding product to cart:', error);
             setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+=======
+
+            console.log('Response:', response.data);
+            setNotification('Producto añadido al carrito.');
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification('Error al agregar producto al carrito.');
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
         }
     };
 
@@ -123,24 +151,48 @@ const ProductPage = ({ addToCart }) => {
                     <div className="filter">
                         <h3>Ocasión</h3>
                         <ul>
-                            <li><input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} /> Amor y Amistad</li>
-                            <li><input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} /> Cumpleaños</li>
+                            <li>
+                                <input type="checkbox" id="Amor y Amistad" onChange={handleFilterChange} />
+                                Amor y Amistad
+                            </li>
+                            <li>
+                                <input type="checkbox" id="Cumpleaños" onChange={handleFilterChange} />
+                                Cumpleaños
+                            </li>
                         </ul>
                     </div>
                     <div className="filter">
                         <h3>Precio</h3>
                         <ul>
-                            <li><input type="checkbox" id="below-100" onChange={handleFilterChange} /> Inferior a $100.000</li>
-                            <li><input type="checkbox" id="between-100-200" onChange={handleFilterChange} /> Entre $100.000 - $200.000</li>
-                            <li><input type="checkbox" id="above-200" onChange={handleFilterChange} /> Superior a $200.000</li>
+                            <li>
+                                <input type="checkbox" id="below-100" name="price" onChange={handleFilterChange} />
+                                Inferior a $100.000
+                            </li>
+                            <li>
+                                <input type="checkbox" id="between-100-200" name="price" onChange={handleFilterChange} />
+                                Entre $100.000 - $200.000
+                            </li>
+                            <li>
+                                <input type="checkbox" id="above-200" name="price" onChange={handleFilterChange} />
+                                Superior a $200.000
+                            </li>
                         </ul>
                     </div>
                     <div className="filter">
                         <h3>Tipo de Flor</h3>
                         <ul>
-                            <li><input type="checkbox" id="rosas" onChange={handleFilterChange} /> Rosas</li>
-                            <li><input type="checkbox" id="tropicales" onChange={handleFilterChange} /> Flores Tropicales</li>
-                            <li><input type="checkbox" id="surtidas" onChange={handleFilterChange} /> Flores Surtidas</li>
+                            <li>
+                                <input type="checkbox" id="rosas" onChange={handleFilterChange} />
+                                Rosas
+                            </li>
+                            <li>
+                                <input type="checkbox" id="tropicales" onChange={handleFilterChange} />
+                                Flores Tropicales
+                            </li>
+                            <li>
+                                <input type="checkbox" id="surtidas" onChange={handleFilterChange} />
+                                Flores Surtidas
+                            </li>
                         </ul>
                     </div>
                 </aside>

@@ -12,8 +12,13 @@ const Footer = () => {
                 <div className="footer-socials">
                     <p className="footer-title">Nuestras<span className="highlight"> Redes</span></p>
                     <div className="social-icons">
-                        <Link to ="#" className="social-icon"><FontAwesomeIcon icon={faWhatsapp} /></Link>
-                        <Link to="https://www.facebook.com/profile.php?id=100066451555506" className="social-icon"><FontAwesomeIcon icon={faFacebook} /></Link>
+                        {/* Enlace directo a WhatsApp */}
+                        <a href="https://wa.me/3222118028" className="social-icon" target="_blank" rel="noopener noreferrer">
+                            <FontAwesomeIcon icon={faWhatsapp} />
+                        </a>
+                        <Link to="https://www.facebook.com/profile.php?id=100066451555506" className="social-icon">
+                            <FontAwesomeIcon icon={faFacebook} />
+                        </Link>
                     </div>
                 </div>
 

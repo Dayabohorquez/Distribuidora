@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import { faEdit, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import '../index.css';
-import Headerc from '../components/Header.c';
-import Footer from '../components/Footer';
+import React, { useEffect, useState } from 'react';
+import CreateProductModal from '../components/createprodmodal';
 import EditModal from '../components/editmodal';
 import EditProdModal from '../components/editprodmodal';
-import CreateProductModal from '../components/createprodmodal';
-import { faEdit, faToggleOff, faToggleOn } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ManageOrderModal from '../components/ManageOrderModal';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import EnvioModal from '../components/enviomodal';
-import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
+import Footer from '../components/Footer';
+import Headerc from '../components/Header.c';
 import ManageEventoModal from '../components/ManageEventoModal';
+import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
+import ManageOrderModal from '../components/ManageOrderModal';
 import ManageTipoFlorModal from '../components/ManageTipoFlorModal';
+import '../index.css';
 
 const App = () => {
     const [activeSection, setActiveSection] = useState('usuarios');
-    const [usuarios, setUsuarios] = useState([]);
+    const [filteredUsuarios, setUsuarios] = useState([]);
     const [productos, setProductos] = useState([]);
     const [pedidos, setPedidos] = useState([]);
     const [envios, setEnvios] = useState([]);
@@ -44,6 +43,10 @@ const App = () => {
     const [eventoModalOpen, setEventoModalOpen] = useState(null);
     const [tipoFlorModalOpen, setTipoFlorModalOpen] = useState(false);
     const [pagos, setPagos] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [sortColumn, setSortColumn] = useState('documento');
+    const [sortDirection, setSortDirection] = useState('asc');
 
     // Llama a fetchPagos en useEffect
     useEffect(() => {
@@ -170,12 +173,15 @@ const App = () => {
         }
     };
 
+<<<<<<< HEAD
     // Manejar cambios en la barra de búsqueda
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
 
     // Cambiar la sección activa
+=======
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
     const handleSectionChange = (section) => {
         setActiveSection(section);
     };
@@ -217,12 +223,55 @@ const App = () => {
         setTimeout(() => setNotification(''), 3000);
     };
 
+<<<<<<< HEAD
     // Filtrar usuarios según la búsqueda
     const filteredUsuarios = usuarios.filter(usuario =>
         usuario.nombre_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
         usuario.apellido_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
         usuario.documento.toString().includes(searchQuery)
     );
+=======
+    const filteredAndSortedUsuarios = filteredUsuarios.filter((usuario) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(usuario.documento || '').toLowerCase().includes(query) ||
+            (usuario.nombre_usuario || '').toLowerCase().includes(query) ||
+            (usuario.apellido_usuario || '').toLowerCase().includes(query) ||
+            (usuario.correo_electronico_usuario || '').toLowerCase().includes(query) ||
+            (usuario.direccion || '').toLowerCase().includes(query) ||
+            new Date(usuario.fecha_registro).toLocaleDateString().includes(query) ||
+            (usuario.rol_usuario || '').toLowerCase().includes(query) ||
+            (usuario.estado_usuario === 1 ? 'activo' : 'inactivo').includes(query)
+        );
+    });
+
+    // Ordenar usuarios
+    const sortedUsuarios = [...filteredAndSortedUsuarios].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPages = Math.ceil(sortedUsuarios.length / rowsPerPage);
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const paginatedUsuarios = sortedUsuarios.slice(startIndex, endIndex);
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSort = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
 
     const fetchProductos = async () => {
         try {
@@ -321,7 +370,7 @@ const App = () => {
             cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
-            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
+            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), 
         };
 
         const fotoFile = formData.get('campo_foto');
@@ -380,11 +429,44 @@ const App = () => {
         }
     };
 
-    const filteredProductos = productos.filter(producto =>
-        producto.nombre_producto.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        producto.id_producto.toString().includes(searchQuery) ||
-        producto.codigo_producto.toString().includes(searchQuery)
-    );
+    const filteredAndSortedProductos = productos.filter((producto) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(producto.id_producto || '').toLowerCase().includes(query) ||
+            String(producto.codigo_producto || '').toLowerCase().includes(query) ||
+            (producto.nombre_producto || '').toLowerCase().includes(query) ||
+            (producto.precio_producto !== null ? String(Math.floor(producto.precio_producto)) : '').includes(query) ||
+            String(producto.cantidad_disponible !== undefined ? producto.cantidad_disponible : 0).includes(query) ||
+            (producto.descripcion_producto || '').toLowerCase().includes(query) ||
+            (producto.estado_producto ? 'activo' : 'inactivo').includes(query)
+        );
+    });
+    
+    // Ordenar usuarios
+    const sortedProductos = [...filteredAndSortedProductos].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesProductos = Math.ceil(sortedProductos.length / rowsPerPage);
+    const startIndexProductos = (currentPage - 1) * rowsPerPage;
+    const endIndexProductos = startIndexProductos + rowsPerPage;
+    const paginatedProductos = sortedProductos.slice(startIndexProductos, endIndexProductos);
+
+    const handleSearchChangeProductos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortProductos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const fetchPedidos = async () => {
         try {
@@ -509,11 +591,51 @@ const App = () => {
         setCurrentOrder(null);
     };
 
+<<<<<<< HEAD
 
     const filteredPedidos = pedidos.filter(pedido =>
         new Date(pedido.fecha_pedido).toLocaleDateString().includes(searchQuery) ||
         pedido.id_pedido.toString().includes(searchQuery)
     );
+=======
+    const filteredAndSortedPedidos = pedidos.filter((pedido) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(pedido.id_pedido || '').toLowerCase().includes(query) ||
+            String(pedido.fecha_pedido || '').toLowerCase().includes(query) ||
+            (pedido.documento || '').toLowerCase().includes(query) ||
+            `${pedido.nombre_usuario || ''} ${pedido.apellido_usuario || ''}`.toLowerCase().includes(query) ||
+            (pedido.total_pagado !== null ? String(Math.floor(pedido.total_pagado)) : '').includes(query) ||
+            (pedido.estado_pedido || '').toLowerCase().includes(query)
+        );
+    });
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
+
+    // Ordenar usuarios
+    const sortedPedidos = [...filteredAndSortedPedidos].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesPedidos = Math.ceil(sortedPedidos.length / rowsPerPage);
+    const startIndexPedidos = (currentPage - 1) * rowsPerPage;
+    const endIndexPedidos = startIndexPedidos + rowsPerPage;
+    const paginatedPedidos = sortedPedidos.slice(startIndexPedidos, endIndexPedidos);
+
+    const handleSearchChangePedidos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortPedidos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const fetchEnvios = async () => {
         try {
@@ -595,9 +717,40 @@ const App = () => {
         setCurrentEnvio(null); // Limpia el envío actual
     };
 
-    const filteredEnvios = envios.filter(envio =>
-        envio.id_envio.toString().includes(searchQuery)
-    );
+    const filteredAndSortedEnvios = envios.filter((envio) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(envio.id_envio || '').toLowerCase().includes(query) ||
+            String(envio.fecha_envio || '').toLowerCase().includes(query) ||
+            (envio.estado_envio || '').toLowerCase().includes(query)
+        );
+    });
+
+    // Ordenar usuarios
+    const sortedEnvios = [...filteredAndSortedEnvios].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesEnvios = Math.ceil(sortedEnvios.length / rowsPerPage);
+    const startIndexEnvios = (currentPage - 1) * rowsPerPage;
+    const endIndexEnvios = startIndexEnvios + rowsPerPage;
+    const paginatedEnvios = sortedEnvios.slice(startIndexEnvios, endIndexEnvios);
+
+    const handleSearchChangeEnvios = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortEnvios = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const openEventoModal = () => {
         setIsEventoModalOpen(true);
@@ -751,9 +904,40 @@ const App = () => {
         setCurrentFechaEspecial(null);
     };
 
-    const filteredFechasEspeciales = fechasEspeciales.filter(fecha =>
-        fecha.nombre_fecha_especial.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredAndSortedFechasEspeciales = fechasEspeciales.filter((fecha) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(fecha.id_fecha_especial || '').toLowerCase().includes(query) ||
+            (fecha.nombre_fecha_especial || '').toLowerCase().includes(query) ||
+            new Date(fecha.fecha).toLocaleDateString().includes(query)
+        );
+    });
+
+    // Ordenar usuarios
+    const sortedFechasEspeciales = [...filteredAndSortedFechasEspeciales].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesFechasEspeciales = Math.ceil(sortedFechasEspeciales.length / rowsPerPage);
+    const startIndexFechasEspeciales = (currentPage - 1) * rowsPerPage;
+    const endIndexFechasEspeciales = startIndexFechasEspeciales + rowsPerPage;
+    const paginatedFechasEspeciales = sortedFechasEspeciales.slice(startIndexFechasEspeciales, endIndexFechasEspeciales);
+
+    const handleSearchChangeFechasEspeciales = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortFechasEspeciales = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const fetchEventos = async () => {
         try {
@@ -854,13 +1038,122 @@ const App = () => {
         setCurrentEvento(null);
     };
 
-    const filteredEventos = eventos.filter(evento =>
-        evento.nombre_evento.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredAndSortedEventos = eventos.filter((evento) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+    
+        return (
+            evento.id_evento.toString().includes(lowerCaseQuery) ||
+            evento.nombre_evento.toLowerCase().includes(lowerCaseQuery) ||
+            (evento.descripcion && evento.descripcion.toLowerCase().includes(lowerCaseQuery))
+        );
+    });
 
-    const filteredTiposFlor = tiposFlor.filter(tipo =>
-        tipo.nombre_tipo_flor.toLowerCase().includes(searchQuery.toLowerCase())
+    // Ordenar usuarios
+    const sortedEventos = [...filteredAndSortedEventos].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesEventos = Math.ceil(sortedEventos.length / rowsPerPage);
+    const startIndexEventos = (currentPage - 1) * rowsPerPage;
+    const endIndexEventos = startIndexEventos + rowsPerPage;
+    const paginatedEventos = sortedEventos.slice(startIndexEventos, endIndexEventos);
+
+    const handleSearchChangeEventos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortEventos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+    const filteredAndSortedTiposFlor = tiposFlor.filter((tipoFlor) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(tipoFlor.id_tipo_flor || '').toLowerCase().includes(query) ||
+            (tipoFlor.nombre_tipo_flor || '').toLowerCase().includes(query)
+        );
+    });
+
+    const filteredAndSortedPagos = pagos.filter((pago) => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const formattedid_pago = pago.id_pago.toString();
+    const formattedmetodo_pago = pago.metodo_pago.toString();
+    const formattednombre_pago = pago.nombre_pago.toString();
+    const formattedFecha = new Date(pago.fecha_pago).toLocaleDateString();
+    const formattedSubtotal = pago.subtotal_pago.toString();
+    const formattedTotal = pago.total_pago.toString();
+    const formattedestado_pago = pago.estado_pago.toString();
+
+    return (
+        formattedid_pago.includes(lowerCaseQuery) ||
+        formattedmetodo_pago.includes(lowerCaseQuery) ||
+        formattednombre_pago.includes(lowerCaseQuery) ||
+        formattedFecha.includes(lowerCaseQuery) ||
+        formattedSubtotal.includes(lowerCaseQuery) ||
+        formattedTotal.includes(lowerCaseQuery) ||
+        formattedestado_pago.includes(lowerCaseQuery)
     );
+    });
+
+    // Ordenar usuarios
+    const sortedPagos = [...filteredAndSortedPagos].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesPagos = Math.ceil(sortedPagos.length / rowsPerPage);
+    const startIndexPagos = (currentPage - 1) * rowsPerPage;
+    const endIndexPagos = startIndexPagos + rowsPerPage;
+    const paginatedPagos = sortedPagos.slice(startIndexPagos, endIndexPagos);
+
+    const handleSearchChangePagos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortPagos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+    // Ordenar usuarios
+    const sortedTiposFlor = [...filteredAndSortedTiposFlor].sort((a, b) => {
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Paginación
+    const totalPagesTiposFlor = Math.ceil(sortedTiposFlor.length / rowsPerPage);
+    const startIndexTiposFlor = (currentPage - 1) * rowsPerPage;
+    const endIndexTiposFlor = startIndexTiposFlor + rowsPerPage;
+    const paginatedTiposFlor = sortedTiposFlor.slice(startIndexTiposFlor, endIndexTiposFlor);
+
+    const handleSearchChangeTiposFlor = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortTiposFlor = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const filteredPagos = pagos.filter(pago =>
         pago.id_pago.toString().includes(searchQuery) ||
@@ -888,80 +1181,96 @@ const App = () => {
                 </div>
 
                 {activeSection === 'usuarios' && (
-                    <div className="admin-section">
-                        <div className="admin-section-header">
-                            <h2>Usuarios</h2>
-                            <input
-                                type="text"
-                                id="search-usuarios"
-                                className="admin-search"
-                                placeholder="Buscar usuario por nombre o documento..."
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                            />
-                        </div>
-                        <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Correo</th>
-                                    <th>Dirección</th>
-                                    <th>Fecha de Registro</th>
-                                    <th>Rol</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredUsuarios.length > 0 ? (
-                                    filteredUsuarios.map(usuario => (
-                                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
-                                            <td>{usuario.documento}</td>
-                                            <td>{usuario.nombre_usuario}</td>
-                                            <td>{usuario.apellido_usuario}</td>
-                                            <td>{usuario.correo_electronico_usuario}</td>
-                                            <td>{usuario.direccion}</td>
-                                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
-                                            <td>
-                                                <select
-                                                    value={usuario.rol_usuario}
-                                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
-                                                    className="admin-role-select"
-                                                >
-                                                    <option value="Cliente">Cliente</option>
-                                                    <option value="Vendedor">Vendedor</option>
-                                                    <option value="Domiciliario">Domiciliario</option>
-                                                    <option value="Administrador">Administrador</option>
-                                                </select>
-                                            </td>
-                                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
-                                            <td>
-                                                <div className="admin-actions">
-                                                    <FontAwesomeIcon
-                                                        icon={faEdit}
-                                                        className="admin-icon-edit"
-                                                        onClick={() => openEditModal(usuario)}
-                                                    />
-                                                    <FontAwesomeIcon
-                                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
-                                                        className="icon-toggle"
-                                                        onClick={() => handleToggleStatus(usuario.documento)}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="9">No hay usuarios disponibles</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Usuarios</h2>
+            <input
+                type="text"
+                id="search-usuarios"
+                className="admin-search"
+                placeholder="Buscar usuario"
+                value={searchQuery}
+                onChange={handleSearchChange}
+            />
+            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+            </select>
+        </div>
+        <table className="admin-table">
+            <thead>
+                <tr>
+                    {['documento', 'nombre', 'apellido', 'correo', 'direccion', 'fecha_registro', 'rol', 'estado'].map((col) => (
+                        <th key={col} onClick={() => handleSort(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedUsuarios.length > 0 ? (
+                    paginatedUsuarios.map(usuario => (
+                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
+                            <td>{usuario.documento}</td>
+                            <td>{usuario.nombre_usuario}</td>
+                            <td>{usuario.apellido_usuario}</td>
+                            <td>{usuario.correo_electronico_usuario}</td>
+                            <td>{usuario.direccion}</td>
+                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
+                            <td>
+                                <select
+                                    value={usuario.rol_usuario}
+                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
+                                    className="admin-role-select"
+                                >
+                                    <option value="Cliente">Cliente</option>
+                                    <option value="Vendedor">Vendedor</option>
+                                    <option value="Domiciliario">Domiciliario</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </td>
+                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
+                            <td>
+                                <div className="admin-actions">
+                                    <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="admin-icon-edit"
+                                        onClick={() => openEditModal(usuario)}
+                                    />
+                                    <FontAwesomeIcon
+                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
+                                        className="icon-toggle"
+                                        onClick={() => handleToggleStatus(usuario.documento)}
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="9">No hay usuarios disponibles</td>
+                    </tr>
                 )}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPages}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
+
 
                 {activeSection === 'productos' && (
                     <div className="admin-section">
@@ -973,8 +1282,14 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar producto..."
                                 value={searchQuery}
-                                onChange={handleSearchChange}
+                                onChange={handleSearchChangeProductos}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openCreateProductModal}>Añadir Nuevo Producto</button>
                         {showCreateProductModal && (
@@ -985,22 +1300,22 @@ const App = () => {
                             />
                         )}
                         <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th>Descripción</th>
-                                    <th>Foto</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
+                        <thead>
+                            <tr>
+                                {['ID', 'Código', 'Nombre', 'Precio', 'Stock', 'Descripción', 'Foto', 'Estado'].map((col) => (
+                                    <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
                             <tbody>
-                                {filteredProductos.length > 0 ? (
-                                    filteredProductos.map(producto => (
+                                {paginatedProductos.length > 0 ? (
+                                    paginatedProductos.map(producto => (
                                         <tr key={producto.id_producto}>
                                             <td>{producto.id_producto || 'N/A'}</td>
                                             <td>{producto.codigo_producto || 'N/A'}</td>
@@ -1043,6 +1358,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesProductos}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesProductos))} disabled={currentPage === totalPagesProductos}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1056,11 +1380,18 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar pedido..."
                                 value={searchQuery}
-                                onChange={handleSearchChange}
+                                onChange={handleSearchChangePedidos}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openCreateModal}>Crear Nuevo Pedido</button>
                         <table className="admin-table">
+<<<<<<< HEAD
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -1075,6 +1406,24 @@ const App = () => {
                             <tbody>
                                 {filteredPedidos.length > 0 ? (
                                     filteredPedidos.map(pedido => (
+=======
+                        <thead>
+                            <tr>
+                                {['ID', 'Fecha','Documento Cliente', 'Nombre Cliente', 'Total', 'Estado', 'Foto'].map((col) => (
+                                    <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                {Array.isArray(paginatedPedidos) && paginatedPedidos.length > 0 ? (
+                                    paginatedPedidos.map(pedido => (
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                         <tr key={pedido.id_pedido} className={pedido.estado_pedido === 'Cancelado' ? 'inactive' : ''}>
                                             <td>{pedido.id_pedido}</td>
                                             <td>{pedido.fecha_pedido}</td>
@@ -1110,6 +1459,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesPedidos}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesPedidos))} disabled={currentPage === totalPagesPedidos}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1123,22 +1481,33 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar envío..."
                                 value={searchQuery}
-                                onChange={handleSearchChange}
+                                onChange={handleSearchChangeEnvios}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openEnvioModal}>Agregar Nuevo Envío</button>
                         <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
+                        <thead>
+                            <tr>
+                                {['ID', 'Fecha', 'Estado'].map((col) => (
+                                    <th key={col} onClick={() => handleSortEnvios(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
                             <tbody>
-                                {filteredEnvios.length > 0 ? (
-                                    filteredEnvios.map(envio => (
+                                {paginatedEnvios.length > 0 ? (
+                                    paginatedEnvios.map(envio => (
                                         <tr key={envio.id_envio}>
                                             <td>{envio.id_envio}</td>
                                             <td>{envio.fecha_envio}</td>
@@ -1176,6 +1545,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesEnvios}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesEnvios))} disabled={currentPage === totalPagesEnvios}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1189,13 +1567,20 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar tipo de flor..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={handleSearchChangeTiposFlor}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openAddTipoFlorModal}>
                             Agregar Nuevo Tipo de Flor
                         </button>
                         <table className="admin-table">
+<<<<<<< HEAD
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -1203,9 +1588,24 @@ const App = () => {
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
+=======
+                        <thead>
+                            <tr>
+                                {['ID', 'Nombre', 'Foto'].map((col) => (
+                                    <th key={col} onClick={() => handleSortTiposFlor(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                             <tbody>
-                                {filteredTiposFlor.length > 0 ? (
-                                    filteredTiposFlor.map(tipoFlor => (
+                                {paginatedTiposFlor.length > 0 ? (
+                                    paginatedTiposFlor.map(tipoFlor => (
                                         <tr key={tipoFlor.id_tipo_flor}>
                                             <td>{tipoFlor.id_tipo_flor}</td>
                                             <td>{tipoFlor.nombre_tipo_flor}</td>
@@ -1236,6 +1636,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesTiposFlor}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesTiposFlor))} disabled={currentPage === totalPagesTiposFlor}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1250,13 +1659,20 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar fecha especial..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={handleSearchChangeFechasEspeciales}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openFechaEspecialModal}>
                             Agregar Nueva Fecha Especial
                         </button>
                         <table className="admin-table">
+<<<<<<< HEAD
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -1264,12 +1680,42 @@ const App = () => {
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
+=======
+                        <thead>
+                            <tr>
+                                {['ID', 'Nombre', 'Fecha', 'Foto'].map((col) => (
+                                    <th key={col} onClick={() => handleSortFechasEspeciales(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                             <tbody>
-                                {filteredFechasEspeciales.length > 0 ? (
-                                    filteredFechasEspeciales.map(fecha => (
+                                {paginatedFechasEspeciales.length > 0 ? (
+                                    paginatedFechasEspeciales.map(fecha => (
                                         <tr key={fecha.id_fecha_especial}>
                                             <td>{fecha.id_fecha_especial}</td>
                                             <td>{fecha.nombre_fecha_especial}</td>
+<<<<<<< HEAD
+=======
+                                            <td>{new Date(fecha.fecha).toLocaleDateString()}</td>
+                                            <td>
+                                                {fecha.foto_fecha_especialURL ? (
+                                                    <img
+                                                        src={fecha.foto_fecha_especialURL}
+                                                        alt={fecha.nombre_fecha_especial}
+                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+                                                    />
+                                                ) : (
+                                                    <span>No disponible</span>
+                                                )}
+                                            </td>
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                             <td>
                                                 <div className="admin-actions">
                                                     <FontAwesomeIcon
@@ -1293,6 +1739,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesFechasEspeciales}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesFechasEspeciales))} disabled={currentPage === totalPagesFechasEspeciales}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1306,25 +1761,35 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar evento..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={handleSearchChangeEventos}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <button className="admin-add-button" onClick={openAddEventoModal}>
                             Agregar Nuevo Evento
                         </button>
                         <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
-                                    <th>Descripción</th> {/* Nueva columna para la descripción */}
-                                    <th>Foto</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
+                        <thead>
+                            <tr>
+                                {['ID', 'Nombre', 'Descripción', 'Foto'].map((col) => (
+                                    <th key={col} onClick={() => handleSortEventos(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
                             <tbody>
-                                {filteredEventos.length > 0 ? (
-                                    filteredEventos.map(evento => (
+                                {paginatedEventos.length > 0 ? (
+                                    paginatedEventos.map(evento => (
                                         <tr key={evento.id_evento}>
                                             <td>{evento.id_evento}</td>
                                             <td>{evento.nombre_evento}</td>
@@ -1367,6 +1832,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesEventos}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesEventos))} disabled={currentPage === totalPagesEventos}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -1380,10 +1854,17 @@ const App = () => {
                                 className="admin-search"
                                 placeholder="Buscar pago por método o número..."
                                 value={searchQuery}
-                                onChange={handleSearchChange}
+                                onChange={handleSearchChangePagos}
                             />
+                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={15}>15</option>
+                                <option value={20}>20</option>
+                            </select>
                         </div>
                         <table className="admin-table">
+<<<<<<< HEAD
                             <thead>
                                 <tr>
                                     <th>ID Pago</th>
@@ -1398,6 +1879,23 @@ const App = () => {
                             <tbody>
                                 {filteredPagos.length > 0 ? (
                                     filteredPagos.map(pago => (
+=======
+                        <thead>
+                            <tr>
+                                {['ID Pago', 'Nombre', 'Fecha', 'Método de Pago', 'Subtotal', 'Total', 'Estado'].map((col) => (
+                                    <th key={col} onClick={() => handleSortPagos(col)} style={{ cursor: 'pointer' }}>
+                                        {col.charAt(0).toUpperCase() + col.slice(1)}
+                                        {sortColumn === col && (
+                                            <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                        )}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                            <tbody>
+                                {paginatedPagos.length > 0 ? (
+                                    paginatedPagos.map(pago => (
+>>>>>>> 162438461dd72e82d1afa0dbf61bd4c93ebfce50
                                         <tr key={pago.id_pago}>
                                             <td>{pago.id_pago}</td>
                                             <td>{pago.documento}</td>
@@ -1426,6 +1924,15 @@ const App = () => {
                                 )}
                             </tbody>
                         </table>
+                        <div className="pagination">
+                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                                Anterior
+                            </button>
+                            <span>Página {currentPage} de {totalPagesPagos}</span>
+                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesPagos))} disabled={currentPage === totalPagesPagos}>
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
                 )}
 
