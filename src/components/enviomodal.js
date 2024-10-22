@@ -24,7 +24,6 @@ const EnvioModal = ({ currentEnvio, isOpen, onClose, onSave }) => {
             pedido_id: pedidoId
         };
     
-        console.log('Datos a enviar:', envioData);
         onSave(envioData);
         onClose();
     };

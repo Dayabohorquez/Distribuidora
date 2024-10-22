@@ -19,9 +19,9 @@ const Login = () => {
         event.preventDefault();
     
         try {
-            const response = await axios.post('http://localhost:4000/api/login', { 
-                correo_electronico_usuario: email, 
-                contrasena_usuario: password 
+            const response = await axios.post('http://localhost:4000/api/login', {
+                correo_electronico_usuario: email,
+                contrasena_usuario: password
             });
     
             console.log('Respuesta del servidor:', response.data);
@@ -31,6 +31,14 @@ const Login = () => {
             if (usuario && usuario.documento) {
                 localStorage.setItem('token', token);
                 localStorage.setItem('documento', usuario.documento);
+    
+                // Crear el carrito después de iniciar sesión
+                const responseCarrito = await axios.post('http://localhost:4000/api/carrito/crear', {
+                    documento: usuario.documento,
+                });
+    
+                // Guarda el ID del carrito en localStorage
+                localStorage.setItem('id_carrito', responseCarrito.data.id_carrito);
     
                 switch (usuario.rol_usuario) {
                     case 'Administrador':

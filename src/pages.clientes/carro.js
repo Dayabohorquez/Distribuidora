@@ -21,9 +21,18 @@ const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [cartTotal, setCartTotal] = useState({ subtotal: 0, iva: 0 });
 
+    const additionalOptionPrices = {
+        'Ninguno': 0,
+        'Chocolates': 30000,
+        'Vino': 86000,
+    };
+
+    const ivaRate = 0.19;
+
+    // Verificar autenticación del usuario
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -33,10 +42,14 @@ const CartPage = () => {
             } catch (e) {
                 console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
+                navigate('/login');
             }
+        } else {
+            navigate('/login');
         }
-    }, []);
+    }, [navigate]);
 
+    // Cargar elementos del carrito
     useEffect(() => {
         const fetchCart = async () => {
             const documento = localStorage.getItem('documento');
@@ -44,15 +57,14 @@ const CartPage = () => {
                 setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
                 return;
             }
-            setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/api/carritos/${documento}`);
-                setCartItems(Array.isArray(response.data) ? response.data : Object.values(response.data));
+                const response = await axios.get(`http://localhost:4000/api/carrito/completo/${documento}`);
+                localStorage.setItem('id_carrito', response.data.id_carrito); // Asegúrate de que esto exista en la respuesta
+                setCartItems(response.data);
+                updateCartTotal(response.data);
             } catch (error) {
                 console.error('Error al obtener el carrito:', error);
-                setNotification('Error al obtener el carrito. Intenta de nuevo más tarde.');
-            } finally {
-                setLoading(false);
+                setNotification('Error al cargar el carrito. Intente de nuevo.');
             }
         };
 
@@ -61,6 +73,54 @@ const CartPage = () => {
         }
     }, [isAuthenticated]);
 
+    // Calcular totales
+    const calculateCartTotal = () => {
+        const total = cartItems.reduce((acc, item) => {
+            const precioBase = parseFloat(item.precio_producto) || 0;
+            const precioAdicional = parseFloat(item.precio_adicional) || 0;
+            const cantidad = parseInt(item.cantidad) || 0;
+            return acc + ((precioBase + precioAdicional) * cantidad);
+        }, 0);
+
+        const ivaRate = 0.19; // 19%
+        return {
+            subtotal: total,
+            iva: total * ivaRate,
+            totalConIva: total + (total * ivaRate)
+        };
+    };
+
+
+    // Actualizar el total del carrito
+    const updateCartTotal = (items) => {
+        const total = items.reduce((acc, item) => {
+            const precioBase = parseFloat(item.precio_producto) || 0;
+            const precioAdicional = parseFloat(item.precio_adicional) || 0;
+            const cantidad = parseInt(item.cantidad) || 0;
+            return acc + ((precioBase + precioAdicional) * cantidad);
+        }, 0);
+        setCartTotal({ subtotal: total, iva: total * ivaRate });
+    };
+
+    const updateTotalInDatabase = useCallback(async () => {
+        const id_carrito = localStorage.getItem('id_carrito');
+        if (!id_carrito) {
+            setNotification('ID de carrito no encontrado.');
+            return;
+        }
+
+        const { totalConIva } = calculateCartTotal();
+        try {
+            await axios.put(`http://localhost:4000/api/actualizarTotal/${id_carrito}`, { total: totalConIva });
+            setNotification('Total actualizado en la base de datos.');
+            setTimeout(() => setNotification(''), 3000);
+        } catch (error) {
+            console.error('Error al actualizar el total en la base de datos:', error);
+            setNotification('Error al actualizar el total.');
+        }
+    }, []);
+
+    // Actualizar cantidad del producto en el carrito
     const updateQuantity = useCallback(async (itemId, newQuantity) => {
         if (newQuantity < 1) return;
         const documento = localStorage.getItem('documento');
@@ -69,18 +129,62 @@ const CartPage = () => {
             return;
         }
         try {
-            await axios.put(`http://localhost:4000/api/carritos/${itemId}`, { cantidad: newQuantity });
-            setCartItems(prevItems => prevItems.map(item =>
-                item.id_carrito === itemId ? { ...item, cantidad: newQuantity } : item
-            ));
+            await axios.put(`http://localhost:4000/api/carrito/actualizar/${itemId}`, { cantidad: newQuantity });
+            setCartItems(prevItems => {
+                const updatedItems = prevItems.map(item =>
+                    item.id_carrito_item === itemId ? { ...item, cantidad: newQuantity } : item
+                );
+                updateCartTotal(updatedItems);
+                updateTotalInDatabase();
+                return updatedItems;
+            });
             setNotification('Cantidad actualizada.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al actualizar la cantidad:', error);
             setNotification('Error al actualizar la cantidad.');
         }
-    }, []);
+    }, [updateTotalInDatabase]);
 
+    // Actualizar opción adicional y dedicatoria
+    const updateAdditionalOptions = useCallback(async (itemId, newOption, newDedicatoria) => {
+        const documento = localStorage.getItem('documento');
+        if (!documento) {
+            setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
+            return;
+        }
+
+        const newPrice = additionalOptionPrices[newOption] || 0;
+
+        try {
+            await axios.put(`http://localhost:4000/api/carritos/actualizar/${itemId}`, {
+                opcion_adicional: newOption,
+                dedicatoria: newDedicatoria
+            });
+
+            setCartItems(prevItems => {
+                const updatedItems = prevItems.map(item =>
+                    item.id_carrito_item === itemId ? {
+                        ...item,
+                        opcion_adicional: newOption,
+                        dedicatoria: newDedicatoria,
+                        precio_adicional: newPrice
+                    } : item
+                );
+                updateCartTotal(updatedItems);
+                updateTotalInDatabase();
+                return updatedItems;
+            });
+
+            setNotification('Opción adicional y dedicatoria actualizadas.');
+            setTimeout(() => setNotification(''), 3000);
+        } catch (error) {
+            console.error('Error al actualizar la opción adicional o dedicatoria:', error);
+            setNotification('Error al actualizar.');
+        }
+    }, [additionalOptionPrices, updateTotalInDatabase]);
+
+    // Eliminar producto del carrito
     const removeFromCart = useCallback(async (itemId) => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
@@ -88,8 +192,8 @@ const CartPage = () => {
             return;
         }
         try {
-            await axios.delete(`http://localhost:4000/api/carritos/${itemId}`);
-            setCartItems(prevItems => prevItems.filter(item => item.id_carrito !== itemId));
+            await axios.delete(`http://localhost:4000/api/carrito/eliminar/${itemId}`);
+            setCartItems(prevItems => prevItems.filter(item => item.id_carrito_item !== itemId));
             setNotification('Producto eliminado del carrito.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
@@ -98,6 +202,7 @@ const CartPage = () => {
         }
     }, []);
 
+    // Vaciar carrito completo
     const emptyCart = useCallback(async () => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
@@ -105,7 +210,7 @@ const CartPage = () => {
             return;
         }
         try {
-            await axios.delete(`http://localhost:4000/api/carritos/vaciar/${documento}`);
+            await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
             setCartItems([]);
             setNotification('Carrito vacío.');
             setTimeout(() => setNotification(''), 3000);
@@ -115,36 +220,22 @@ const CartPage = () => {
         }
     }, []);
 
-    const calcularPrecioAdicional = (opcion) => {
-        switch (opcion) {
-            case 'Chocolates':
-                return 30000;
-            case 'Vino':
-                return 86000;
-            default:
-                return 0;
-        }
-    };
-
-    const cartTotal = cartItems.reduce((total, item) => {
-        const precioAdicional = calcularPrecioAdicional(item.opcion_adicional);
-        return total + ((parseFloat(item.precio_producto) + precioAdicional) * item.cantidad || 0);
-    }, 0);
-
-    const ivaRate = 0.19; // 19%
-    const ivaTotal = cartTotal * ivaRate;
-    const totalConIva = cartTotal + ivaTotal;
+    // Opciones adicionales para el desplegable
+    const additionalOptions = Object.keys(additionalOptionPrices);
 
     const handleCheckout = () => {
-        const cartData = cartItems.map(({ id_carrito, nombre_producto, precio_producto, cantidad, opcion_adicional }) => ({
-            id_carrito,
+        updateTotalInDatabase();
+
+        const cartData = cartItems.map(({ id_carrito_item, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria }) => ({
+            id_carrito_item,
             nombre_producto,
             precio_producto,
             cantidad,
             opcion_adicional,
+            dedicatoria,
         }));
 
-        navigate('/payment-method', { state: { cartItems: cartData, subtotal: cartTotal } });
+        navigate('/payment-method', { state: { cartItems: cartData, subtotal: cartTotal.subtotal } });
     };
 
     return (
@@ -153,53 +244,86 @@ const CartPage = () => {
             <div className="cart-page">
                 <h2 className="cart-title">Carrito de Compras</h2>
                 {notification && <div className="notification">{notification}</div>}
-                {loading ? (
-                    <div className="loading">Cargando...</div>
-                ) : cartItems.length === 0 ? (
+                {cartItems.length === 0 ? (
                     <div className="empty-cart">
                         <p className="empty-cart-message">El carrito está vacío.</p>
                     </div>
                 ) : (
                     <div className="cart-content">
                         {cartItems.map(item => {
-                            const precioAdicional = calcularPrecioAdicional(item.opcion_adicional);
-                            const total = (parseFloat(item.precio_producto) + precioAdicional) * item.cantidad;
+                            const precioAdicional = parseFloat(item.precio_adicional) || 0;
+                            const precioBase = parseFloat(item.precio_producto) || 0;
+                            const total = (precioBase + precioAdicional) * item.cantidad;
 
                             return (
-                                <div key={item.id_carrito} className="cart-item">
-                                    <img
-                                        src={item.foto_ProductoURL || 'path/to/default/image.jpg'}
-                                        alt={item.nombre_producto}
-                                        className="cart-item-image"
-                                    />
-                                    <div className="cart-item-details">
-                                        <h3 className="cart-item-name">{item.nombre_producto}</h3>
-                                        <p className="cart-item-price">Precio base: ${parseFloat(item.precio_producto).toLocaleString()}</p>
-                                        <p className="cart-item-adicional">Precio adicional: ${precioAdicional.toLocaleString()}</p>
-                                        <p className="cart-item-total">Total: ${total.toLocaleString()}</p>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            value={item.cantidad}
-                                            onChange={(e) => {
-                                                const value = parseInt(e.target.value);
-                                                if (value >= 1) {
-                                                    updateQuantity(item.id_carrito, value);
-                                                }
-                                            }}
-                                            className="quantity-input"
+                                <div key={item.id_carrito_item} className="cart-item">
+                                    {item.foto_ProductoURL ? (
+                                        <img
+                                            src={item.foto_ProductoURL}
+                                            alt={item.nombre_producto}
+                                            className="cart-item-image"
                                         />
-                                        <button className="remove-button" onClick={() => removeFromCart(item.id_carrito)}>
-                                            <FaTrash />
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        <div className="no-image">Imagen no disponible</div>
+                                    )}
+                                    <h3 className="cart-item-name">{item.nombre_producto}</h3>
+                                    <p className="cart-item-price">Precio base: ${precioBase.toLocaleString()}</p>
+
+                                    {item.opcion_adicional && item.opcion_adicional !== 'Ninguno' && (
+                                        <p className="cart-item-adicional">
+                                            Precio adicional: ${precioAdicional.toLocaleString()} ({item.opcion_adicional})
+                                        </p>
+                                    )}
+
+                                    {item.dedicatoria && (
+                                        <p className="cart-item-dedicatoria">Dedicatoria: {item.dedicatoria}</p>
+                                    )}
+
+                                    <p className="cart-item-total">Total: ${total.toLocaleString()}</p>
+
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={item.cantidad}
+                                        onChange={(e) => {
+                                            const value = parseInt(e.target.value);
+                                            if (value >= 1) {
+                                                updateQuantity(item.id_carrito_item, value);
+                                            }
+                                        }}
+                                        className="quantity-input"
+                                    />
+
+                                    <select
+                                        value={item.opcion_adicional}
+                                        onChange={(e) => updateAdditionalOptions(item.id_carrito_item, e.target.value, item.dedicatoria)}
+                                        className="additional-option-select"
+                                    >
+                                        {additionalOptions.map(option => (
+                                            <option key={option} value={option}>{option}</option>
+                                        ))}
+                                    </select>
+
+                                    {item.opcion_adicional !== 'Ninguno' && (
+                                        <input
+                                            type="text"
+                                            value={item.dedicatoria}
+                                            onChange={(e) => updateAdditionalOptions(item.id_carrito_item, item.opcion_adicional, e.target.value)}
+                                            className="dedicatoria-input"
+                                            placeholder="Dedicatoria"
+                                        />
+                                    )}
+
+                                    <button className="remove-button" onClick={() => removeFromCart(item.id_carrito_item)}>
+                                        <FaTrash />
+                                    </button>
                                 </div>
                             );
                         })}
                         <div className="cart-footer">
-                            <p className="cart-total">Subtotal: ${cartTotal.toLocaleString()}</p>
-                            <p className="cart-iva">IVA (19%): ${ivaTotal.toLocaleString()}</p>
-                            <p className="cart-total-con-iva">Total con IVA: ${totalConIva.toLocaleString()}</p>
+                            <p className="cart-total">Subtotal: ${cartTotal.subtotal.toLocaleString()}</p>
+                            <p className="cart-iva">IVA (19%): ${cartTotal.iva.toLocaleString()}</p>
+                            <p className="cart-total-con-iva">Total con IVA: ${(cartTotal.subtotal + cartTotal.iva).toLocaleString()}</p>
                             <div className="cart-actions">
                                 <button className="empty-cart-button" onClick={emptyCart}>Vaciar Carrito</button>
                                 <button className="checkout-button" onClick={handleCheckout}>Comprar</button>

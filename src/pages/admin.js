@@ -71,7 +71,7 @@ const App = () => {
     const fetchPagos = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/pagos');
-            setPagos(response.data); // Asumiendo que tienes un estado para guardar los pagos
+            setPagos(response.data); // Asegúrate de que response.data es un array
         } catch (error) {
             console.error('Error al obtener los pagos:', error);
         }
@@ -93,6 +93,7 @@ const App = () => {
         }
     };
 
+    // Función para obtener usuarios
     const fetchUsuarios = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/usuarios');
@@ -103,6 +104,7 @@ const App = () => {
         }
     };
 
+    // Función para actualizar un usuario
     const handleUpdateUsuario = async (documento, updatedUsuario) => {
         if (!documento) {
             console.error('El documento no está definido');
@@ -124,6 +126,7 @@ const App = () => {
         }
     };
 
+    // Función para actualizar el rol de un usuario
     const handleUpdateRolUsuario = async (documento, nuevoRol) => {
         if (!documento || !nuevoRol) {
             console.error('El documento o el nuevo rol no están definidos');
@@ -133,7 +136,7 @@ const App = () => {
         try {
             const response = await axios.put(`http://localhost:4000/api/usuario/${documento}/rol`, { rol_usuario: nuevoRol });
             if (response.status === 200) {
-                fetchUsuarios(); // O la función que recarga la lista de usuarios
+                fetchUsuarios();
                 showNotification('Rol actualizado exitosamente.');
             } else {
                 console.error('Error en la respuesta del servidor:', response.status);
@@ -145,11 +148,13 @@ const App = () => {
         }
     };
 
+    // Función para cambiar el estado de un usuario
     const handleToggleStatus = async (documento) => {
         if (!documento) {
             console.error('El documento no está definido');
             return;
         }
+
         try {
             const response = await axios.patch(`http://localhost:4000/api/usuario/${documento}/estado`);
             if (response.status === 200) {
@@ -165,24 +170,29 @@ const App = () => {
         }
     };
 
+    // Manejar cambios en la barra de búsqueda
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
 
+    // Cambiar la sección activa
     const handleSectionChange = (section) => {
         setActiveSection(section);
     };
 
+    // Abrir el modal de edición
     const openEditModal = (usuario) => {
         setCurrentUsuario(usuario);
         setShowEditModal(true);
     };
 
+    // Cerrar el modal de edición
     const closeEditModal = () => {
         setShowEditModal(false);
         setCurrentUsuario(null);
     };
 
+    // Manejar la edición de un usuario
     const handleEditUsuario = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -201,11 +211,13 @@ const App = () => {
         }
     };
 
+    // Mostrar notificaciones
     const showNotification = (message) => {
         setNotification(message);
         setTimeout(() => setNotification(''), 3000);
     };
 
+    // Filtrar usuarios según la búsqueda
     const filteredUsuarios = usuarios.filter(usuario =>
         usuario.nombre_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
         usuario.apellido_usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -376,14 +388,15 @@ const App = () => {
 
     const fetchPedidos = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/api/pedidos');
+            const response = await axios.get('http://localhost:4000/api/pedidos'); // Cambiado a /api/pedidos
             setPedidos(response.data);
         } catch (error) {
-            console.error('Error al obtener los pedidos:', error);
-            showNotification('Error al obtener los pedidos.');
+            console.error('Error al obtener pedidos:', error);
+            showNotification('Error al obtener pedidos.');
         }
     };
 
+    // Cambiar el estado de un pedido
     const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
         if (!idPedido) {
             console.error('El ID del pedido no está definido');
@@ -411,16 +424,16 @@ const App = () => {
         }
     };
 
+    // Crear un nuevo pedido
     const handleCreatePedido = async (formData) => {
         const pedidoData = {
             fecha_pedido: formData.get('campo_fecha'),
             total_pagado: parseFloat(formData.get('campo_total')),
             documento: formData.get('campo_documento'),
             pago_id: parseInt(formData.get('campo_pagoId')),
-            id_carrito: parseInt(formData.get('campo_carritoId')),
         };
 
-        if (isNaN(pedidoData.total_pagado) || isNaN(pedidoData.pago_id) || isNaN(pedidoData.id_carrito)) {
+        if (isNaN(pedidoData.total_pagado) || isNaN(pedidoData.pago_id)) {
             console.error('Datos no válidos:', pedidoData);
             showNotification('Datos no válidos al crear el pedido.');
             return;
@@ -449,13 +462,13 @@ const App = () => {
         }
     };
 
+    // Actualizar un pedido existente
     const handleUpdatePedido = async (formData) => {
         const pedidoData = {
             fecha_pedido: formData.get('campo_fecha'),
             total_pagado: parseFloat(formData.get('campo_total')),
             documento: formData.get('campo_documento'),
             pago_id: parseInt(formData.get('campo_pagoId')),
-            id_carrito: parseInt(formData.get('campo_carritoId')),
         };
 
         // Añadir foto al FormData si existe
@@ -496,15 +509,11 @@ const App = () => {
         setCurrentOrder(null);
     };
 
-    const filteredPedidos = pedidos.filter(pedido => {
-        const fechaPedidoStr = pedido.fecha_pedido ? new Date(pedido.fecha_pedido).toLocaleDateString() : "";
-        const idPedidoStr = pedido.id_pedido ? pedido.id_pedido.toString() : "";
 
-        return (
-            fechaPedidoStr.includes(searchQuery) ||
-            idPedidoStr.includes(searchQuery)
-        );
-    });
+    const filteredPedidos = pedidos.filter(pedido =>
+        new Date(pedido.fecha_pedido).toLocaleDateString().includes(searchQuery) ||
+        pedido.id_pedido.toString().includes(searchQuery)
+    );
 
     const fetchEnvios = async () => {
         try {
@@ -512,48 +521,49 @@ const App = () => {
             setEnvios(response.data);
         } catch (error) {
             console.error('Error al obtener los envíos:', error);
-            showNotification('Error al obtener los envíos.');
         }
     };
 
     const handleAddEnvio = async (envioData) => {
         try {
+            // Aquí asumo que envió fecha_envio y pedido_id en el objeto envioData
             const response = await axios.post('http://localhost:4000/api/envios', envioData);
-            fetchEnvios();
+            fetchEnvios(); // Refresca la lista de envíos
             showNotification('Envío agregado exitosamente.');
         } catch (error) {
             console.error('Error al agregar envío:', error.response ? error.response.data : error.message);
             showNotification('Error al agregar envío.');
         }
     };
-
+    
     const handleEditEnvio = async (envioData) => {
         if (!currentEnvio || !currentEnvio.id_envio) {
             console.error('No se puede editar el envío, el envío no es válido.');
             return;
         }
-
+    
         try {
+            // Asegúrate de que envioData contenga fecha_envio y pedido_id
             await axios.put(`http://localhost:4000/api/envios/${currentEnvio.id_envio}`, envioData);
-            fetchEnvios();
-            closeEnvioModal();
+            fetchEnvios(); // Refresca la lista de envíos
+            closeEnvioModal(); // Cierra el modal de edición
             showNotification('Envío actualizado exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar envío:', error);
+            console.error('Error al actualizar envío:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el envío.');
         }
-    };
+    };    
 
     const handleEstadoChange = async (id_envio, nuevoEstado) => {
         try {
-            await axios.put(`http://localhost:4000/api/envios/estado/${id_envio}`, { estado_envio: nuevoEstado });
-            fetchEnvios();
+            await axios.put(`http://localhost:4000/api/envios/estado/${id_envio}`, { nuevo_estado: nuevoEstado });
+            fetchEnvios(); // Asegúrate de que esta función está definida y actualiza la lista de envíos
             showNotification('Estado del envío actualizado.');
         } catch (error) {
             console.error('Error al actualizar el estado del envío:', error);
             showNotification('Error al actualizar el estado del envío.');
         }
-    };
+    };    
 
     const handleDeleteEnvio = async (id_envio) => {
         try {
@@ -603,19 +613,10 @@ const App = () => {
     };
 
     const handleAddTipoFlor = async (tipoFlorData) => {
-        const formData = new FormData();
-        formData.append('nombre_tipo_flor', tipoFlorData.get('nombre_tipo_flor'));
-
-        if (tipoFlorData.get('foto_tipo_flor')) {
-            formData.append('foto_tipo_flor', tipoFlorData.get('foto_tipo_flor'));
-        }
+        const nombreTipoFlor = tipoFlorData.get('nombre_tipo_flor');
 
         try {
-            const response = await axios.post('http://localhost:4000/api/tipo-flor', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            const response = await axios.post('http://localhost:4000/api/tipo-flor', { nombre_tipo_flor: nombreTipoFlor });
             console.log('Respuesta del servidor:', response.data);
             fetchTiposFlor(); // Función para refrescar la lista de tipos de flores
             showNotification('Tipo de flor agregado exitosamente.');
@@ -633,18 +634,11 @@ const App = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('nombre_tipo_flor', tipoFlorData.get('nombre_tipo_flor'));
-
-        if (tipoFlorData.get('foto_tipo_flor')) {
-            formData.append('foto_tipo_flor', tipoFlorData.get('foto_tipo_flor'));
-        }
+        const nombreTipoFlor = tipoFlorData.get('nombre_tipo_flor');
 
         try {
-            await axios.put(`http://localhost:4000/api/tipo-flor/${currentTipoFlor.id_tipo_flor}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+            await axios.put(`http://localhost:4000/api/tipo-flor/${currentTipoFlor.id_tipo_flor}`, {
+                nombre_tipo_flor: nombreTipoFlor,
             });
             fetchTiposFlor(); // Función para refrescar la lista de tipos de flores
             closeTipoFlorModal();
@@ -699,8 +693,6 @@ const App = () => {
         try {
             const formData = new FormData();
             formData.append('nombre_fecha_especial', fechaEspecialData.get('nombre_fecha_especial'));
-            formData.append('fecha', fechaEspecialData.get('fecha'));
-            formData.append('foto', fechaEspecialData.get('foto')); // Puede ser opcional
 
             await axios.post('http://localhost:4000/api/fechas-especiales', formData);
             fetchFechasEspeciales();
@@ -868,6 +860,11 @@ const App = () => {
 
     const filteredTiposFlor = tiposFlor.filter(tipo =>
         tipo.nombre_tipo_flor.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredPagos = pagos.filter(pago =>
+        pago.id_pago.toString().includes(searchQuery) ||
+        pago.metodo_pago.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -1072,12 +1069,11 @@ const App = () => {
                                     <th>Nombre Cliente</th>
                                     <th>Total</th>
                                     <th>Estado</th>
-                                    <th>Foto</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {Array.isArray(filteredPedidos) && filteredPedidos.length > 0 ? (
+                                {filteredPedidos.length > 0 ? (
                                     filteredPedidos.map(pedido => (
                                         <tr key={pedido.id_pedido} className={pedido.estado_pedido === 'Cancelado' ? 'inactive' : ''}>
                                             <td>{pedido.id_pedido}</td>
@@ -1095,17 +1091,6 @@ const App = () => {
                                                     <option value="Entregado">Entregado</option>
                                                     <option value="Cancelado">Cancelado</option>
                                                 </select>
-                                            </td>
-                                            <td>
-                                                {pedido.foto_PedidoURL ? (
-                                                    <img
-                                                        src={pedido.foto_PedidoURL}
-                                                        alt={pedido.nombre_usuario}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }} // Cambia a 'contain'
-                                                    />
-                                                ) : (
-                                                    <span>No disponible</span>
-                                                )}
                                             </td>
                                             <td>
                                                 <div className="admin-actions">
@@ -1215,7 +1200,6 @@ const App = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
-                                    <th>Foto</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -1225,17 +1209,6 @@ const App = () => {
                                         <tr key={tipoFlor.id_tipo_flor}>
                                             <td>{tipoFlor.id_tipo_flor}</td>
                                             <td>{tipoFlor.nombre_tipo_flor}</td>
-                                            <td>
-                                                {tipoFlor.foto_tipo_florURL ? (
-                                                    <img
-                                                        src={tipoFlor.foto_tipo_florURL}
-                                                        alt={tipoFlor.nombre_tipo_flor}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                    />
-                                                ) : (
-                                                    <span>Sin imagen</span>
-                                                )}
-                                            </td>
                                             <td>
                                                 <div className="admin-actions">
                                                     <FontAwesomeIcon
@@ -1288,8 +1261,6 @@ const App = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
-                                    <th>Fecha</th>
-                                    <th>Foto</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -1299,18 +1270,6 @@ const App = () => {
                                         <tr key={fecha.id_fecha_especial}>
                                             <td>{fecha.id_fecha_especial}</td>
                                             <td>{fecha.nombre_fecha_especial}</td>
-                                            <td>{fecha.fecha}</td>
-                                            <td>
-                                                {fecha.foto_fecha_especialURL ? (
-                                                    <img
-                                                        src={fecha.foto_fecha_especialURL}
-                                                        alt={fecha.nombre_fecha_especial}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                    />
-                                                ) : (
-                                                    <span>No disponible</span>
-                                                )}
-                                            </td>
                                             <td>
                                                 <div className="admin-actions">
                                                     <FontAwesomeIcon
@@ -1410,6 +1369,7 @@ const App = () => {
                         </table>
                     </div>
                 )}
+
                 {activeSection === 'pagos' && (
                     <div className="admin-section">
                         <div className="admin-section-header">
@@ -1427,7 +1387,7 @@ const App = () => {
                             <thead>
                                 <tr>
                                     <th>ID Pago</th>
-                                    <th>Nombre</th>
+                                    <th>Documento</th>
                                     <th>Fecha</th>
                                     <th>Método de Pago</th>
                                     <th>Subtotal</th>
@@ -1436,11 +1396,11 @@ const App = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pagos.length > 0 ? (
-                                    pagos.map(pago => (
+                                {filteredPagos.length > 0 ? (
+                                    filteredPagos.map(pago => (
                                         <tr key={pago.id_pago}>
                                             <td>{pago.id_pago}</td>
-                                            <td>{pago.nombre_pago}</td>
+                                            <td>{pago.documento}</td>
                                             <td>{new Date(pago.fecha_pago).toLocaleDateString()}</td>
                                             <td>{pago.metodo_pago}</td>
                                             <td>${pago.subtotal_pago.toLocaleString()}</td>

@@ -50,7 +50,6 @@ const App = () => {
 
     const handleToggleProductStatus = async (idProducto) => {
         if (!idProducto) return;
-        if (window.confirm('¿Estás seguro de que deseas cambiar el estado?')) {
             try {
                 const productoActual = productos.find(p => p.id_producto === idProducto);
                 const nuevoEstado = !productoActual.estado_producto;
@@ -62,7 +61,6 @@ const App = () => {
                 console.error('Error al cambiar el estado del producto:', error);
                 showNotification('Error al cambiar el estado del producto: ' + (error.response ? error.response.data.message : error.message));
             }
-        }
     };
 
     const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
@@ -129,6 +127,7 @@ const App = () => {
                                     <th>ID</th>
                                     <th>Código</th>
                                     <th>Nombre</th>
+                                    <th>Stock</th>
                                     <th>Precio</th>
                                     <th>Estado</th>
                                     <th>Foto</th>
@@ -142,6 +141,7 @@ const App = () => {
                                             <td>{producto.id_producto}</td>
                                             <td>{producto.codigo_producto}</td>
                                             <td>{producto.nombre_producto}</td>
+                                            <td>{producto.cantidad_disponible}</td>
                                             <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
                                             <td>{producto.estado_producto ? 'Activo' : 'Inactivo'}</td>
                                             <td>
@@ -189,9 +189,10 @@ const App = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Fecha</th>
+                                    <th>Documento Cliente</th>
+                                    <th>Nombre Cliente</th>
                                     <th>Total</th>
                                     <th>Estado</th>
-                                    <th>Foto</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -201,6 +202,8 @@ const App = () => {
                                         <tr key={pedido.id_pedido}>
                                             <td>{pedido.id_pedido}</td>
                                             <td>{pedido.fecha_pedido}</td>
+                                            <td>{pedido.documento}</td>
+                                            <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
                                             <td>{pedido.total_pagado}</td>
                                             <td>
                                                 <select
@@ -212,17 +215,6 @@ const App = () => {
                                                     <option value="Entregado">Entregado</option>
                                                     <option value="Cancelado">Cancelado</option>
                                                 </select>
-                                            </td>
-                                            <td>
-                                                {pedido.foto_PedidoURL ? (
-                                                    <img
-                                                        src={pedido.foto_PedidoURL}
-                                                        alt={pedido.nombre_usuario}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                    />
-                                                ) : (
-                                                    <span>No disponible</span>
-                                                )}
                                             </td>
                                             <td>
                                                 <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />

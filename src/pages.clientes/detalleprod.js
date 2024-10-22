@@ -48,7 +48,7 @@ const DetalleProducto = () => {
     const handleOptionChange = (event) => {
         const option = event.target.value;
         setSelectedOption(option);
-        setOpcionAdicionalPrecio(option === 'chocolate' ? 30000 : option === 'vino' ? 86000 : 0);
+        setOpcionAdicionalPrecio(option === 'chocolates' ? 30000 : option === 'vino' ? 86000 : 0);
     };
 
     const handleQuantityChange = (event) => {
@@ -61,33 +61,38 @@ const DetalleProducto = () => {
     };
 
     const updateProductPrice = () => {
-        const basePrice = product.precio_producto ? parseFloat(product.precio_producto) : 0;
-        return basePrice + opcionAdicionalPrecio; // Asegúrate de que `opcionAdicionalPrecio` se esté actualizando correctamente
+        const basePrice = parseFloat(product.precio_producto) || 0;
+        return basePrice + opcionAdicionalPrecio;
     };
 
     const handleAddToCart = async () => {
-        const totalPrice = updateProductPrice() * quantity;
         const documento = localStorage.getItem('documento');
 
         if (!documento) {
-            setNotification('Documento no encontrado. Asegúrate de estar autenticado.');
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            return;
+        }
+
+        if (quantity < 1) {
+            setNotification('La cantidad debe ser al menos 1.');
             return;
         }
 
         try {
-            await axios.post('http://localhost:4000/api/carritos', {
+            // Ajusta la ruta según lo que configuraste
+            await axios.post('http://localhost:4000/api/carrito-item/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: quantity,
-                dedicatoria,
-                opcion_adicional: selectedOption === 'ninguno' ? undefined : selectedOption,
-                precio_adicional: opcionAdicionalPrecio,  // Asegúrate de enviar el precio adicional
-                total: totalPrice,
+                dedicatoria: dedicatoria.trim() || null,
+                opcion_adicional: selectedOption,
+                precio_adicional: opcionAdicionalPrecio
             });
+
             setNotification('Producto añadido al carrito exitosamente.');
         } catch (error) {
-            console.error('Error al agregar al carrito:', error.response ? error.response.data : error.message);
-            setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
+            console.error('Error al agregar producto al carrito:', error);
+            setNotification(`Error al agregar producto al carrito: ${error.response?.data?.message || error.message}`);
         }
 
         setTimeout(() => {
@@ -118,23 +123,28 @@ const DetalleProducto = () => {
                             <h3>{product.nombre_producto}</h3>
                             <p>{product.descripcion_producto || 'Descripción no disponible.'}</p>
                             <div className="meta-producto">
-                                <p><strong>Precio base: ${product.precio_producto ? parseFloat(product.precio_producto).toLocaleString() : '0'}</strong></p>
+                                <p><strong>Precio base: ${parseFloat(product.precio_producto).toLocaleString()}</strong></p>
                                 <p><strong>Precio adicional: ${opcionAdicionalPrecio.toLocaleString()}</strong></p>
                                 <p><strong>Precio total: ${updateProductPrice().toLocaleString()}</strong></p>
-                                <p><strong>Precio total (con cantidad): ${updateProductPrice() * quantity.toLocaleString()}</strong></p>
                             </div>
                             <div className="opciones-producto">
                                 <h4 className="opciones">Opciones disponibles</h4>
                                 <label htmlFor="detalle-adicional">Detalle adicional</label>
                                 <select id="detalle-adicional" value={selectedOption} onChange={handleOptionChange}>
                                     <option value="ninguno">Ninguno</option>
-                                    <option value="chocolate">Chocolate Ferrero Rocher (caja x 8Und) (+$30,000)</option>
+                                    <option value="chocolates">Chocolate Ferrero Rocher (caja x 8Und) (+$30,000)</option>
                                     <option value="vino">Vino (+$86,000)</option>
                                 </select>
 
-
                                 <label htmlFor="cantidad">Cantidad:</label>
-                                <input type="number" id="cantidad" value={quantity} min="1" onChange={handleQuantityChange} required />
+                                <input
+                                    type="number"
+                                    id="cantidad"
+                                    value={quantity}
+                                    min="1"
+                                    onChange={handleQuantityChange}
+                                    required
+                                />
 
                                 <label htmlFor="dedicatoria">Dedicatoria:</label>
                                 <input

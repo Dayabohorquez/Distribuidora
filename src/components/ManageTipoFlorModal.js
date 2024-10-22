@@ -33,15 +33,6 @@ const ManageTipoFlorModal = ({ onClose, onSave, tipoFlorData }) => {
                             className="admin-form-input"
                         />
                     </label>
-                    <label className="admin-form-label">
-                        Foto (opcional):
-                        <input
-                            type="file"
-                            name="foto_tipo_flor"
-                            accept="image/*"
-                            className="admin-form-input"
-                        />
-                    </label>
                     <div className="modal-buttons">
                         <button type="submit" className="admin-modal-button">
                             {tipoFlorData ? 'Actualizar' : 'Crear'}

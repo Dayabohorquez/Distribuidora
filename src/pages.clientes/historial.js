@@ -35,7 +35,7 @@ const OrderHistory = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:4000/api/usuarios/${documento}/historial`);
+      const response = await fetch(`http://localhost:4000/api/pedidos/${documento}`);
       if (!response.ok) {
         throw new Error('Error al obtener el historial de pedidos');
       }
@@ -77,11 +77,11 @@ const OrderHistory = () => {
                 <tbody>
                   {orders.map((order, index) => (
                     <tr key={`${order.id_pedido}-${index}`}>
-                      <td>{order.nombre_producto}</td>
-                      <td>{order.codigo_producto}</td>
+                      <td>{order.nombre_producto || 'N/A'}</td>
+                      <td>{order.codigo_producto || 'N/A'}</td>
                       <td>${order.precio ? order.precio.toLocaleString() : 'N/A'}</td>
-                      <td>{order.cantidad}</td>
-                      <td>{order.estado_pedido}</td>
+                      <td>{order.cantidad || 'N/A'}</td>
+                      <td>{order.estado_pedido || 'N/A'}</td>
                       <td>${order.total_pagado ? order.total_pagado.toLocaleString() : 'N/A'}</td>
                     </tr>
                   ))}

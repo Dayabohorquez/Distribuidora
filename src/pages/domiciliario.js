@@ -30,7 +30,7 @@ const App = () => {
             showNotification('Error al obtener pedidos: ' + (error.response ? error.response.data.message : error.message));
         }
     };
-    
+
     const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
         if (!idPedido) return;
         try {
@@ -42,17 +42,17 @@ const App = () => {
             showNotification('Error al cambiar el estado del pedido: ' + (error.response ? error.response.data.message : error.message));
         }
     };
-    
+
     const handleOpenDetalle = (pedido) => {
         setCurrentItem(pedido);
         setDetalleVisible(true);
     };
-    
+
     const closeDetalle = () => {
         setDetalleVisible(false);
         setCurrentItem(null);
     };
-    
+
     // Filtrado de pedidos
     const filteredPedidos = pedidos.filter(pedido =>
         pedido.fecha_pedido.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,9 +83,10 @@ const App = () => {
                             <tr>
                                 <th>ID</th>
                                 <th>Fecha</th>
+                                <th>Nombre Cliente</th>
+                                <th>Direcciòn</th>
                                 <th>Total</th>
                                 <th>Estado</th>
-                                <th>Foto</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -95,6 +96,8 @@ const App = () => {
                                     <tr key={pedido.id_pedido}>
                                         <td>{pedido.id_pedido}</td>
                                         <td>{pedido.fecha_pedido}</td>
+                                        <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
+                                        <td>{pedido.direccion}</td>
                                         <td>{pedido.total_pagado ? `${Math.floor(pedido.total_pagado)} USD` : 'N/A'}</td>
                                         <td>
                                             <select
@@ -106,17 +109,6 @@ const App = () => {
                                                 <option value="Entregado">Entregado</option>
                                                 <option value="Cancelado">Cancelado</option>
                                             </select>
-                                        </td>
-                                        <td>
-                                            {pedido.foto_PedidoURL ? (
-                                                <img
-                                                    src={pedido.foto_PedidoURL}
-                                                    alt={pedido.nombre_usuario}
-                                                    style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                />
-                                            ) : (
-                                                <span>No disponible</span>
-                                            )}
                                         </td>
                                         <td>
                                             <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />

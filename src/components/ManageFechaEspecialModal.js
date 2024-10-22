@@ -37,25 +37,6 @@ const ManageFechaEspecialModal = ({ onClose, onSave, fechaEspecialData }) => {
                             className="admin-form-input"
                         />
                     </label>
-                    <label className="admin-form-label">
-                        Fecha:
-                        <input
-                            type="date"
-                            name="fecha"
-                            defaultValue={fechaEspecialData ? fechaEspecialData.fecha.split('T')[0] : ''}
-                            required
-                            className="admin-form-input"
-                        />
-                    </label>
-                    <label className="admin-form-label">
-                        Foto (opcional):
-                        <input
-                            type="file"
-                            name="foto"
-                            accept="image/*"
-                            className="admin-form-input"
-                        />
-                    </label>
                     <div className="modal-buttons">
                         <button type="submit" className="admin-modal-button">
                             {fechaEspecialData ? 'Actualizar' : 'Crear'}

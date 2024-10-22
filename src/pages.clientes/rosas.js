@@ -28,7 +28,7 @@ const ProductPage = ({ addToCart }) => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
+                console.error('Error decoding token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -38,15 +38,14 @@ const ProductPage = ({ addToCart }) => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/productos/1');
-                console.log(response.data);
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
                 } else {
-                    console.error('Los datos no son un array:', response.data);
+                    console.error('Data is not an array:', response.data);
                     setProducts([]);
                 }
             } catch (error) {
-                console.error('Error al obtener productos:', error);
+                console.error('Error fetching products:', error);
                 setProducts([]);
             }
         };
@@ -57,9 +56,9 @@ const ProductPage = ({ addToCart }) => {
     const handleDetailsClick = (product) => {
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
-            title: product.nombre_producto || 'Producto sin nombre',
+            title: product.nombre_producto || 'Product without name',
             price: Math.floor(product.precio_producto),
-            description: product.descripcion_producto || 'Descripción del producto no disponible.',
+            description: product.descripcion_producto || 'Product description not available.',
             id: product.id_producto
         });
     };
@@ -78,11 +77,11 @@ const ProductPage = ({ addToCart }) => {
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
-
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (price === 'below-100' && product.precio_producto < 100000) ||
-                           (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
-                           (price === 'above-200' && product.precio_producto > 200000);
+        const matchPrice = !price || 
+            (price === 'below-100' && product.precio_producto < 100000) ||
+            (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
+            (price === 'above-200' && product.precio_producto > 200000);
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
@@ -90,30 +89,26 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-        console.log('Documento recuperado:', documento); // Agrega este log
-    
+        
         if (!documento) {
-            console.error('Documento no encontrado en localStorage');
-            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            console.error('Document not found in localStorage');
+            setNotification('Please log in to add products to the cart.');
             return;
         }
-    
+
         try {
-            const response = await axios.post('http://localhost:4000/api/carritos', {
-                documento: documento,
+            await axios.post('http://localhost:4000/api/carrito/agregar', {
+                documento,
                 id_producto: product.id_producto,
                 cantidad: 1
             });
-            
-            console.log('Response:', response.data);
-            // Resto del código...
+            setNotification('Product added to cart successfully.');
         } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
-            // Resto del código...
+            console.error('Error adding product to cart:', error);
+            setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
         }
     };
-     
-    
+
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}

@@ -27,10 +27,10 @@ const Register = () => {
         const validations = [
             { condition: !documentNumber || !/^\d+$/.test(documentNumber) || documentNumber.length < 6,
               message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
-            { condition: !name || !/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
-              message: 'El nombre debe contener solo letras y ciertos caracteres especiales.' },
-            { condition: !lastName || !/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
-              message: 'El apellido debe contener solo letras y ciertos caracteres especiales.' },
+            { condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
+              message: 'El nombre debe contener solo letras y al menos una letra válida.' },
+            { condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
+              message: 'El apellido debe contener solo letras y al menos una letra válida.' },
             { condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
               message: 'El correo electrónico no es válido.' },
             { condition: !password || !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(password),
@@ -47,6 +47,27 @@ const Register = () => {
         }
 
         return true;
+    };
+
+    const handleChangeDocumentNumber = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // Solo números
+            setDocumentNumber(value);
+        }
+    };
+
+    const handleChangeName = (e) => {
+        const value = e.target.value;
+        if (/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]*$/.test(value)) { // Solo letras y caracteres permitidos
+            setName(value);
+        }
+    };
+
+    const handleChangeLastName = (e) => {
+        const value = e.target.value;
+        if (/^[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]*$/.test(value)) { // Solo letras y caracteres permitidos
+            setLastName(value);
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -101,7 +122,7 @@ const Register = () => {
                                         placeholder="Ingrese su número de documento aquí:"
                                         required
                                         value={documentNumber}
-                                        onChange={(e) => setDocumentNumber(e.target.value)}
+                                        onChange={handleChangeDocumentNumber}
                                         autoFocus
                                     />
                                 </div>
@@ -120,7 +141,7 @@ const Register = () => {
                                         placeholder="Ingrese su nombre aquí:"
                                         required
                                         value={name}
-                                        onChange={(e) => setName(e.target.value)}
+                                        onChange={handleChangeName}
                                     />
                                 </div>
                             </div>
@@ -138,7 +159,7 @@ const Register = () => {
                                         placeholder="Ingrese su apellido aquí:"
                                         required
                                         value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
+                                        onChange={handleChangeLastName}
                                     />
                                 </div>
                             </div>

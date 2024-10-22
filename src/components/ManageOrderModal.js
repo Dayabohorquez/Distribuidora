@@ -23,7 +23,7 @@ const ManageOrderModal = ({ onClose, onSave, orderData }) => {
                         <input 
                             type="date" 
                             name="campo_fecha" 
-                            defaultValue={orderData ? orderData.fecha_pedido : ''} 
+                            defaultValue={orderData ? orderData.fecha_pedido.split('T')[0] : ''} // Formato de fecha
                             required 
                             className="admin-form-input"
                         />
@@ -35,6 +35,7 @@ const ManageOrderModal = ({ onClose, onSave, orderData }) => {
                             name="campo_total" 
                             defaultValue={orderData ? orderData.total_pagado : ''} 
                             required 
+                            min="0" // Total no negativo
                             className="admin-form-input"
                         />
                     </label>
@@ -55,28 +56,23 @@ const ManageOrderModal = ({ onClose, onSave, orderData }) => {
                             name="campo_pagoId" 
                             defaultValue={orderData ? orderData.pago_id : ''} 
                             required 
+                            min="1" // ID de pago positivo
                             className="admin-form-input"
                         />
                     </label>
-                    <label className="admin-form-label">
-                        Carrito ID:
-                        <input 
-                            type="number" 
-                            name="campo_carritoId" 
-                            defaultValue={orderData ? orderData.id_carrito : ''} 
-                            required 
-                            className="admin-form-input"
-                        />
-                    </label>
-                    <label className="admin-form-label">
-                        Nueva Foto:
-                        <input 
-                            type="file" 
-                            name="campo_foto" 
-                            accept="image/*" 
-                            className="admin-form-input"
-                        />
-                    </label>
+                    {/* Mostrar Carrito ID solo al crear un pedido */}
+                    {!orderData && (
+                        <label className="admin-form-label">
+                            Carrito ID:
+                            <input 
+                                type="number" 
+                                name="campo_carritoId" 
+                                required 
+                                min="1" // ID de carrito positivo
+                                className="admin-form-input"
+                            />
+                        </label>
+                    )}
                     <div className="modal-buttons">
                         <button type="submit" className="admin-modal-button">
                             {orderData ? 'Actualizar' : 'Crear'}
