@@ -95,10 +95,7 @@ const CartPage = () => {
         const totalConIva = cartTotal.subtotal + cartTotal.iva;
         try {
             await axios.put(`http://localhost:4000/api/actualizarTotal/${id_carrito}`, { total: totalConIva });
-            setNotification('Total actualizado en la base de datos.');
-            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
-            console.error('Error al actualizar el total en la base de datos:', error);
             setNotification('Error al actualizar el total.');
         }
     }, [cartTotal]);
@@ -159,8 +156,6 @@ const CartPage = () => {
                 return updatedItems;
             });
 
-            setNotification('Opción adicional y dedicatoria actualizadas.');
-            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al actualizar la opción adicional o dedicatoria:', error);
             setNotification('Error al actualizar.');
@@ -178,8 +173,8 @@ const CartPage = () => {
             await axios.delete(`http://localhost:4000/api/carrito/eliminar/${itemId}`);
             setCartItems(prevItems => {
                 const updatedItems = prevItems.filter(item => item.id_carrito_item !== itemId);
-                updateCartTotal(updatedItems); // Actualiza el total después de eliminar
-                updateTotalInDatabase(); // Actualiza el total en la base de datos
+                updateCartTotal(updatedItems);
+                updateTotalInDatabase();
                 return updatedItems;
             });
             setNotification('Producto eliminado del carrito.');
@@ -200,8 +195,8 @@ const CartPage = () => {
         try {
             await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
             setCartItems([]);
-            setCartTotal({ subtotal: 0, iva: 0 }); // Reinicia el total
-            updateTotalInDatabase(); // Actualiza el total en la base de datos
+            setCartTotal({ subtotal: 0, iva: 0 });
+            updateTotalInDatabase();
             setNotification('Carrito vacío.');
             setTimeout(() => setNotification(''), 3000);
         } catch (error) {
@@ -214,7 +209,7 @@ const CartPage = () => {
     const additionalOptions = Object.keys(additionalOptionPrices);
 
     const handleCheckout = () => {
-        updateTotalInDatabase(); // Asegúrate de que se actualice antes de proceder
+        updateTotalInDatabase();
 
         const cartData = cartItems.map(({ id_carrito_item, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria }) => ({
             id_carrito_item,

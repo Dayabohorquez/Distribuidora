@@ -80,37 +80,30 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
+    
         if (!documento) {
-            console.error('Documento no encontrado.');
-            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            setNotification('Please log in to add products to the cart.');
             return;
         }
-
+    
         try {
-            const response = await axios.post('http://localhost:4000/api/carritos', {
-                documento: documento,
+            // Agregar el producto al carrito
+            const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
+                documento,
                 id_producto: product.id_producto,
-                cantidad: 1
+                cantidad: 1,
+                precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
             });
-
-            console.log('Response from API:', response);
-
-            if (response.status === 200 || response.status === 201) {
-                addToCart({
-                    id: product.id_producto,
-                    title: product.nombre_producto,
-                    price: product.precio_producto,
-                    img: product.foto_ProductoURL,
-                    quantity: 1
-                });
-
-                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
-            } else {
-                throw new Error('Error inesperado al agregar al carrito');
-            }
+    
+            const idCarrito = response.data.id_carrito; // Asegúrate de que esta propiedad esté en la respuesta
+    
+            // Llamar al procedimiento para actualizar el total del carrito
+            await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
+    
+            setNotification('Product added to cart successfully.');
         } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
-            setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
+            console.error('Error adding product to cart:', error);
+            setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
         }
     };
 

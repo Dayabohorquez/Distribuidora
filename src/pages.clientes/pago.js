@@ -11,9 +11,10 @@ import axios from 'axios';
 const PaymentMethod = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
-  const { cartItems, subtotal } = location.state || { cartItems: [], subtotal: 0 };
+  const { cartItems = [], subtotal = 0 } = location.state || {};
   const [paymentMethod, setPaymentMethod] = useState('nequi');
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -35,33 +36,28 @@ const PaymentMethod = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const numberField = document.getElementById(`${paymentMethod}-number`).value;
-    if (!numberField) {
-      setNotification({ message: 'Por favor, completa todos los campos.', type: 'error' });
+    if (!cartItems.length) {
+      setNotification({ message: 'El carrito está vacío.', type: 'error' });
       return;
     }
 
-    const documento = localStorage.getItem('documento');
-    if (!documento) {
-      setNotification({ message: 'Documento no encontrado. Inicie sesión nuevamente.', type: 'error' });
+    const id_carrito_item = cartItems[0]?.id_carrito_item;
+    if (!id_carrito_item) {
+      setNotification({ message: 'El ID del carrito no está disponible.', type: 'error' });
       return;
     }
 
     const iva = subtotal * 0.19;
     const total = subtotal + iva;
 
-    if (!cartItems.length) {
-      setNotification({ message: 'El carrito está vacío.', type: 'error' });
-      return;
-    }
-
-    const id_carrito = cartItems[0]?.id_carrito;
-    if (!id_carrito) {
-      setNotification({ message: 'El ID del carrito no está disponible.', type: 'error' });
-      return;
-    }
-
+    setLoading(true);
     try {
+      const documento = localStorage.getItem('documento');
+      if (!documento) {
+        setNotification({ message: 'Documento no encontrado. Inicie sesión nuevamente.', type: 'error' });
+        return;
+      }
+
       const paymentAndOrderData = {
         pagoData: {
           nombre_pago: `Pago por ${paymentMethod}`,
@@ -71,20 +67,19 @@ const PaymentMethod = () => {
           subtotal_pago: parseFloat(subtotal.toFixed(2)),
           total_pago: parseFloat(total.toFixed(2)),
           documento,
-          id_carrito,
+          id_carrito_item,
         },
         pedidoData: {
           fecha_pedido: new Date().toISOString(),
           total_pagado: parseFloat(total.toFixed(2)),
           documento,
-          id_carrito,
+          id_carrito_item,
         }
       };
 
       const response = await axios.post('http://localhost:4000/api/pago-y-pedido', paymentAndOrderData);
 
       if (response.data.message === "Pago y pedido creados exitosamente") {
-        // Vaciar el carrito
         const vaciarResponse = await axios.delete(`http://localhost:4000/api/carritos/vaciar/${documento}`);
         if (vaciarResponse.status === 200) {
           setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
@@ -99,6 +94,8 @@ const PaymentMethod = () => {
       console.error('Error al procesar el pago:', error);
       const errorMessage = error.response?.data?.message || 'Error al procesar el pago. Inténtalo de nuevo.';
       setNotification({ message: errorMessage, type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,6 +112,7 @@ const PaymentMethod = () => {
             {notification.message}
           </div>
         )}
+        {loading && <div className="loading">Procesando...</div>}
         <section className="section payment-method">
           <h2>Selecciona tu Método de Pago</h2>
           <form onSubmit={handleSubmit}>
@@ -143,7 +141,7 @@ const PaymentMethod = () => {
                   <label htmlFor={`${method}-number`}>
                     {method === 'efectivo' ? 'Monto en Efectivo' : `Número de ${method.charAt(0).toUpperCase() + method.slice(1)}:`}
                   </label>
-                  <input type="text" id={`${method}-number`} name={`${method}-number`} />
+                  <input type="text" id={`${method}-number`} name={`${method}-number`} required />
                 </div>
               ))}
             </div>
@@ -153,13 +151,13 @@ const PaymentMethod = () => {
               <h4>Productos:</h4>
               <ul>
                 {cartItems.map(item => (
-                  <li key={item.id_carrito}>
+                  <li key={item.id_carrito_item}>
                     {item.nombre_producto} (x{item.cantidad}) - ${Number(item.precio_producto).toFixed(2).toLocaleString()}
                   </li>
                 ))}
               </ul>
             </div>
-            <button className="submit-btn" type="submit">Realizar Pago</button>
+            <button className="submit-btn" type="submit" disabled={loading}>Realizar Pago</button>
           </form>
         </section>
       </main>

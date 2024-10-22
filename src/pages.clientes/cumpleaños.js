@@ -36,7 +36,7 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/productos/fechaEspecial/5'); // Cambia el ID según sea necesario
+                const response = await axios.get('http://localhost:4000/api/productos/fecha-especial/5'); // Cambia el ID según sea necesario
                 setProducts(response.data);
             } catch (error) {
                 console.error('Error al obtener productos:', error);

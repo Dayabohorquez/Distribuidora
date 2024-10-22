@@ -1376,7 +1376,7 @@ const App = () => {
                         <table className="admin-table">
                             <thead>
                                 <tr>
-                                    {['ID', 'Fecha', 'Documento Cliente', 'Nombre Cliente', 'Total', 'Estado', 'Foto'].map((col) => (
+                                    {['ID', 'Fecha', 'Documento Cliente', 'Nombre Cliente', 'Total', 'Estado'].map((col) => (
                                         <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
                                             {col.charAt(0).toUpperCase() + col.slice(1)}
                                             {sortColumn === col && (

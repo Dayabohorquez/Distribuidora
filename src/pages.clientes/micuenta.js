@@ -45,46 +45,33 @@ const App = () => {
   };
 
   const handleUpdateUsuario = async (updatedUsuario) => {
-    if (!userData?.documento) {
-      console.error('El documento no está definido');
-      return;
-    }
+    if (!userData?.documento) return;
 
     try {
       const response = await axios.put(`${API_URL}/usuario/${userData.documento}`, updatedUsuario);
       if (response.status === 200) {
         fetchUsuario(userData.documento);
         showNotification('Información actualizada correctamente.');
-      } else {
-        console.error('Error en la respuesta del servidor:', response.status);
-        showNotification('Error al actualizar el usuario.');
       }
     } catch (error) {
-      console.error('Error al actualizar el usuario:', error.response ? error.response.data : error.message);
+      console.error('Error al actualizar el usuario:', error);
       showNotification('Error al actualizar el usuario.');
     }
   };
 
   const handleChangePassword = async (oldPassword, newPassword) => {
-    if (!userData?.documento) {
-      console.error('El documento no está definido');
-      return;
-    }
+    if (!userData?.documento) return;
 
     try {
       const response = await axios.patch(`${API_URL}/usuarios/${userData.documento}/cambiar-contrasena`, {
         oldPassword,
         newPassword
       });
-
       if (response.status === 200) {
         showNotification('Contraseña cambiada exitosamente.');
-      } else {
-        console.error('Error en la respuesta del servidor:', response.status);
-        showNotification('Error al cambiar la contraseña.');
       }
     } catch (error) {
-      console.error('Error al cambiar la contraseña:', error.response ? error.response.data : error.message);
+      console.error('Error al cambiar la contraseña:', error);
       showNotification('Error al cambiar la contraseña.');
     } finally {
       setChangePasswordModalOpen(false);
@@ -96,12 +83,15 @@ const App = () => {
     setTimeout(() => setNotification(''), 3000);
   };
 
+  const closeModal = () => {
+    setEditAccountModalOpen(false);
+    setChangePasswordModalOpen(false);
+    setPersonalInfoModalOpen(false);
+  };
+
   return (
     <div>
-      {isAuthenticated ? <Headerc /> : <Header
-        onEditAccount={() => setEditAccountModalOpen(true)}
-        onChangePassword={() => setChangePasswordModalOpen(true)}
-      />}
+      {isAuthenticated ? <Headerc /> : <Header onEditAccount={() => setEditAccountModalOpen(true)} onChangePassword={() => setChangePasswordModalOpen(true)} />}
       <main className="container2">
         <h2>
           <Link to="#" className="home-link">
@@ -129,35 +119,19 @@ const App = () => {
       <Footer />
 
       {isEditAccountModalOpen && userData && (
-        <Modal
-          isOpen={isEditAccountModalOpen}
-          onClose={() => setEditAccountModalOpen(false)}
-        >
-          <EditPersonalInfoModal
-            userData={userData}
-            onClose={() => setEditAccountModalOpen(false)}
-            onSave={handleUpdateUsuario}
-          />
+        <Modal isOpen={isEditAccountModalOpen} onClose={closeModal}>
+          <EditPersonalInfoModal userData={userData} onClose={closeModal} onSave={handleUpdateUsuario} />
         </Modal>
       )}
 
       {isChangePasswordModalOpen && (
-        <Modal
-          isOpen={isChangePasswordModalOpen}
-          onClose={() => setChangePasswordModalOpen(false)}
-        >
-          <ChangePasswordModal
-            onClose={() => setChangePasswordModalOpen(false)}
-            onSave={handleChangePassword}
-          />
+        <Modal isOpen={isChangePasswordModalOpen} onClose={closeModal}>
+          <ChangePasswordModal onClose={closeModal} onSave={handleChangePassword} />
         </Modal>
       )}
 
       {isPersonalInfoModalOpen && userData && (
-        <Modal
-          isOpen={isPersonalInfoModalOpen}
-          onClose={() => setPersonalInfoModalOpen(false)}
-        >
+        <Modal isOpen={isPersonalInfoModalOpen} onClose={closeModal}>
           <h2 className="modal-header">Información Personal</h2>
           <div className="modal-content">
             <p className="modal-detail"><strong>Documento:</strong> {userData.documento}</p>
@@ -167,7 +141,7 @@ const App = () => {
             <p className="modal-detail"><strong>Dirección:</strong> {userData.direccion}</p>
           </div>
           <div className="modal-buttons">
-            <button className="admin-modal-button" onClick={() => setPersonalInfoModalOpen(false)}>Cerrar</button>
+            <button className="admin-modal-button" onClick={closeModal}>Cerrar</button>
           </div>
         </Modal>
       )}
@@ -175,7 +149,7 @@ const App = () => {
       {notification && <div className="notification">{notification}</div>}
     </div>
   );
-}
+};
 
 const Modal = ({ onClose, children, isOpen }) => (
   <div className={`modal-custom ${isOpen ? 'show' : ''}`} onClick={onClose}>

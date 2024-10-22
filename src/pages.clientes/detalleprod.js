@@ -12,6 +12,7 @@ const DetalleProducto = () => {
     const location = useLocation();
     const { product } = location.state || {};
     const navigate = useNavigate();
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [opcionAdicionalPrecio, setOpcionAdicionalPrecio] = useState(0);
     const [quantity, setQuantity] = useState(1);
@@ -67,39 +68,35 @@ const DetalleProducto = () => {
 
     const handleAddToCart = async () => {
         const documento = localStorage.getItem('documento');
-
+    
         if (!documento) {
             setNotification('Por favor, inicie sesión para agregar productos al carrito.');
             return;
         }
-
+    
         if (quantity < 1) {
             setNotification('La cantidad debe ser al menos 1.');
             return;
         }
-
+    
         try {
-            // Ajusta la ruta según lo que configuraste
-            await axios.post('http://localhost:4000/api/carrito-item/agregar', {
+            const response = await axios.post('http://localhost:4000/api/carrito-item/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: quantity,
-                dedicatoria: dedicatoria.trim() || null,
-                opcion_adicional: selectedOption,
+                dedicatoria: dedicatoria.trim() || null, // Verifica aquí
+                opcion_adicional: selectedOption, // Verifica aquí
                 precio_adicional: opcionAdicionalPrecio
             });
-
-            setNotification('Producto añadido al carrito exitosamente.');
+            setNotification('Producto agregado al carrito.');
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
             setNotification(`Error al agregar producto al carrito: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setTimeout(() => setNotification(''), 3000);
         }
-
-        setTimeout(() => {
-            setNotification('');
-        }, 3000);
     };
-
+    
     return (
         <div>
             {isAuthenticated ? <Headerc /> : <Header />}

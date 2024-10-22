@@ -18,6 +18,7 @@ const ProductPage = ({ addToCart }) => {
         type: ''
     });
     const [notification, setNotification] = useState('');
+    const [cartTotal, setCartTotal] = useState(0);
 
     const navigate = useNavigate();
 
@@ -89,7 +90,7 @@ const ProductPage = ({ addToCart }) => {
 
         // Filtros de ocasión, precio y tipo
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || 
+        const matchPrice = !price ||
             (price === 'below-100' && product.precio_producto < 100000) ||
             (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
             (price === 'above-200' && product.precio_producto > 200000);
@@ -100,21 +101,26 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-
-        console.log('Documento recuperado:', documento);
-
+    
         if (!documento) {
-            console.error('Document not found in localStorage');
             setNotification('Please log in to add products to the cart.');
             return;
         }
-
+    
         try {
-            await axios.post('http://localhost:4000/api/carrito/agregar', {
+            // Agregar el producto al carrito
+            const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento,
                 id_producto: product.id_producto,
-                cantidad: 1
+                cantidad: 1,
+                precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
             });
+    
+            const idCarrito = response.data.id_carrito; // Asegúrate de que esta propiedad esté en la respuesta
+    
+            // Llamar al procedimiento para actualizar el total del carrito
+            await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
+    
             setNotification('Product added to cart successfully.');
         } catch (error) {
             console.error('Error adding product to cart:', error);
