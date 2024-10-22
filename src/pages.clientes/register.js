@@ -25,19 +25,30 @@ const Register = () => {
 
         // Validaciones
         const validations = [
-            { condition: !documentNumber || !/^\d+$/.test(documentNumber) || documentNumber.length < 6,
-              message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.' },
-            { condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
-              message: 'El nombre debe contener solo letras y al menos una letra válida.' },
-            { condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
-              message: 'El apellido debe contener solo letras y al menos una letra válida.' },
-
-            { condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-                message: 'El correo electrónico no es válido.' },
-            { condition: !password || !/^(?=.[A-Z])(?=.[a-z])(?=.\d)[A-Za-z\d@$!%?&]{8,}$/.test(password),
-                message: 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.' },
-            { condition: password !== confirmPassword,
-                message: 'Las contraseñas no coinciden.' },
+            {
+                condition: !documentNumber || !/^\d+$/.test(documentNumber) || documentNumber.length < 6,
+                message: 'El número de documento debe contener solo números y tener al menos 6 caracteres.'
+            },
+            {
+                condition: !name || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(name),
+                message: 'El nombre debe contener solo letras y al menos una letra válida.'
+            },
+            {
+                condition: !lastName || !/^(?=.*[A-Za-z])[A-Za-zÁáÉéÍíÓóÚúÑñüÜ\s'-]+$/.test(lastName),
+                message: 'El apellido debe contener solo letras y al menos una letra válida.'
+            },
+            {
+                condition: !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+                message: 'El correo electrónico no es válido.'
+            },
+            {
+                condition: !password || !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%?&]{8,}$/.test(password),
+                message: 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.'
+            },
+            {
+                condition: password !== confirmPassword,
+                message: 'Las contraseñas no coinciden.'
+            },
         ];
 
         for (const { condition, message } of validations) {
@@ -73,11 +84,11 @@ const Register = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         if (!validateForm()) {
-            return; 
+            return;
         }
-    
+
         const requestData = {
             documento: documentNumber,
             nombre_usuario: name,
@@ -85,10 +96,10 @@ const Register = () => {
             correo_electronico_usuario: email,
             contrasena_usuario: password
         };
-    
+
         try {
-            await axios.post('http://localhost:4000/api/register', requestData);
-            setNotification('Cuenta creada exitosamente.');
+            const response = await axios.post('http://localhost:4000/api/register', requestData);
+            setNotification(response.data.message); // Mensaje del servidor
 
             setTimeout(() => {
                 navigate('/login');
@@ -96,9 +107,9 @@ const Register = () => {
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al registrar la cuenta. Verifique los datos e intente nuevamente.';
             setNotification(`Error: ${errorMessage}`);
-            console.error('Error en la solicitud:', error);
+            console.error('Error en la solicitud:', error.response?.data); // Mostrar detalles del error
         }
-    };    
+    };
 
     return (
         <div>
@@ -108,7 +119,7 @@ const Register = () => {
                     <div className="form-box1 login">
                         <h2>Crear Cuenta</h2>
                         {notification && <div className="notification">{notification}</div>}
-    
+
                         <form id="register-form" className="form" onSubmit={handleSubmit}>
                             <div className="input-box1">
                                 <label htmlFor="documentNumber">Número de Documento</label>
@@ -128,7 +139,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <div className="input-box1">
                                 <label htmlFor="name">Nombre</label>
                                 <div className="input-wrapper2">
@@ -146,7 +157,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <div className="input-box1">
                                 <label htmlFor="lastName">Apellido</label>
                                 <div className="input-wrapper2">
@@ -164,7 +175,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <div className="input-box1">
                                 <label htmlFor="email">Correo</label>
                                 <div className="input-wrapper2">
@@ -182,7 +193,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <div className="input-box1">
                                 <label htmlFor="password">Contraseña</label>
                                 <div className="input-wrapper2">
@@ -207,7 +218,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <div className="input-box1">
                                 <label htmlFor="confirmPassword">Confirmación de contraseña</label>
                                 <div className="input-wrapper2">
@@ -232,7 +243,7 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
-    
+
                             <button type="submit" className="btn0">Crear Cuenta</button>
                             <div className="login-registerr">
                                 <p>¿Ya tiene una cuenta? <Link to="/login" className="login-registerr">Iniciar sesión</Link></p>
@@ -251,7 +262,7 @@ const Register = () => {
             </a>
             <Footer />
         </div>
-    );    
+    );
 };
 
 export default Register;

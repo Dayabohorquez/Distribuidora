@@ -1063,14 +1063,18 @@ const App = () => {
 
     const filteredAndSortedPagos = pagos.filter((pago) => {
         const lowerCaseQuery = searchQuery.toLowerCase();
-        const formattedid_pago = pago.id_pago.toString();
-        const formattedmetodo_pago = pago.metodo_pago.toString();
-        const formattednombre_pago = pago.nombre_pago.toString();
-        const formattedFecha = new Date(pago.fecha_pago).toLocaleDateString();
-        const formattedSubtotal = pago.subtotal_pago.toString();
-        const formattedTotal = pago.total_pago.toString();
-        const formattedestado_pago = pago.estado_pago.toString();
-
+    
+        // Asegúrate de que 'pago' esté definido y tiene las propiedades necesarias
+        if (!pago) return false; // Sal de la función si 'pago' es undefined
+    
+        const formattedid_pago = pago.id_pago ? pago.id_pago.toString() : '';
+        const formattedmetodo_pago = pago.metodo_pago ? pago.metodo_pago.toString() : '';
+        const formattednombre_pago = pago.nombre_pago ? pago.nombre_pago.toString() : '';
+        const formattedFecha = pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString() : '';
+        const formattedSubtotal = pago.subtotal_pago ? pago.subtotal_pago.toString() : '';
+        const formattedTotal = pago.total_pago ? pago.total_pago.toString() : '';
+        const formattedestado_pago = pago.estado_pago ? pago.estado_pago.toString() : '';
+    
         return (
             formattedid_pago.includes(lowerCaseQuery) ||
             formattedmetodo_pago.includes(lowerCaseQuery) ||
@@ -1080,7 +1084,7 @@ const App = () => {
             formattedTotal.includes(lowerCaseQuery) ||
             formattedestado_pago.includes(lowerCaseQuery)
         );
-    });
+    });    
 
     // Ordenar usuarios
     const sortedPagos = [...filteredAndSortedPagos].sort((a, b) => {
@@ -1544,7 +1548,7 @@ const App = () => {
                         <table className="admin-table">
                             <thead>
                                 <tr>
-                                    {['ID', 'Nombre', 'Foto'].map((col) => (
+                                    {['ID', 'Nombre'].map((col) => (
                                         <th key={col} onClick={() => handleSortTiposFlor(col)} style={{ cursor: 'pointer' }}>
                                             {col.charAt(0).toUpperCase() + col.slice(1)}
                                             {sortColumn === col && (
@@ -1626,7 +1630,7 @@ const App = () => {
                         <table className="admin-table">
                             <thead>
                                 <tr>
-                                    {['ID', 'Nombre', 'Fecha', 'Foto'].map((col) => (
+                                    {['ID', 'Nombre'].map((col) => (
                                         <th key={col} onClick={() => handleSortFechasEspeciales(col)} style={{ cursor: 'pointer' }}>
                                             {col.charAt(0).toUpperCase() + col.slice(1)}
                                             {sortColumn === col && (
@@ -1643,18 +1647,6 @@ const App = () => {
                                         <tr key={fecha.id_fecha_especial}>
                                             <td>{fecha.id_fecha_especial}</td>
                                             <td>{fecha.nombre_fecha_especial}</td>
-                                            <td>{new Date(fecha.fecha).toLocaleDateString()}</td>
-                                            <td>
-                                                {fecha.foto_fecha_especialURL ? (
-                                                    <img
-                                                        src={fecha.foto_fecha_especialURL}
-                                                        alt={fecha.nombre_fecha_especial}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                    />
-                                                ) : (
-                                                    <span>No disponible</span>
-                                                )}
-                                            </td>
                                             <td>
                                                 <div className="admin-actions">
                                                     <FontAwesomeIcon
@@ -1815,8 +1807,8 @@ const App = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredPagos.length > 0 ? (
-                                    paginatedPagos.map(pago => (
+                                {filteredAndSortedPagos.length > 0 ? (
+                                    filteredAndSortedPagos.map(pago => (
                                         <tr key={pago.id_pago}>
                                             <td>{pago.id_pago}</td>
                                             <td>{pago.documento}</td>
