@@ -1,35 +1,37 @@
 import React, { useState } from 'react';
 import { Route, Routes } from "react-router-dom";
+import ScrollToTop from './components/ScrollToTop';
 import AmorAmistad from "./pages.clientes/amor_amistad";
 import Aniversario from "./pages.clientes/aniversario";
 import Anturios from "./pages.clientes/anturios";
+import Car from "./pages.clientes/carro";
 import Chirosas from "./pages.clientes/chirosas";
 import PurchasePage from "./pages.clientes/compra";
 import Condolencias from "./pages.clientes/condolencias";
 import Cumpleaños from "./pages.clientes/cumpleaños";
+import DetalleProducto from "./pages.clientes/detalleprod";
 import DiaMadre from "./pages.clientes/dia_madre";
 import DiaMujer from "./pages.clientes/dia_mujer";
 import Eventos from "./pages.clientes/eventos";
 import Gerberas from "./pages.clientes/Gerberas";
 import Girasoles from "./pages.clientes/girasoles";
 import OrderHistory from "./pages.clientes/historial";
+import ResetPassword from './pages.clientes/ingresarNuevaContrase';
+import RequestPasswordReset from './pages.clientes/introducirCorreo';
 import Lirios from "./pages.clientes/lirios";
 import Login from "./pages.clientes/login";
 import Main from "./pages.clientes/main";
+import Myaccount from "./pages.clientes/micuenta";
 import PaymentMethod from "./pages.clientes/pago";
+import Politica from './pages.clientes/PolityPrivacity';
 import QuienesSomos from "./pages.clientes/quienes_somos";
 import Register from "./pages.clientes/register";
 import Rosas from "./pages.clientes/rosas";
-import Domiciliary from "./pages/domiciliario";
-import VendorDashboard from "./pages/vendedor";
-import Admin from "./pages/admin";
-import Myaccount from "./pages.clientes/micuenta";
-import Car from "./pages.clientes/carro";
-import DetalleProducto from "./pages.clientes/detalleprod";
-import ProtectedRoute from './pages/ProtectedRoute';
 import Terminos from './pages.clientes/TerminsAndConditions';
-import Politica from './pages.clientes/PolityPrivacity';
-import ScrollToTop from './components/ScrollToTop';
+import Admin from "./pages/admin";
+import Domiciliary from "./pages/domiciliario";
+import ProtectedRoute from './pages/ProtectedRoute';
+import VendorDashboard from "./pages/vendedor";
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -88,6 +90,12 @@ function App() {
 
           {/* Ruta para redirigir a la página principal si no se encuentra ninguna ruta */}
           <Route path="*" element={<Main />} />
+
+          {/* Ruta para la solicitud de restablecimiento */}
+          <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+        
+          {/* Ruta para restablecer la contraseña con el token */}
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </main>
     </div>

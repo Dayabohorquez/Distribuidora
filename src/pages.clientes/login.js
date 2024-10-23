@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import '../index.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 const Login = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -120,7 +120,10 @@ const Login = () => {
                                     />
                                     Recordar contraseña
                                 </label>
-                                <Link to="#">¿Olvidó su contraseña?</Link>
+                                <div>
+                                    {/* otros elementos del formulario de inicio de sesion */}
+                                    <Link to="/request-password-reset">¿Olvidó su contraseña?</Link>
+                                </div>
                             </div>
                             <button type="submit" className="btn0" id="submit-button">Iniciar sesión</button>
                             <div className="login-registerr">
