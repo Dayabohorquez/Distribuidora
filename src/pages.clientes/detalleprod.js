@@ -91,7 +91,6 @@ const DetalleProducto = () => {
             setNotification('Producto agregado al carrito.');
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
-            setNotification(`Error al agregar producto al carrito: ${error.response?.data?.message || error.message}`);
         } finally {
             setTimeout(() => setNotification(''), 3000);
         }
