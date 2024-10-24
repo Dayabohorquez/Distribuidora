@@ -20,23 +20,27 @@ const Login = () => {
     const [savedEmails, setSavedEmails] = useState([]); // Estado para guardar correos
     const navigate = useNavigate();
 
-    // Cargar los correos guardados en localStorage al montar el componente
+    // Cargar los correos y la contraseña guardados en localStorage al montar el componente
     useEffect(() => {
+        const savedEmail = localStorage.getItem('savedEmail');
+        const savedPassword = localStorage.getItem('savedPassword');
         const emails = JSON.parse(localStorage.getItem('savedEmails')) || []; // Obtener lista de correos guardados
+
+        if (savedEmail) {
+            setEmail(savedEmail);
+            setRememberMe(true); // Marcar la casilla si hay un correo guardado
+        }
+        if (savedPassword) {
+            setPassword(savedPassword); // Cargar la contraseña guardada
+        }
         setSavedEmails(emails); // Establecer la lista de correos guardados
     }, []);
 
-    // Manejar el cambio en el campo de correo
-    const handleEmailChange = (event) => {
-        const inputEmail = event.target.value;
-        setEmail(inputEmail);
-
-        // Completar la contraseña si el correo ingresado coincide con uno guardado
+    const handleEmailChange = (selectedEmail) => {
+        setEmail(selectedEmail);
         const savedPassword = localStorage.getItem('savedPassword');
-        if (savedEmails.includes(inputEmail) && savedPassword) {
+        if (savedPassword) {
             setPassword(savedPassword); // Completar la contraseña si hay una guardada
-        } else {
-            setPassword(''); // Limpiar la contraseña si no hay coincidencia
         }
     };
 
@@ -132,6 +136,16 @@ const Login = () => {
         navigateToRole(userRole); // Redirigir después de cerrar el modal
     };
 
+    // Función para borrar las credenciales guardadas
+    const handleClearSavedCredentials = () => {
+        localStorage.removeItem('savedEmail');
+        localStorage.removeItem('savedPassword');
+        localStorage.removeItem('savedEmails');
+        setSavedEmails([]);
+        setEmail('');
+        setPassword('');
+    };
+
     return (
         <div>
             <Header />
@@ -147,13 +161,25 @@ const Login = () => {
                                     <span className="icon">
                                         <FontAwesomeIcon icon={faEnvelope} />
                                     </span>
+                                    <select
+                                        id="email"
+                                        value={email}
+                                        onChange={(e) => handleEmailChange(e.target.value)}
+                                    >
+                                        <option value="">Seleccione un correo</option>
+                                        {savedEmails.map((email, index) => (
+                                            <option key={index} value={email}>
+                                                {email}
+                                            </option>
+                                        ))}
+                                    </select>
                                     <input
                                         type="email"
-                                        id="email"
-                                        placeholder="Ingrese su correo aquí:"
+                                        id="emailInput"
+                                        placeholder="O ingrese su correo aquí:"
                                         required
                                         value={email}
-                                        onChange={handleEmailChange}
+                                        onChange={(e) => setEmail(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -187,6 +213,7 @@ const Login = () => {
                                 <Link to="#">¿Olvidó su contraseña?</Link>
                             </div>
                             <button type="submit" className="btn0" id="submit-button">Iniciar sesión</button>
+                            <button type="button" className="btn0" onClick={handleClearSavedCredentials}>Borrar credenciales guardadas</button>
                             <div className="login-registerr">
                                 <p>¿No tiene una cuenta? <Link to="/Register" className="register-link">Registrarse</Link></p>
                             </div>
