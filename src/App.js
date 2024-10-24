@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Route, Routes } from "react-router-dom";
-import ScrollToTop from './components/ScrollToTop';
+import ScrollToTop from './components/ScrollToTop'; // Mantén solo esta línea
 import AmorAmistad from "./pages.clientes/amor_amistad";
 import Aniversario from "./pages.clientes/aniversario";
 import Anturios from "./pages.clientes/anturios";
@@ -16,8 +16,6 @@ import Eventos from "./pages.clientes/eventos";
 import Gerberas from "./pages.clientes/Gerberas";
 import Girasoles from "./pages.clientes/girasoles";
 import OrderHistory from "./pages.clientes/historial";
-import ResetPassword from './pages.clientes/ingresarNuevaContrase';
-import RequestPasswordReset from './pages.clientes/introducirCorreo';
 import Lirios from "./pages.clientes/lirios";
 import Login from "./pages.clientes/login";
 import Main from "./pages.clientes/main";
@@ -28,16 +26,11 @@ import QuienesSomos from "./pages.clientes/quienes_somos";
 import Register from "./pages.clientes/register";
 import Rosas from "./pages.clientes/rosas";
 import Terminos from './pages.clientes/TerminsAndConditions';
-<<<<<<< HEAD
-import Politica from './pages.clientes/PolityPrivacity';
-import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './AuthContext';
-=======
 import Admin from "./pages/admin";
 import Domiciliary from "./pages/domiciliario";
 import ProtectedRoute from './pages/ProtectedRoute';
 import VendorDashboard from "./pages/vendedor";
->>>>>>> 25cf7c0e7c7d39a06cc156156558bb09f82555c3
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -90,7 +83,6 @@ function App() {
             <Route path="/Terminos" element={<Terminos />} />
             <Route path="/Politica" element={<Politica />} />
 
-<<<<<<< HEAD
             {/* Rutas protegidas */}
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
             <Route path="/VendorDashboard" element={<ProtectedRoute allowedRoles={['Vendedor']}><VendorDashboard /></ProtectedRoute>} />
@@ -99,24 +91,7 @@ function App() {
         </main>
       </div>
     </AuthProvider>
-=======
-          {/* Rutas protegidas */}
-          <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
-          <Route path="/VendorDashboard" element={<ProtectedRoute allowedRoles={['Vendedor']}><VendorDashboard /></ProtectedRoute>} />
-          <Route path="/domiciliary" element={<ProtectedRoute allowedRoles={['Domiciliario']}><Domiciliary /></ProtectedRoute>} />
 
-          {/* Ruta para redirigir a la página principal si no se encuentra ninguna ruta */}
-          <Route path="*" element={<Main />} />
-
-          {/* Ruta para la solicitud de restablecimiento */}
-          <Route path="/request-password-reset" element={<RequestPasswordReset />} />
-        
-          {/* Ruta para restablecer la contraseña con el token */}
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-        </Routes>
-      </main>
-    </div>
->>>>>>> 25cf7c0e7c7d39a06cc156156558bb09f82555c3
   );
 }
 
