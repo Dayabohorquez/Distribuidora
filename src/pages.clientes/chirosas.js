@@ -18,6 +18,7 @@ const ProductPage = ({ addToCart }) => {
         type: ''
     });
     const [notification, setNotification] = useState(''); // Estado para notificaciones
+    const [cart, setCart] = useState(JSON.parse(localStorage.getItem('cart')) || {});
 
     const navigate = useNavigate();
 
@@ -46,6 +47,20 @@ const ProductPage = ({ addToCart }) => {
 
         fetchProducts();
     }, []);
+
+    useEffect(() => {
+        if (notification) {
+            const timer = setTimeout(() => {
+                setNotification('');
+            }, 1500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [notification]);
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
 
     const handleDetailsClick = (product) => {
         setModalData({
@@ -80,30 +95,46 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-    
+
         if (!documento) {
-            setNotification('Please log in to add products to the cart.');
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
             return;
         }
-    
+
+        const availableQuantity = product.cantidad_disponible;
+        const currentQuantityInCart = cart[product.id_producto]?.cantidad || 0;
+
+        if (currentQuantityInCart >= availableQuantity) {
+            setNotification(`No hay productos disponibles.`);
+            return;
+        }
+
         try {
-            // Agregar el producto al carrito
+            const newCart = {
+                ...cart,
+                [product.id_producto]: {
+                    ...product,
+                    cantidad: currentQuantityInCart + 1
+                }
+            };
+
+            setCart(newCart);
+
             const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: 1,
-                precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
+                precio_adicional: 0
             });
-    
-            const idCarrito = response.data.id_carrito; // Asegúrate de que esta propiedad esté en la respuesta
-    
-            // Llamar al procedimiento para actualizar el total del carrito
+
+            const idCarrito = response.data.id_carrito;
             await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
-    
-            setNotification('Product added to cart successfully.');
+
+            setNotification('Producto agregado al carrito');
+            setModalData(null);
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+            setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -180,7 +211,14 @@ const ProductPage = ({ addToCart }) => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={handleAddToCartFromModal}>Añadir al carrito</button>
+                                    <button className="btn-cart" onClick={() => handleAddToCart({
+                                        id_producto: modalData.id,
+                                        nombre_producto: modalData.title,
+                                        precio_producto: modalData.price,
+                                        foto_ProductoURL: modalData.imgSrc
+                                    })}>
+                                        Añadir al carrito
+                                    </button>
                                 </div>
                             </div>
                         </div>

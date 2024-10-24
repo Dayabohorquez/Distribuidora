@@ -13,6 +13,7 @@ const App = () => {
     const [detalleVisible, setDetalleVisible] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [notification, setNotification] = useState('');
+    const [itemsPedido, setItemsPedido] = useState([]); // Nuevo estado para los items del pedido
 
     const showNotification = (message) => {
         setNotification(message);
@@ -48,6 +49,28 @@ const App = () => {
         }
     };
 
+    const fetchItemsByPedido = async (id_pedido) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/pedido/${id_pedido}/items`); // Cambia esta URL si es necesario
+            setItemsPedido(response.data); // Actualizar el estado con los items
+        } catch (error) {
+            console.error('Error al obtener items del pedido:', error);
+            showNotification('Error al obtener items del pedido: ' + (error.response ? error.response.data.message : error.message));
+        }
+    };
+
+    const handleOpenDetalle = async (pedido) => {
+        setCurrentItem(pedido);
+        setDetalleVisible(true);
+        await fetchItemsByPedido(pedido.id_pedido); // Obtener items del pedido al abrir el detalle
+    };
+
+    const closeDetalle = () => {
+        setDetalleVisible(false);
+        setCurrentItem(null);
+        setItemsPedido([]); // Limpiar items al cerrar el detalle
+    };
+
     const handleToggleProductStatus = async (idProducto) => {
         if (!idProducto) return;
             try {
@@ -73,16 +96,6 @@ const App = () => {
             console.error('Error al cambiar el estado del pedido:', error);
             showNotification('Error al cambiar el estado del pedido: ' + (error.response ? error.response.data.message : error.message));
         }
-    };
-
-    const handleOpenDetalle = (item) => {
-        setCurrentItem(item);
-        setDetalleVisible(true);
-    };
-
-    const closeDetalle = () => {
-        setDetalleVisible(false);
-        setCurrentItem(null);
     };
 
     // Filtrado de productos
@@ -217,7 +230,7 @@ const App = () => {
                                                 </select>
                                             </td>
                                             <td>
-                                                <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
+                                            <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
                                             </td>
                                         </tr>
                                     ))
@@ -229,28 +242,13 @@ const App = () => {
                     </div>
                 )}
 
-                {/* Detalles del Vendedor */}
+                {/* Detalles del Pedido */}
                 {detalleVisible && (
                     <div className="vend-detalle show" onClick={closeDetalle}>
                         <div className="detalle-content" onClick={e => e.stopPropagation()}>
                             <span className="close-btn" onClick={closeDetalle}>&times;</span>
-                            <h2>{currentItem.nombre_producto ? 'Detalles del Producto' : 'Detalles del Pedido'}</h2>
-                            {currentItem.nombre_producto ? (
-                                <div>
-                                    <p>ID: {currentItem.id_producto}</p>
-                                    <p>Nombre: {currentItem.nombre_producto}</p>
-                                    <p>Precio: {currentItem.precio_producto ? `${Math.floor(currentItem.precio_producto)} USD` : 'N/A'}</p>
-                                    <p>Código: {currentItem.codigo_producto}</p>
-                                    <p>Estado: {currentItem.estado_producto ? 'Activo' : 'Inactivo'}</p>
-                                    {currentItem.foto_ProductoURL && (
-                                        <img
-                                            src={currentItem.foto_ProductoURL}
-                                            alt={currentItem.nombre_producto}
-                                            className="product-img"
-                                        />
-                                    )}
-                                </div>
-                            ) : (
+                            <h2>Detalles del Pedido</h2>
+                            {currentItem && (
                                 <div>
                                     <p>ID: {currentItem.id_pedido}</p>
                                     <p>Fecha: {currentItem.fecha_pedido}</p>
@@ -263,6 +261,36 @@ const App = () => {
                                             className="product-img"
                                         />
                                     )}
+                                    <h3>Items del Pedido:</h3>
+                                    {itemsPedido.length > 0 ? (
+                                        <ul>
+                                            {itemsPedido.map(item => (
+                                                <li key={item.id_pedido_item} style={{ marginBottom: '10px' }}>
+                                                    {item.foto_ProductoURL && (
+                                                        <img src={item.foto_ProductoURL} alt={item.nombre_producto} style={{ width: '100px', marginRight: '50px' }} />
+                                                    )}
+                                                    <div>
+                                                        <strong>{item.nombre_producto}</strong><br />
+                                                        Cantidad: {item.cantidad}<br />
+                                                        Precio Unitario: {item.precio_unitario} USD<br />
+                                                        Opción Adicional: {item.opcion_adicional || 'Ninguna'}<br />
+                                                        Dedicatoria: {item.dedicatoria || 'No especificada'}<br />
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>No hay items para este pedido.</p>
+                                    )}
+
+                                    <h3>Dirección de Envío:</h3>
+                                    {itemsPedido.length > 0 ? (
+                                        <p>{itemsPedido[0].direccion_envio || 'Dirección no especificada'}</p>
+                                    ) : (
+                                        <p>No hay dirección disponible.</p>
+                                    )}
+
+
                                 </div>
                             )}
                         </div>

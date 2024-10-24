@@ -17,6 +17,18 @@ axios.interceptors.request.use(config => {
     return config;
 }, error => Promise.reject(error));
 
+// Define the function here
+const groupCartItems = (items) => {
+    return items.reduce((acc, item) => {
+        const key = `${item.nombre_producto}-${item.opcion_adicional}-${item.dedicatoria}`;
+        if (!acc[key]) {
+            acc[key] = { ...item, cantidad: 0 };
+        }
+        acc[key].cantidad += item.cantidad;
+        return acc;
+    }, {});
+};
+
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [notification, setNotification] = useState('');
@@ -60,11 +72,13 @@ const CartPage = () => {
             try {
                 const response = await axios.get(`http://localhost:4000/api/carrito/completo/${documento}`);
                 localStorage.setItem('id_carrito', response.data.id_carrito);
-                setCartItems(response.data);
+                setCartItems(response.data.map(item => ({
+                    ...item,
+                    id_producto: item.id_producto || item.id_carrito_item, // Asignar id_producto
+                })));
                 updateCartTotal(response.data);
             } catch (error) {
-                console.error('Error al obtener el carrito:', error);
-                setNotification('Error al cargar el carrito. Intente de nuevo.');
+                console.error('Error al cargar el carrito:', error);
             }
         };
 
@@ -101,8 +115,11 @@ const CartPage = () => {
     }, [cartTotal]);
 
     // Actualizar cantidad del producto en el carrito
-    const updateQuantity = useCallback(async (itemId, newQuantity) => {
-        if (newQuantity < 1) return;
+    const updateQuantity = useCallback(async (itemId, newQuantity, availableStock) => {
+        if (newQuantity < 1 || newQuantity > availableStock) {
+            setNotification(`Los productos se han agotado`);
+            return;
+        }
         const documento = localStorage.getItem('documento');
         if (!documento) {
             setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
@@ -148,7 +165,8 @@ const CartPage = () => {
                         ...item,
                         opcion_adicional: newOption,
                         dedicatoria: newDedicatoria,
-                        precio_adicional: newPrice
+                        precio_adicional: newPrice,
+                        id_producto: item.id_producto // Asegúrate de mantener el id_producto
                     } : item
                 );
                 updateCartTotal(updatedItems);
@@ -210,19 +228,36 @@ const CartPage = () => {
 
     const handleCheckout = () => {
         updateTotalInDatabase();
-
-        const cartData = cartItems.map(({ id_carrito_item, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria }) => ({
-            id_carrito_item,
+    
+        const cartData = cartItems.map(({ id_producto, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria, precio_adicional }) => ({
+            id_producto,
             nombre_producto,
             precio_producto,
             cantidad,
             opcion_adicional,
             dedicatoria,
+            precio_adicional: precio_adicional || 0,
         }));
-
-        navigate('/payment-method', { state: { cartItems: cartData, subtotal: cartTotal.subtotal } });
-    };
-
+    
+        const id_carrito = localStorage.getItem('id_carrito');
+    
+        // Verificar que el ID del carrito esté presente
+        console.log('ID del carrito antes de navegar:', id_carrito);
+    
+        if (!id_carrito) {
+            console.error('El ID del carrito no está definido. Asegúrate de que se almacene correctamente en localStorage.');
+            return; // Detener la ejecución si no hay ID
+        }
+    
+        navigate('/payment-method', {
+            state: {
+                cartItems: cartData,
+                subtotal: cartTotal.subtotal || 0,
+                id_carrito: id_carrito,
+            },
+        });
+    };    
+    
     return (
         <div className="admin-app">
             {isAuthenticated ? <Headerc /> : <Header />}
@@ -235,7 +270,7 @@ const CartPage = () => {
                     </div>
                 ) : (
                     <div className="cart-content">
-                        {cartItems.map(item => {
+                        {Object.values(groupCartItems(cartItems)).map(item => {
                             const precioAdicional = parseFloat(item.precio_adicional) || 0;
                             const precioBase = parseFloat(item.precio_producto) || 0;
                             const total = (precioBase + precioAdicional) * item.cantidad;
@@ -269,11 +304,14 @@ const CartPage = () => {
                                     <input
                                         type="number"
                                         min="1"
+                                        max={item.cantidad_disponible} // Límite superior
                                         value={item.cantidad}
                                         onChange={(e) => {
                                             const value = parseInt(e.target.value);
-                                            if (value >= 1) {
-                                                updateQuantity(item.id_carrito_item, value);
+                                            if (value >= 1 && value <= item.cantidad_disponible) {
+                                                updateQuantity(item.id_carrito_item, value, item.cantidad_disponible);
+                                            } else {
+                                                setNotification(`La cantidad debe estar entre 1 y ${item.cantidad_disponible}.`);
                                             }
                                         }}
                                         className="quantity-input"

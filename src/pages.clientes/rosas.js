@@ -60,7 +60,8 @@ const ProductPage = ({ addToCart }) => {
             title: product.nombre_producto || 'Product without name',
             price: Math.floor(product.precio_producto),
             description: product.descripcion_producto || 'Product description not available.',
-            id: product.id_producto
+            id: product.id_producto,
+            cantidad_disponible: product.cantidad_disponible // Incluye cantidad disponible
         });
     };
 
@@ -71,16 +72,15 @@ const ProductPage = ({ addToCart }) => {
     const handleFilterChange = (e) => {
         const { id, checked, name } = e.target;
 
-        // Si es un filtro de precio, desmarcar otros filtros de precio
         if (name === 'price') {
             setFilters((prevFilters) => ({
                 ...prevFilters,
-                price: checked ? id : null // Solo permite un filtro de precio activo a la vez
+                price: checked ? id : null
             }));
         } else {
             setFilters((prevFilters) => ({
                 ...prevFilters,
-                [id]: checked ? id : '' // Si está marcado, activar filtro; si no, desactivar
+                [id]: checked ? id : ''
             }));
         }
     };
@@ -88,7 +88,6 @@ const ProductPage = ({ addToCart }) => {
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
 
-        // Filtros de ocasión, precio y tipo
         const matchOccasion = !occasion || product.occasion === occasion;
         const matchPrice = !price ||
             (price === 'below-100' && product.precio_producto < 100000) ||
@@ -101,30 +100,35 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-    
+
         if (!documento) {
-            setNotification('Please log in to add products to the cart.');
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
             return;
         }
-    
+
+        // Verifica la cantidad disponible antes de agregar
+        if (product.cantidad_disponible < 1) {
+            setNotification('Producto agotado.');
+            return;
+        }
+
         try {
-            // Agregar el producto al carrito
             const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: 1,
                 precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
             });
-    
-            const idCarrito = response.data.id_carrito; // Asegúrate de que esta propiedad esté en la respuesta
-    
-            // Llamar al procedimiento para actualizar el total del carrito
+
+            const idCarrito = response.data.id_carrito;
+
             await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
-    
-            setNotification('Product added to cart successfully.');
+            
+            setNotification('Producto agregado al carrito');
+            setModalData(null);
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+            setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -194,9 +198,16 @@ const ProductPage = ({ addToCart }) => {
                             <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
                             <h3>{product.nombre_producto}</h3>
                             <p>${product.precio_producto?.toLocaleString() || '0'}</p>
+                            {product.cantidad_disponible < 1 && <p className="out-of-stock">Producto agotado</p>}
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
                             <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
-                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
+                            <button 
+                                className="btn-cart" 
+                                onClick={() => handleAddToCart(product)} 
+                                disabled={product.cantidad_disponible < 1} // Deshabilitar si está agotado
+                            >
+                                Añadir al carrito
+                            </button>
                         </div>
                     ))}
                 </main>
@@ -211,12 +222,17 @@ const ProductPage = ({ addToCart }) => {
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
                                     <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={() => handleAddToCart({
-                                        id_producto: modalData.id,
-                                        nombre_producto: modalData.title,
-                                        precio_producto: modalData.price,
-                                        foto_ProductoURL: modalData.imgSrc
-                                    })}>
+                                    <button 
+                                        className="btn-cart" 
+                                        onClick={() => handleAddToCart({
+                                            id_producto: modalData.id,
+                                            nombre_producto: modalData.title,
+                                            precio_producto: modalData.price,
+                                            foto_ProductoURL: modalData.imgSrc,
+                                            cantidad_disponible: modalData.cantidad_disponible // Añadir cantidad disponible
+                                        })}
+                                        disabled={modalData.cantidad_disponible < 1} // Deshabilitar si está agotado
+                                    >
                                         Añadir al carrito
                                     </button>
                                 </div>

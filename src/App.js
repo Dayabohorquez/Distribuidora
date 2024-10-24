@@ -30,6 +30,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import Terminos from './pages.clientes/TerminsAndConditions';
 import Politica from './pages.clientes/PolityPrivacity';
 import ScrollToTop from './components/ScrollToTop';
+import { AuthProvider } from './AuthContext';
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -48,49 +49,48 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <main>
-        <ScrollToTop />
-        <Routes>
-          {/* Rutas públicas */}
-          <Route path="/" element={<Main />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/OrderHistory" element={<OrderHistory />} />
-          <Route path="/purchase-page" element={<PurchasePage />} />
-          <Route path="/payment-method" element={<PaymentMethod />} />
-          <Route path="/car" element={<Car cart={cart} />} />
-          <Route path="/producto/:id" element={<DetalleProducto addToCart={addToCart} />} />
+    <AuthProvider>
+      <div className="App">
+        <main>
+          <ScrollToTop />
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path="/" element={<Main />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/OrderHistory" element={<OrderHistory />} />
+            <Route path="/purchase-page" element={<PurchasePage />} />
+            <Route path="/payment-method" element={<PaymentMethod />} />
+            <Route path="/car" element={<Car cart={cart} />} />
+            <Route path="/producto/:id" element={<DetalleProducto addToCart={addToCart} />} />
 
-          {/* Rutas adicionales */}
-          <Route path="/diamujer" element={<DiaMujer addToCart={addToCart} />} />
-          <Route path="/diamadre" element={<DiaMadre addToCart={addToCart} />} />
-          <Route path="/AmorAmistad" element={<AmorAmistad addToCart={addToCart} />} />
-          <Route path="/aniversario" element={<Aniversario addToCart={addToCart} />} />
-          <Route path="/condolencias" element={<Condolencias addToCart={addToCart} />} />
-          <Route path="/Cumpleaños" element={<Cumpleaños addToCart={addToCart}  />} />
-          <Route path="/anturios" element={<Anturios addToCart={addToCart} />} />
-          <Route path="/chirosas" element={<Chirosas addToCart={addToCart} />} />
-          <Route path="/gerberas" element={<Gerberas addToCart={addToCart} />} />
-          <Route path="/girasoles" element={<Girasoles addToCart={addToCart} />} />
-          <Route path="/lirios" element={<Lirios addToCart={addToCart} />} />
-          <Route path="/rosas" element={<Rosas addToCart={addToCart} />} />
-          <Route path="/eventos" element={<Eventos />} />
-          <Route path="/quienessomos" element={<QuienesSomos />} />
-          <Route path="/myaccount" element={<Myaccount />} />
-          <Route path="/Terminos" element={<Terminos />} />
-          <Route path="/Politica" element={<Politica />} />
+            {/* Rutas adicionales */}
+            <Route path="/diamujer" element={<DiaMujer addToCart={addToCart} />} />
+            <Route path="/diamadre" element={<DiaMadre addToCart={addToCart} />} />
+            <Route path="/AmorAmistad" element={<AmorAmistad addToCart={addToCart} />} />
+            <Route path="/aniversario" element={<Aniversario addToCart={addToCart} />} />
+            <Route path="/condolencias" element={<Condolencias addToCart={addToCart} />} />
+            <Route path="/Cumpleaños" element={<Cumpleaños addToCart={addToCart} />} />
+            <Route path="/anturios" element={<Anturios addToCart={addToCart} />} />
+            <Route path="/chirosas" element={<Chirosas addToCart={addToCart} />} />
+            <Route path="/gerberas" element={<Gerberas addToCart={addToCart} />} />
+            <Route path="/girasoles" element={<Girasoles addToCart={addToCart} />} />
+            <Route path="/lirios" element={<Lirios addToCart={addToCart} />} />
+            <Route path="/rosas" element={<Rosas addToCart={addToCart} />} />
+            <Route path="/eventos" element={<Eventos />} />
+            <Route path="/quienessomos" element={<QuienesSomos />} />
+            <Route path="/myaccount" element={<Myaccount />} />
+            <Route path="/Terminos" element={<Terminos />} />
+            <Route path="/Politica" element={<Politica />} />
 
-          {/* Rutas protegidas */}
-          <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
-          <Route path="/VendorDashboard" element={<ProtectedRoute allowedRoles={['Vendedor']}><VendorDashboard /></ProtectedRoute>} />
-          <Route path="/domiciliary" element={<ProtectedRoute allowedRoles={['Domiciliario']}><Domiciliary /></ProtectedRoute>} />
-
-          {/* Ruta para redirigir a la página principal si no se encuentra ninguna ruta */}
-          <Route path="*" element={<Main />} />
-        </Routes>
-      </main>
-    </div>
+            {/* Rutas protegidas */}
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
+            <Route path="/VendorDashboard" element={<ProtectedRoute allowedRoles={['Vendedor']}><VendorDashboard /></ProtectedRoute>} />
+            <Route path="/domiciliary" element={<ProtectedRoute allowedRoles={['Domiciliario']}><Domiciliary /></ProtectedRoute>} />
+          </Routes>
+        </main>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -35,7 +35,7 @@ const OrderHistory = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:4000/api/pedidos/${documento}`);
+      const response = await fetch(`http://localhost:4000/api/historial/${documento}`);
       if (!response.ok) {
         throw new Error('Error al obtener el historial de pedidos');
       }
@@ -66,25 +66,38 @@ const OrderHistory = () => {
               <table className="his5-historial-table">
                 <thead>
                   <tr>
-                    <th>Nombre del Producto</th>
-                    <th>Código del Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
+                    <th>ID del Pedido</th>
+                    <th>Fecha del Pedido</th>
                     <th>Estado del Pedido</th>
+                    <th>Método de Pago</th>
                     <th>Total Pagado</th>
+                    <th>Dirección de Envío</th>
+                    <th>Detalles de Compra</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order, index) => (
-                    <tr key={`${order.id_pedido}-${index}`}>
-                      <td>{order.nombre_producto || 'N/A'}</td>
-                      <td>{order.codigo_producto || 'N/A'}</td>
-                      <td>${order.precio ? order.precio.toLocaleString() : 'N/A'}</td>
-                      <td>{order.cantidad || 'N/A'}</td>
-                      <td>{order.estado_pedido || 'N/A'}</td>
-                      <td>${order.total_pagado ? order.total_pagado.toLocaleString() : 'N/A'}</td>
-                    </tr>
-                  ))}
+                  {orders.map((order) => {
+                    const productos = order.productos ? order.productos.split(', ') : [];
+                    return (
+                      <React.Fragment key={order.id_pedido}>
+                        {productos.map((producto, index) => (
+                          <tr key={`${order.id_pedido}-${index}`}>
+                            {index === 0 && (
+                              <>
+                                <td rowSpan={productos.length}>{order.id_pedido}</td>
+                                <td rowSpan={productos.length}>{new Date(order.fecha_pedido).toLocaleDateString()}</td>
+                                <td rowSpan={productos.length}>{order.estado_pedido}</td>
+                                <td rowSpan={productos.length}>{order.metodo_pago}</td>
+                                <td rowSpan={productos.length}>${parseFloat(order.total_pagado).toLocaleString()}</td>
+                                <td rowSpan={productos.length}>{order.direccion_envio}</td>
+                              </>
+                            )}
+                            <td>{producto}</td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

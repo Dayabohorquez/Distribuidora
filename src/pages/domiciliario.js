@@ -10,6 +10,7 @@ const App = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [detalleVisible, setDetalleVisible] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const [itemsPedido, setItemsPedido] = useState([]); // Nuevo estado para los items del pedido
     const [notification, setNotification] = useState('');
 
     const showNotification = (message) => {
@@ -31,6 +32,16 @@ const App = () => {
         }
     };
 
+    const fetchItemsByPedido = async (id_pedido) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/pedido/${id_pedido}/items`); // Cambia esta URL si es necesario
+            setItemsPedido(response.data); // Actualizar el estado con los items
+        } catch (error) {
+            console.error('Error al obtener items del pedido:', error);
+            showNotification('Error al obtener items del pedido: ' + (error.response ? error.response.data.message : error.message));
+        }
+    };
+
     const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
         if (!idPedido) return;
         try {
@@ -43,14 +54,16 @@ const App = () => {
         }
     };
 
-    const handleOpenDetalle = (pedido) => {
+    const handleOpenDetalle = async (pedido) => {
         setCurrentItem(pedido);
         setDetalleVisible(true);
+        await fetchItemsByPedido(pedido.id_pedido); // Obtener items del pedido al abrir el detalle
     };
 
     const closeDetalle = () => {
         setDetalleVisible(false);
         setCurrentItem(null);
+        setItemsPedido([]); // Limpiar items al cerrar el detalle
     };
 
     // Filtrado de pedidos
@@ -84,7 +97,7 @@ const App = () => {
                                 <th>ID</th>
                                 <th>Fecha</th>
                                 <th>Nombre Cliente</th>
-                                <th>Direcciòn</th>
+                                <th>Dirección</th>
                                 <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -141,6 +154,36 @@ const App = () => {
                                             className="product-img"
                                         />
                                     )}
+                                    <h3>Items del Pedido:</h3>
+                                    {itemsPedido.length > 0 ? (
+                                        <ul>
+                                            {itemsPedido.map(item => (
+                                                <li key={item.id_pedido_item} style={{ width: '100px', marginRight: '50px' }}>
+                                                    {item.foto_ProductoURL && (
+                                                        <img src={item.foto_ProductoURL} alt={item.nombre_producto} style={{ width: '50px', marginRight: '10px' }} />
+                                                    )}
+                                                    <div>
+                                                        <strong>{item.nombre_producto}</strong><br />
+                                                        Cantidad: {item.cantidad}<br />
+                                                        Precio Unitario: {item.precio_unitario} USD<br />
+                                                        Opción Adicional: {item.opcion_adicional || 'Ninguna'}<br />
+                                                        Dedicatoria: {item.dedicatoria || 'No especificada'}<br />
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>No hay items para este pedido.</p>
+                                    )}
+
+                                    <h3>Dirección de Envío:</h3>
+                                    {itemsPedido.length > 0 ? (
+                                        <p>{itemsPedido[0].direccion_envio || 'Dirección no especificada'}</p>
+                                    ) : (
+                                        <p>No hay dirección disponible.</p>
+                                    )}
+
+
                                 </div>
                             )}
                         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../index.css';
@@ -9,14 +9,23 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
 const PaymentMethod = () => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
-  const { cartItems = [], subtotal = 0 } = location.state || {};
+  
+  // Desestructuración con valor por defecto
+  const { id_carrito, subtotal: initialSubtotal, cartItems: initialCartItems = [] } = location.state || {};
+  
+  const [cartItems, setCartItems] = useState(initialCartItems);
   const [paymentMethod, setPaymentMethod] = useState('nequi');
   const [notification, setNotification] = useState({ message: '', type: '' });
   const [loading, setLoading] = useState(false);
+  const [subtotal, setSubtotal] = useState(initialSubtotal || 0);
+  const [shippingAddress, setShippingAddress] = useState('');
 
   useEffect(() => {
+    console.log('El componente PaymentMethod se ha montado');
+
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -27,77 +36,136 @@ const PaymentMethod = () => {
         localStorage.removeItem('token');
       }
     }
-  }, []);
+
+    // Validación de id_carrito
+    if (!id_carrito) {
+      console.error('ID del carrito no está definido. Asegúrate de que se pase correctamente.');
+      return;
+    }
+
+    console.log('ID del carrito en useEffect:', id_carrito);
+
+    if (id_carrito && cartItems.length === 0) {
+      console.log('ID del carrito:', id_carrito);
+
+      const fetchCartItems = async () => {
+        try {
+          const response = await axios.get(`http://localhost:4000/api/carrito-item/${id_carrito}`);
+          console.log('Respuesta de la API:', response.data);
+
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            console.log('Datos del carrito:', response.data);
+            setCartItems(response.data);
+            
+            const totalSubtotal = response.data.reduce((acc, item) => {
+              const itemTotal = (parseFloat(item.precio_producto) + (parseFloat(item.precio_adicional) || 0)) * item.cantidad;
+              return acc + itemTotal;
+            }, 0);
+            setSubtotal(totalSubtotal);
+          } else {
+            setNotification({ message: 'No hay productos en el carrito.', type: 'info' });
+          }
+        } catch (error) {
+          console.error('Error al obtener los items del carrito:', error);
+          setNotification({ message: 'Error al cargar los items del carrito', type: 'error' });
+        }
+      };
+
+      fetchCartItems();
+    }
+  }, [id_carrito, cartItems]);
 
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
+    if (e.target.value !== 'efectivo') {
+      document.getElementById('efectivo-number').value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!cartItems.length) {
       setNotification({ message: 'El carrito está vacío.', type: 'error' });
       return;
     }
 
-    const id_carrito_item = cartItems[0]?.id_carrito_item;
-    if (!id_carrito_item) {
-      setNotification({ message: 'El ID del carrito no está disponible.', type: 'error' });
+    const unavailableItems = cartItems.filter(item => item.cantidad > item.cantidad_disponible);
+    if (unavailableItems.length > 0) {
+      setNotification({ message: 'Algunos productos en el carrito están agotados. Actualiza el carrito.', type: 'error' });
+      return;
+    }
+
+    const documento = localStorage.getItem('documento');
+    if (!documento) {
+      setNotification({ message: 'Documento no encontrado. Inicie sesión nuevamente.', type: 'error' });
       return;
     }
 
     const iva = subtotal * 0.19;
     const total = subtotal + iva;
 
-    setLoading(true);
-    try {
-      const documento = localStorage.getItem('documento');
-      if (!documento) {
-        setNotification({ message: 'Documento no encontrado. Inicie sesión nuevamente.', type: 'error' });
-        return;
-      }
+    const validItems = cartItems.map(item => ({
+      id_producto: item.id_producto,
+      cantidad: item.cantidad,
+      precio_unitario: parseFloat(item.precio_producto),
+      opcion_adicional: item.opcion_adicional || 'Ninguno',
+      precio_adicional: item.precio_adicional || 0, // Asegúrate de incluir el precio adicional
+      dedicatoria: item.dedicatoria, // Use the fixed dedication message
+    }));
 
-      const paymentAndOrderData = {
-        pagoData: {
-          nombre_pago: `Pago por ${paymentMethod}`,
-          fecha_pago: new Date().toISOString(),
-          iva: parseFloat(iva.toFixed(2)),
-          metodo_pago: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
-          subtotal_pago: parseFloat(subtotal.toFixed(2)),
-          total_pago: parseFloat(total.toFixed(2)),
-          documento,
-          id_carrito_item,
-        },
-        pedidoData: {
-          fecha_pedido: new Date().toISOString(),
-          total_pagado: parseFloat(total.toFixed(2)),
-          documento,
-          id_carrito_item,
-        }
-      };
+    const paymentAndOrderData = {
+      documento: parseInt(documento),
+      metodo_pago: paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1),
+      subtotal_pago: parseFloat(subtotal.toFixed(2)),
+      total_pago: parseFloat(total.toFixed(2)),
+      items: validItems,
+      direccion_envio: shippingAddress,
+    };
+
+    try {
+      setLoading(true);
+      console.log('Datos del pago y pedido:', paymentAndOrderData); // Log de datos antes del envío
 
       const response = await axios.post('http://localhost:4000/api/pago-y-pedido', paymentAndOrderData);
+      console.log('Respuesta del pago:', response.data); // Log de respuesta del pago
 
-      if (response.data.message === "Pago y pedido creados exitosamente") {
-        const vaciarResponse = await axios.delete(`http://localhost:4000/api/carritos/vaciar/${documento}`);
-        if (vaciarResponse.status === 200) {
-          setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
-        } else {
-          throw new Error("Error al vaciar el carrito");
-        }
+      if (response.data.mensaje === "Pedido realizado con éxito") {
+        await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
+        setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
+        navigate('/');
       } else {
         throw new Error("Error al crear el pago y el pedido");
       }
-
     } catch (error) {
       console.error('Error al procesar el pago:', error);
-      const errorMessage = error.response?.data?.message || 'Error al procesar el pago. Inténtalo de nuevo.';
-      setNotification({ message: errorMessage, type: 'error' });
+      if (error.response) {
+        setNotification({ message: error.response.data.mensaje || 'Error al procesar el pago', type: 'error' });
+      } else {
+        setNotification({ message: 'Error al procesar el pago. Inténtalo de nuevo.', type: 'error' });
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const groupedItems = cartItems.reduce((acc, item) => {
+    const key = `${item.id_producto}-${item.opcion_adicional || 'Ninguno'}`;
+    if (!acc[key]) {
+      acc[key] = {
+        ...item,
+        cantidad: 0,
+        precio_adicional: 0, // Inicializa el precio adicional en 0
+      };
+    }
+    acc[key].cantidad += item.cantidad;
+
+    // Sumar el precio adicional si existe
+    if (item.precio_adicional) {
+      acc[key].precio_adicional += parseFloat(item.precio_adicional) * item.cantidad; // Acumula el precio adicional
+    }
+
+    return acc;
+  }, {});
 
   const iva = subtotal * 0.19;
   const total = subtotal + iva;
@@ -107,11 +175,7 @@ const PaymentMethod = () => {
       {isAuthenticated ? <Headerc /> : <Header />}
       <main className="payment-method-container">
         <h1>Método de Pago</h1>
-        {notification.message && (
-          <div className={`notification ${notification.type}`}>
-            {notification.message}
-          </div>
-        )}
+        {notification.message && <div className={`notification ${notification.type}`}>{notification.message}</div>}
         {loading && <div className="loading">Procesando...</div>}
         <section className="section payment-method">
           <h2>Selecciona tu Método de Pago</h2>
@@ -141,22 +205,50 @@ const PaymentMethod = () => {
                   <label htmlFor={`${method}-number`}>
                     {method === 'efectivo' ? 'Monto en Efectivo' : `Número de ${method.charAt(0).toUpperCase() + method.slice(1)}:`}
                   </label>
-                  <input type="text" id={`${method}-number`} name={`${method}-number`} required />
+                  <input
+                    type="text"
+                    id={`${method}-number`}
+                    name={`${method}-number`}
+                    required={paymentMethod === method}
+                  />
                 </div>
               ))}
             </div>
+
+            {/* Shipping Address Section */}
+            <div className="shipping-address">
+              <h3>Dirección de Envío</h3>
+              <input
+                type="text"
+                value={shippingAddress}
+                onChange={(e) => setShippingAddress(e.target.value)}
+                placeholder="Ingresa la dirección de envío"
+                required
+              />
+            </div>
+
             <div className="cart-summary">
               <h3>Resumen de la Compra</h3>
               <p>Total: ${total.toFixed(2).toLocaleString()}</p>
               <h4>Productos:</h4>
-              <ul>
-                {cartItems.map(item => (
-                  <li key={item.id_carrito_item}>
-                    {item.nombre_producto} (x{item.cantidad}) - ${Number(item.precio_producto).toFixed(2).toLocaleString()}
-                  </li>
-                ))}
-              </ul>
+              {Object.keys(groupedItems).length > 0 ? (
+                <ul>
+                  {Object.entries(groupedItems).map(([key, item]) => (
+                    <li key={key}>
+                      <strong>{item.nombre_producto}:</strong> (x{item.cantidad}) - ${parseFloat(item.precio_producto).toFixed(2).toLocaleString()}
+                      {item.opcion_adicional && item.opcion_adicional !== 'Ninguno' && (
+                        <div>
+                          <strong>Opción adicional:</strong> {item.opcion_adicional} - ${item.precio_adicional > 0 ? item.precio_adicional.toFixed(2).toLocaleString() : '0.00'}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No hay productos en el carrito.</p>
+              )}
             </div>
+
             <button className="submit-btn" type="submit" disabled={loading}>Realizar Pago</button>
           </form>
         </section>
