@@ -1,4 +1,4 @@
-import { faEnvelope, faKey, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEye, faEyeSlash, faKey, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -205,7 +205,7 @@ const Register = () => {
                                         onClick={() => setPasswordVisible(!passwordVisible)}
                                         className="toggle-password"
                                     >
-                                        {passwordVisible ? 'Ocultar' : 'Mostrar'}
+                                        <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
                                     </button>
                                     <input
                                         type={passwordVisible ? 'text' : 'password'}
@@ -230,7 +230,7 @@ const Register = () => {
                                         onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
                                         className="toggle-password"
                                     >
-                                        {confirmPasswordVisible ? 'Ocultar' : 'Mostrar'}
+                                        <FontAwesomeIcon icon={confirmPasswordVisible ? faEyeSlash : faEye} />
                                     </button>
                                     <input
                                         type={confirmPasswordVisible ? 'text' : 'password'}

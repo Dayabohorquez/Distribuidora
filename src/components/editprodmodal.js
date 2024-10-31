@@ -56,16 +56,6 @@ const EditProdModal = ({ producto, onClose, onSave }) => {
                         />
                     </label>
                     <label className="admin-form-label">
-                        Cantidad Disponible:
-                        <input 
-                            type="number" 
-                            name="campo_cantidad" 
-                            className="admin-form-input" 
-                            defaultValue={producto.cantidad_disponible} 
-                            required 
-                        />
-                    </label>
-                    <label className="admin-form-label">
                         Tipo de Flor:
                         <input 
                             type="number" 

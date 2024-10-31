@@ -73,7 +73,7 @@ header {
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     padding: 10px;
     z-index: 1000;
     min-width: 150px;
@@ -247,7 +247,7 @@ header {
     left: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     padding: 10px;
     z-index: 1000;
     min-width: 250px;
@@ -288,11 +288,16 @@ header {
 
 /* Estilo para el menú desplegable de "Flores" */
 .main-menu ul li .dropdown.flower-submenu {
-    display: none; /* Ocultar el menú por defecto */
-    grid-template-columns: repeat(4, 1fr); /* Cuatro columnas para las categorías */
-    gap: 20px; /* Espacio entre columnas */
-    width: auto; /* Ajustar el ancho automáticamente según el contenido */
-    min-width: 400px; /* Ancho mínimo para evitar que el menú sea demasiado estrecho */
+    display: none;
+    /* Ocultar el menú por defecto */
+    grid-template-columns: repeat(4, 1fr);
+    /* Cuatro columnas para las categorías */
+    gap: 20px;
+    /* Espacio entre columnas */
+    width: auto;
+    /* Ajustar el ancho automáticamente según el contenido */
+    min-width: 400px;
+    /* Ancho mínimo para evitar que el menú sea demasiado estrecho */
     padding: 10px;
     background-color: #ffffff;
     border: 1px solid #ddd;
@@ -301,7 +306,8 @@ header {
     top: 100%;
     left: 0;
     z-index: 1000;
-    text-align: center; /* Centrar el texto dentro del menú */
+    text-align: center;
+    /* Centrar el texto dentro del menú */
 }
 
 /* Mostrar el menú desplegable cuando el enlace principal está en hover */
@@ -313,7 +319,8 @@ header {
 .main-menu ul li .dropdown.flower-submenu .menu-column {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espacio entre categorías */
+    gap: 10px;
+    /* Espacio entre categorías */
 }
 
 /* Estilo para los títulos de las categorías */
@@ -323,16 +330,20 @@ header {
     color: black;
     text-decoration: none;
     padding: 2px 10px;
-    margin-bottom: 10px; /* Espacio debajo del título */
-    border-bottom: 2px solid #ddd; /* Línea divisoria debajo del título */
+    margin-bottom: 10px;
+    /* Espacio debajo del título */
+    border-bottom: 2px solid #ddd;
+    /* Línea divisoria debajo del título */
 }
 
 /* Estilo para la lista de productos bajo cada categoría */
 .main-menu ul li .dropdown.flower-submenu .menu-column ul.column.category {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Centrar elementos */
-    gap: 10px; /* Espacio entre productos */
+    justify-content: center;
+    /* Centrar elementos */
+    gap: 10px;
+    /* Espacio entre productos */
     list-style: none;
     padding: 0;
     margin: 0;
@@ -360,12 +371,15 @@ header {
 
 /* Línea divisoria entre columnas */
 .main-menu ul li .dropdown.flower-submenu .menu-column {
-    border-right: 2px solid #ddd; /* Línea divisoria entre columnas */
-    padding-right: 20px; /* Espacio adicional a la derecha de cada columna */
+    border-right: 2px solid #ddd;
+    /* Línea divisoria entre columnas */
+    padding-right: 20px;
+    /* Espacio adicional a la derecha de cada columna */
 }
 
 .main-menu ul li .dropdown.flower-submenu .menu-column:last-child {
-    border-right: none; /* Eliminar la línea divisoria para la última columna */
+    border-right: none;
+    /* Eliminar la línea divisoria para la última columna */
 }
 
 /* Estilo para centrar el contenido dentro de la sección de eventos */
@@ -420,7 +434,7 @@ header {
     .main-menu ul {
         display: flex;
     }
-    
+
     .hamburger {
         display: flex;
     }
@@ -443,22 +457,27 @@ header {
 /* Deslizamiento del carrusel */
 .carousel-slide {
     display: flex;
-    transition: transform 0.5s ease-in-out; /* Transición suave para el desplazamiento */
+    transition: transform 0.5s ease-in-out;
+    /* Transición suave para el desplazamiento */
     width: 100%;
 }
 
 /* Cada ítem del carrusel */
 .carousel-item {
-    min-width: 100%; /* Cada imagen ocupa el 100% del contenedor */
+    min-width: 100%;
+    /* Cada imagen ocupa el 100% del contenedor */
     box-sizing: border-box;
     position: relative;
 }
 
 .carousel-item img {
-    width: 70%; /* Ajusta el ancho de las imágenes */
-    height: 600px; /* Mantiene la proporción de la imagen */
+    width: 70%;
+    /* Ajusta el ancho de las imágenes */
+    height: 600px;
+    /* Mantiene la proporción de la imagen */
     display: block;
-    margin: 0 auto; /* Centra la imagen */
+    margin: 0 auto;
+    /* Centra la imagen */
 }
 
 /* Estilo de los subtítulos en el carrusel */
@@ -466,7 +485,8 @@ header {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el texto */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fondo semitransparente para el texto */
     color: #fff;
     padding: 10px;
     border-radius: 5px;
@@ -482,7 +502,8 @@ header {
 }
 
 /* Botones de navegación */
-.prev, .next {
+.prev,
+.next {
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
@@ -503,7 +524,8 @@ header {
 }
 
 /* Hover effect */
-.prev:hover, .next:hover {
+.prev:hover,
+.next:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
@@ -512,26 +534,31 @@ header {
     .carousel-container {
         width: 100%;
     }
-    
-    .prev, .next {
-        display: none; /* Ocultar botones en pantallas pequeñas si es necesario */
+
+    .prev,
+    .next {
+        display: none;
+        /* Ocultar botones en pantallas pequeñas si es necesario */
     }
 }
 
 @media (max-width: 480px) {
     .carousel-item img {
-        height: 200px; /* Adjust height for even smaller screens */
+        height: 200px;
+        /* Adjust height for even smaller screens */
     }
 
     .product-grid {
-        grid-template-columns: 1fr; /* Single column layout */
+        grid-template-columns: 1fr;
+        /* Single column layout */
     }
 
     .product-item {
         padding: 5px;
     }
 
-    .prev, .next {
+    .prev,
+    .next {
         font-size: 14px;
         padding: 5px;
     }
@@ -539,32 +566,41 @@ header {
 
 .role-navigation-button {
     background-color: white;
-    padding: 8px ; /* Espaciado interno */
-    border: none; /* Sin borde */
-    font-size: 16px; /* Tamaño de fuente */
-    cursor: pointer; /* Cambiar cursor al pasar el mouse */
-    transition: background-color 0.3s, transform 0.3s; /* Transición suave */
+    padding: 8px;
+    /* Espaciado interno */
+    border: none;
+    /* Sin borde */
+    font-size: 16px;
+    /* Tamaño de fuente */
+    cursor: pointer;
+    /* Cambiar cursor al pasar el mouse */
+    transition: background-color 0.3s, transform 0.3s;
+    /* Transición suave */
     text-align: left;
 }
 
 
 .role-navigation-button:active {
-    transform: translateY(0); /* Volver a la posición original al hacer clic */
-    background-color: #ebebeb; /* Color de fondo al pasar el mouse */
+    transform: translateY(0);
+    /* Volver a la posición original al hacer clic */
+    background-color: #ebebeb;
+    /* Color de fondo al pasar el mouse */
 }
 
 
 /* Estilo de la sección de detalles */
 .section-details {
     padding: 20px;
-    background-color: #f9f9f9; /* Color de fondo claro */
+    background-color: #f9f9f9;
+    /* Color de fondo claro */
 }
 
 /* Título de la sección */
 .section-details h2 {
     text-align: center;
     font-size: 2em;
-    color: #000000; /* Color del texto */
+    color: #000000;
+    /* Color del texto */
 }
 
 /* Estilo de la cuadrícula de productos */
@@ -582,27 +618,37 @@ header {
     overflow: hidden;
     text-align: center;
     padding: 10px;
-    transition: transform 0.3s, box-shadow 0.3s, border 0.3s; /* Agrega transición para efectos suaves */
-    cursor: pointer; /* Cambia el cursor para indicar que el elemento es interactivo */
-    max-width: 300px; /* Ajusta el ancho máximo de cada ítem del producto según sea necesario */
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    /* Agrega transición para efectos suaves */
+    cursor: pointer;
+    /* Cambia el cursor para indicar que el elemento es interactivo */
+    max-width: 300px;
+    /* Ajusta el ancho máximo de cada ítem del producto según sea necesario */
 }
 
 /* Efecto de resaltar el ítem al pasar el cursor */
 .product-item:hover {
-    transform: scale(1.05); /* Aumenta ligeramente el tamaño del ítem */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agrega sombra para destacar */
-    border-color: #000000; /* Cambia el color del borde al pasar el cursor */
+    transform: scale(1.05);
+    /* Aumenta ligeramente el tamaño del ítem */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Agrega sombra para destacar */
+    border-color: #000000;
+    /* Cambia el color del borde al pasar el cursor */
 }
 
 /* Estilo de la imagen del producto */
 .product-item img {
     width: 100%;
-    height: 300px; /* Establece una altura fija para las imágenes */
-    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionar */
-    display: block; /* Asegura que la imagen se ajuste al contenedor */
-    margin-bottom: 10px; /* Espacio entre la imagen y el texto */
+    height: 300px;
+    /* Establece una altura fija para las imágenes */
+    object-fit: cover;
+    /* Asegura que la imagen cubra el contenedor sin distorsionar */
+    display: block;
+    /* Asegura que la imagen se ajuste al contenedor */
+    margin-bottom: 10px;
+    /* Espacio entre la imagen y el texto */
 }
- 
+
 /* Estilo del título del producto */
 .product-item h3 {
     margin: 10px 0 5px;
@@ -620,12 +666,14 @@ header {
 .account {
     position: relative;
     display: inline-flex;
-    align-items: center; /* Alinea el icono y el texto verticalmente */
+    align-items: center;
+    /* Alinea el icono y el texto verticalmente */
     cursor: pointer;
 }
 
 .account i {
-    margin-right: 10px; /* Espacio entre el icono y el texto */
+    margin-right: 10px;
+    /* Espacio entre el icono y el texto */
 }
 
 .account .dropdown {
@@ -635,11 +683,12 @@ header {
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     padding: 10px;
     z-index: 1000;
     min-width: 150px;
-    text-align: left; /* Alinea el texto dentro del menú desplegable */
+    text-align: left;
+    /* Alinea el texto dentro del menú desplegable */
 }
 
 .account .dropdown a {
@@ -652,7 +701,8 @@ header {
 
 .account .dropdown a i {
     margin-left: auto;
-    margin-right: 10px; /* Espacio entre el icono y el texto */
+    margin-right: 10px;
+    /* Espacio entre el icono y el texto */
 }
 
 .account .dropdown a:hover {
@@ -695,19 +745,22 @@ header {
 .cart-content {
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Aumenté el espacio entre los ítems */
+    gap: 30px;
+    /* Aumenté el espacio entre los ítems */
     max-width: 1000px;
     margin: 0 auto;
 }
 
 .cart-item {
-    display: flex;
-    align-items: center;
+    display: block;
+    align-items: flex-start;
+    /* Cambiado para alinear mejor los ítems */
     padding: 15px;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    gap: 20px; /* Espacio entre la imagen y los detalles */
+    gap: 20px;
+    /* Espacio entre la imagen y los detalles */
 }
 
 .cart-item-image {
@@ -747,7 +800,8 @@ header {
 .cart-item-actions {
     display: flex;
     align-items: center;
-    gap: 15px; /* Espacio entre input y botón */
+    gap: 15px;
+    /* Espacio entre input y botón */
     margin-top: 10px;
 }
 
@@ -799,7 +853,8 @@ header {
 .cart-actions {
     display: flex;
     justify-content: space-between;
-    gap: 10px; /* Espaciado entre botones */
+    gap: 10px;
+    /* Espaciado entre botones */
 }
 
 .empty-cart-button {
@@ -946,11 +1001,12 @@ header {
     left: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     padding: 10px;
     z-index: 1000;
     min-width: 250px;
-    text-align: left; /* Alinea el texto dentro del menú desplegable */
+    text-align: left;
+    /* Alinea el texto dentro del menú desplegable */
 }
 
 .special-dates .dropdown li {
@@ -1011,12 +1067,15 @@ header {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-right: 2px solid #ddd; /* Línea divisoria entre columnas */
-    padding-right: 20px; /* Espacio adicional a la derecha de cada columna */
+    border-right: 2px solid #ddd;
+    /* Línea divisoria entre columnas */
+    padding-right: 20px;
+    /* Espacio adicional a la derecha de cada columna */
 }
 
 .main-menu ul li .dropdown.flower-submenu .menu-column:last-child {
-    border-right: none; /* Eliminar la línea divisoria para la última columna */
+    border-right: none;
+    /* Eliminar la línea divisoria para la última columna */
 }
 
 /* Estilo para los títulos de las categorías */
@@ -1072,21 +1131,28 @@ header {
     align-items: center;
     margin-top: 150px;
     margin-bottom: 60px;
-    padding: 20px; /* Añadido padding para asegurarse de que los bordes internos no se corten */
+    padding: 20px;
+    /* Añadido padding para asegurarse de que los bordes internos no se corten */
 }
 
 /* Estilos para el formulario */
 .form-box1 {
     position: relative;
     width: 100%;
-    max-width: 500px; /* Añadido max-width para asegurar que no se expanda demasiado en pantallas grandes */
-    margin: 0 auto; /* Centrado del formulario */
+    max-width: 500px;
+    /* Añadido max-width para asegurar que no se expanda demasiado en pantallas grandes */
+    margin: 0 auto;
+    /* Centrado del formulario */
     padding: 40px;
-    background: #fff; /* Fondo blanco para el formulario */
-    border-radius: 15px; /* Bordes redondeados para el formulario */
+    background: #fff;
+    /* Fondo blanco para el formulario */
+    border-radius: 15px;
+    /* Bordes redondeados para el formulario */
     border: 2px solid #8d8d8d;
-    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.5); /* Sombra sutil para el contenedor */
+    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.5);
+    /* Sombra sutil para el contenedor */
     margin-top: 30px;
+    margin-bottom: 32px;
 }
 
 
@@ -1113,9 +1179,16 @@ header {
 }
 
 .input-wrapper2 {
-    position: relative;
     display: flex;
     align-items: center;
+}
+
+.toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 20px;
+    /* Espacio entre el ícono y el campo de entrada */
 }
 
 .input-wrapper2 .icon {
@@ -1132,7 +1205,8 @@ header {
     background: transparent;
     border: 2px solid #ddd;
     border-radius: 6px;
-    padding-left: 40px; /* Aumentado para no sobreponerse con el icono */
+    padding-left: 40px;
+    /* Aumentado para no sobreponerse con el icono */
     padding-right: 40px;
     box-sizing: border-box;
     outline: none;
@@ -1187,7 +1261,8 @@ header {
     color: #fff;
     font-weight: 400;
     display: block;
-    margin: 20px 0 0; /* Añadido margen para separar del contenido inferior */
+    margin: 20px 0 0;
+    /* Añadido margen para separar del contenido inferior */
 }
 
 /* Estilos para el enlace de registro */
@@ -1209,15 +1284,14 @@ header {
 }
 
 /* Estilos específicos para el botón de visibilidad de contraseña */
-.input-wrapper2 .password-toggle {
+.input-wrapper2 .toggle-password {
     position: absolute;
     right: 10px;
-    background: transparent;
+    background: none;
     border: none;
-    cursor: pointer;
-    outline: none;
-    font-size: 18px; /* Tamaño del icono de visibilidad de contraseña */
     color: #000;
+    cursor: pointer;
+    font-size: 0.9em;
 }
 
 /*Cierre de login y registro */
@@ -1228,7 +1302,7 @@ header {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 20px auto;
     position: relative;
     text-align: center;
@@ -1251,7 +1325,8 @@ header {
     border-collapse: collapse;
     margin-top: 10px;
     font-family: Arial, sans-serif;
-    margin: 0 auto; /* Centrar la tabla en su contenedor */
+    margin: 0 auto;
+    /* Centrar la tabla en su contenedor */
 }
 
 .his5-historial-table th,
@@ -1276,43 +1351,6 @@ header {
     background-color: #f1f1f1;
     cursor: pointer;
 }
-
-.his5-historial-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .his5-historial-table th, .his5-historial-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  .his5-historial-table th {
-    background-color: #f2f2f2;
-  }
-  
-  .his5-historial-table tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .order-card {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .card {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 16px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card h3 {
-    margin: 0 0 10px 0;
-  }  
 
 /* Contenedor para el botón */
 .his6-boton-container {
@@ -1348,9 +1386,9 @@ header {
         font-size: 1.5em;
     }
 
-    input[type="text"], 
-    input[type="email"], 
-    input[type="password"], 
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
     select {
         padding: 8px;
     }
@@ -1370,9 +1408,9 @@ header {
         font-size: 1.2em;
     }
 
-    input[type="text"], 
-    input[type="email"], 
-    input[type="password"], 
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
     select {
         padding: 6px;
     }
@@ -1415,7 +1453,8 @@ header {
     margin-bottom: 20px;
 }
 
-.client-info p, .order-details p {
+.client-info p,
+.order-details p {
     margin: 8px 0;
 }
 
@@ -1424,7 +1463,8 @@ header {
     border-collapse: collapse;
 }
 
-.order-details th, .order-details td {
+.order-details th,
+.order-details td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: left;
@@ -1458,21 +1498,27 @@ header {
 .payment-method label {
     font-size: 16px;
 }
+
 /* Botón de Confirmación */
 .confirmation-button {
     text-align: center;
-    margin-top: 30px; /* Espacio superior para separación */
+    margin-top: 30px;
+    /* Espacio superior para separación */
 }
 
 .confirm-btn {
     display: inline-block;
     padding: 12px 24px;
     font-size: 16px;
-    font-weight: 600; /* Peso del texto más destacado */
-    background-color: #ffffff; /* Fondo blanco */
+    font-weight: 600;
+    /* Peso del texto más destacado */
+    background-color: #ffffff;
+    /* Fondo blanco */
     color: #000;
-    border: 2.5px solid #000000; /* Borde rosado claro */
-    border-radius: 8px; /* Bordes redondeados más suaves */
+    border: 2.5px solid #000000;
+    /* Borde rosado claro */
+    border-radius: 8px;
+    /* Bordes redondeados más suaves */
     text-align: center;
     text-decoration: none;
     cursor: pointer;
@@ -1487,8 +1533,10 @@ header {
 
 /* Opcional: Estilo adicional para enfoque */
 .confirm-btn:focus {
-    outline: none; /* Quitar el borde de enfoque predeterminado */
-    box-shadow: 0 0 0 3px rgba(255, 172, 204, 0.5); /* Sombra rosada de enfoque */
+    outline: none;
+    /* Quitar el borde de enfoque predeterminado */
+    box-shadow: 0 0 0 3px rgba(255, 172, 204, 0.5);
+    /* Sombra rosada de enfoque */
 }
 
 /* Cierre de compra */
@@ -1536,7 +1584,8 @@ header {
     margin-right: 15px;
     accent-color: #fdcae1;
     transition: transform 0.2s;
-    cursor: pointer; /* Asegura que el cursor sea de mano */
+    cursor: pointer;
+    /* Asegura que el cursor sea de mano */
 }
 
 .payment-option input[type="radio"]:checked {
@@ -1600,19 +1649,26 @@ header {
 /* Estilos para el contenedor del vendedor */
 
 .admin-header {
-    text-align: center; /* Centrar el contenido */
-    margin: 40px 0; /* Espaciado superior e inferior */
+    text-align: center;
+    /* Centrar el contenido */
+    margin: 40px 0;
+    /* Espaciado superior e inferior */
 }
 
 .admin-title {
-    font-size: 36px; /* Tamaño del título más grande */
-    font-weight: bold; /* Negrita para el título */
-    margin-bottom: 20px; /* Espacio entre título y párrafo */
+    font-size: 36px;
+    /* Tamaño del título más grande */
+    font-weight: bold;
+    /* Negrita para el título */
+    margin-bottom: 20px;
+    /* Espacio entre título y párrafo */
 }
 
 .admin-description {
-    font-size: 20px; /* Tamaño del párrafo más grande */
-    line-height: 1.5; /* Espaciado entre líneas */
+    font-size: 20px;
+    /* Tamaño del párrafo más grande */
+    line-height: 1.5;
+    /* Espaciado entre líneas */
 }
 
 .vend1-container {
@@ -1694,7 +1750,8 @@ h2 {
     text-align: center;
 }
 
-.vend4-table th, .vend5-product-table th {
+.vend4-table th,
+.vend5-product-table th {
     background-color: #fdcae1;
 }
 
@@ -1736,7 +1793,8 @@ h2 {
     padding: 20px;
     border-radius: 8px;
     width: 90%;
-    max-width: 400px; /* Ajuste de ancho para que no sea tan grande */
+    max-width: 400px;
+    /* Ajuste de ancho para que no sea tan grande */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     position: relative;
 }
@@ -1758,24 +1816,32 @@ h2 {
 .detalle-content h2 {
     margin-top: 0;
     font-size: 24px;
-    text-align: center; /* Centrar título del detalle */
+    text-align: center;
+    /* Centrar título del detalle */
 }
+
 .product-card h3 {
     font-size: 1.2rem;
-    margin: 10px 0 5px; /* Ajusta el margen del título para reducir el espacio vertical */
+    margin: 10px 0 5px;
+    /* Ajusta el margen del título para reducir el espacio vertical */
 }
 
 /* Imágenes de productos */
 .product-img {
-    width: 100%; /* Asegura que la imagen ocupe todo el ancho disponible */
-    max-width: 245px; /* Tamaño máximo razonable */
-    height: auto; /* Mantiene la proporción */
+    width: 100%;
+    /* Asegura que la imagen ocupe todo el ancho disponible */
+    max-width: 245px;
+    /* Tamaño máximo razonable */
+    height: auto;
+    /* Mantiene la proporción */
     display: block;
-    margin: 20px auto; /* Añadir margen superior e inferior */
+    margin: 20px auto;
+    /* Añadir margen superior e inferior */
 }
 
 /* Responsive Styles */
 @media (max-width: 1024px) {
+
     .vend4-table th,
     .vend4-table td,
     .vend5-product-table th,
@@ -1808,11 +1874,13 @@ h2 {
     }
 
     .product-img {
-        max-width: 100px; /* Ajustar a un tamaño más pequeño en pantallas más pequeñas */
+        max-width: 100px;
+        /* Ajustar a un tamaño más pequeño en pantallas más pequeñas */
     }
 
     .detalle-content {
-        width: 90%; /* Ajustar ancho del modal */
+        width: 90%;
+        /* Ajustar ancho del modal */
     }
 }
 
@@ -1830,7 +1898,8 @@ h2 {
     }
 
     .product-img {
-        max-width: 80px; /* Hacer que la imagen ocupe menos espacio */
+        max-width: 80px;
+        /* Hacer que la imagen ocupe menos espacio */
     }
 
     .admin-nav button {
@@ -1926,9 +1995,11 @@ h2 {
     max-width: 800px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
     position: relative;
-    text-align: center; /* Centra el texto dentro del modal */
+    text-align: center;
+    /* Centra el texto dentro del modal */
     font-size: 19px;
-    flex-direction: column; /* Asegura que los detalles se apilen verticalmente */
+    flex-direction: column;
+    /* Asegura que los detalles se apilen verticalmente */
 }
 
 /* Estilos para el encabezado del modal */
@@ -1983,7 +2054,8 @@ h2 {
 }
 
 .modal-content img {
-    max-width: 300px; /* Imagen más pequeña */
+    max-width: 300px;
+    /* Imagen más pequeña */
     height: auto;
     display: block;
     margin: 0 auto;
@@ -2030,6 +2102,7 @@ h2 {
 }
 
 @media (max-width: 768px) {
+
     .domiciliario-orders-table th,
     .domiciliario-orders-table td {
         font-size: 0.9em;
@@ -2070,20 +2143,20 @@ h2 {
     }
 }
 
-/*Aniversario*/
+/*Aniversario*/ 
 .container {
     display: flex;
 }
 
-.home-link{
+.home-link {
     color: #000000;
 }
 
-ul{
+ul {
     list-style: none;
 }
 
-li{
+li {
     list-style: none;
 }
 
@@ -2095,22 +2168,31 @@ li{
 }
 
 .filter li a {
-    text-decoration: none; /* Elimina el subrayado del enlace */
-    color: black; /* Ajusta el color del texto según sea necesario */
-    display: flex; /* Usa flexbox para alinear la imagen y el texto */
-    align-items: center; /* Alinea verticalmente */
+    text-decoration: none;
+    /* Elimina el subrayado del enlace */
+    color: black;
+    /* Ajusta el color del texto según sea necesario */
+    display: flex;
+    /* Usa flexbox para alinear la imagen y el texto */
+    align-items: center;
+    /* Alinea verticalmente */
 }
 
 .filter li img {
-    width: 100px; /* Ajusta el tamaño de la imagen según sea necesario */
+    width: 100px;
+    /* Ajusta el tamaño de la imagen según sea necesario */
     height: auto;
-    object-fit: cover; /* Asegura que la imagen se recorte si es necesario */
-    margin-right: 15px; /* Espacio entre la imagen y el texto */
+    object-fit: cover;
+    /* Asegura que la imagen se recorte si es necesario */
+    margin-right: 15px;
+    /* Espacio entre la imagen y el texto */
 }
 
 .filter li a p {
-    margin: 0; /* Elimina márgenes predeterminados del párrafo */
-    font-size: 14px; /* Ajusta el tamaño de la fuente según sea necesario */
+    margin: 0;
+    /* Elimina márgenes predeterminados del párrafo */
+    font-size: 14px;
+    /* Ajusta el tamaño de la fuente según sea necesario */
 }
 
 /* Asegúrate de que el contenedor de la lista tenga suficiente espacio */
@@ -2119,7 +2201,7 @@ li{
     background-color: #f7f7f7;
 }
 
-.filter1{
+.filter1 {
     margin-top: 20px;
 }
 
@@ -2137,24 +2219,6 @@ li{
     padding: 40px;
 }
 
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-  }
-  
-  .product-item {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .product-item img {
-    max-width: 100%;
-    border-radius: 4px;
-  }
-
 .product-card {
     background-color: white;
     border: 1px solid #e0e0e0;
@@ -2162,15 +2226,18 @@ li{
     text-align: center;
     position: relative;
     transition: transform 0.3s;
-    max-width: 300px; /* Ajusta el ancho máximo */
-    height: 520px; /* Permite que la altura sea automática */
+    max-width: 300px;
+    /* Ajusta el ancho máximo */
+    height: 520px;
+    /* Permite que la altura sea automática */
     flex-direction: column;
     justify-content: space-between;
 }
 
 .product-card p {
     font-size: 1rem;
-    margin: 5px 0; /* Reduce el espacio entre el precio y otros elementos */
+    margin: 5px 0;
+    /* Reduce el espacio entre el precio y otros elementos */
 }
 
 .cart-btn {
@@ -2184,7 +2251,7 @@ li{
 }
 
 .cart-item {
-    display: flex;
+    display: block;
     align-items: center;
     margin-bottom: 10px;
     position: relative;
@@ -2230,13 +2297,17 @@ li{
     cursor: pointer;
 }
 
-.btn-details, .btn-cart {
+.btn-details,
+.btn-cart {
     margin: 5px 0;
 }
 
-.btn-details, .btn-cart, .personalizar {
+.btn-details,
+.btn-cart,
+.personalizar {
     margin-top: 20px;
-    margin-right: 10px;  /* Separación horizontal */
+    margin-right: 10px;
+    /* Separación horizontal */
     padding: 10px 20px;
     background-color: #fdcae1;
     color: #000000;
@@ -2247,7 +2318,8 @@ li{
 
 /* Estilos para el modal */
 .modal {
-    display: none; /* Por defecto, el modal está oculto */
+    display: none;
+    /* Por defecto, el modal está oculto */
     position: fixed;
     top: 0;
     left: 0;
@@ -2259,13 +2331,16 @@ li{
 }
 
 .modal-content {
-    background: #ffffff; /* Fondo blanco */
+    background: #ffffff;
+    /* Fondo blanco */
     padding: 50px;
-    border-radius: 12px; /* Bordes redondeados */
+    border-radius: 12px;
+    /* Bordes redondeados */
     width: 100%;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column; /* Apilar elementos verticalmente */
+    flex-direction: column;
+    /* Apilar elementos verticalmente */
 }
 
 .modal-body {
@@ -2274,15 +2349,21 @@ li{
 }
 
 .modal-img {
-    max-width: 50%; /* Ajusta el ancho máximo de la imagen al 50% */
-    height: auto; /* Mantiene la proporción de la imagen */
-    max-height: 60vh; /* Ajusta la altura máxima de la imagen para que no exceda el alto del modal */
+    max-width: 50%;
+    /* Ajusta el ancho máximo de la imagen al 50% */
+    height: auto;
+    /* Mantiene la proporción de la imagen */
+    max-height: 60vh;
+    /* Ajusta la altura máxima de la imagen para que no exceda el alto del modal */
 }
 
 .modal-text {
-    padding-left: 20px; /* Espacio entre la imagen y el texto */
-    max-width: 50%; /* Ajusta el ancho máximo del texto al 50% */
-    text-align: left; /* Alinea el texto a la izquierda */
+    padding-left: 20px;
+    /* Espacio entre la imagen y el texto */
+    max-width: 50%;
+    /* Ajusta el ancho máximo del texto al 50% */
+    text-align: left;
+    /* Alinea el texto a la izquierda */
 }
 
 .close-modal {
@@ -2320,7 +2401,8 @@ li{
         width: 50px;
     }
 
-    .btn-details, .btn-cart {
+    .btn-details,
+    .btn-cart {
         padding: 8px 15px;
         font-size: 14px;
     }
@@ -2384,41 +2466,59 @@ li{
 /* Botones */
 .empty-cart-button,
 .checkout-button {
-    padding: 10px 20px;
+    background-color: #fdcae1;
     border: none;
+    color: black;
+    font-size: 1em;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.empty-cart-button:hover,
+.checkout-button:hover {
+    background-color: #c0392b;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .cart-item {
-        flex-direction: column; /* Cambia a columna en pantallas pequeñas */
-        align-items: flex-start; /* Alinea a la izquierda */
+        flex-direction: column;
+        /* Cambia a columna en pantallas pequeñas */
+        align-items: flex-start;
+        /* Alinea a la izquierda */
     }
 
     .cart-item-image {
-        width: 100%; /* Imagen ocupa todo el ancho */
-        height: auto; /* Mantiene la proporción */
+        width: 100%;
+        /* Imagen ocupa todo el ancho */
+        height: auto;
+        /* Mantiene la proporción */
     }
 
     .cart-actions {
-        flex-direction: column; /* Coloca botones uno debajo del otro */
-        gap: 5px; /* Espacio reducido entre botones */
+        flex-direction: column;
+        /* Coloca botones uno debajo del otro */
+        gap: 5px;
+        /* Espacio reducido entre botones */
     }
 }
 
 @media (max-width: 480px) {
     .cart-title {
-        font-size: 1.5em; /* Reduce el tamaño del título */
+        font-size: 1.5em;
+        /* Reduce el tamaño del título */
     }
 
     .cart-total {
-        font-size: 1.2em; /* Ajuste para el total */
+        font-size: 1.2em;
+        /* Ajuste para el total */
     }
 
     .quantity-input {
-        width: 40px; /* Ajuste del input en pantallas pequeñas */
+        width: 40px;
+        /* Ajuste del input en pantallas pequeñas */
     }
 }
 
@@ -2436,8 +2536,19 @@ li{
     transition: opacity 0.5s ease; /* Transición suave al ocultarse */
 }
 
-/*detalle_producto*/
-.contenedor-detalle {
+.icon-faxmark {
+    background: none; /* Elimina el fondo */
+    border: none; /* Elimina el borde */
+    align-items: center; /* Centra verticalmente */
+    color: #000000;
+    font-size: 25px;
+    padding: 30px;
+    cursor: pointer;
+    transition: color 0.3s;
+    justify-content: center; /* Centra horizontalmente */
+  }
+
+/*detalle_producto*/ .contenedor-detalle {
     display: flex;
 }
 
@@ -2445,7 +2556,7 @@ li{
     width: 20%;
     background-color: #f0f0f0;
     padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .detalle-producto {
@@ -2514,28 +2625,28 @@ li{
     background-color: #fdcae1;
 }
 
-.descripcion{
+.descripcion {
     padding-top: 20px;
     padding-bottom: 20px;
 }
 
-.opciones{
+.opciones {
     padding-bottom: 20px;
 }
 
-.fecha-entrega{
+.fecha-entrega {
     padding-top: 20px;
 }
 
-.dedicatoria{
+.dedicatoria {
     padding-top: 20px;
 }
 
-.cantidad{
+.cantidad {
     padding-top: 20px;
 }
 
-.botones{
+.botones {
     padding-top: 20px;
 }
 
@@ -2560,8 +2671,6 @@ li{
 /*Eventos*/
 /* Sección Hero */
 .hero-section {
-    /*background-image: url('../static/img/boda.jpg');*/
-    background-size: cover;
     background-position: center;
     padding: 50px 10px;
     text-align: center;
@@ -2583,8 +2692,10 @@ li{
 .eventos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 100px; /* Espacio entre los recuadros */
-    padding: 100px; /* Espaciado interno */
+    gap: 100px;
+    /* Espacio entre los recuadros */
+    padding: 100px;
+    /* Espaciado interno */
     background-color: #fff;
 }
 
@@ -2602,56 +2713,74 @@ li{
 }
 
 .evento-img {
-    width: 100%; /* Ajusta la imagen al 100% del contenedor */
-    height: 450px; /* Altura fija para las imágenes */
-    object-fit: cover; /* Mantiene la relación de aspecto y cubre el área */
+    width: 100%;
+    /* Ajusta la imagen al 100% del contenedor */
+    height: 450px;
+    /* Altura fija para las imágenes */
+    object-fit: cover;
+    /* Mantiene la relación de aspecto y cubre el área */
 }
 
 .evento-content {
-    padding: 15px; /* Espaciado interno para el contenido */
-    text-align: center; /* Centra el texto */
+    padding: 15px;
+    /* Espaciado interno para el contenido */
+    text-align: center;
+    /* Centra el texto */
 }
 
 .evento-content h3 {
-    font-size: 24px; /* Tamaño del título */
-    margin-bottom: 10px; /* Espaciado inferior */
-    color: #333; /* Color del texto */
+    font-size: 24px;
+    /* Tamaño del título */
+    margin-bottom: 10px;
+    /* Espaciado inferior */
+    color: #333;
+    /* Color del texto */
 }
 
 .evento-content p {
-    font-size: 16px; /* Tamaño de la descripción */
-    color: #777; /* Color del texto */
-    margin-bottom: 20px; /* Espaciado inferior */
+    font-size: 16px;
+    /* Tamaño de la descripción */
+    color: #777;
+    /* Color del texto */
+    margin-bottom: 20px;
+    /* Espaciado inferior */
 }
 
 .evento-btn {
-    padding: 10px 20px; /* Espaciado interno del botón */
-    background-color: #fdcae1; /* Color de fondo del botón */
-    color: #000000; /* Color del texto del botón */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar el ratón */
-    font-size: 16px; /* Tamaño de fuente */
-    transition: background-color 0.3s ease; /* Transición para el hover */
+    padding: 10px 20px;
+    /* Espaciado interno del botón */
+    background-color: #fdcae1;
+    /* Color de fondo del botón */
+    color: #000000;
+    /* Color del texto del botón */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el ratón */
+    font-size: 16px;
+    /* Tamaño de fuente */
+    transition: background-color 0.3s ease;
+    /* Transición para el hover */
 }
 
 .evento-btn:hover {
-    background-color: #fdcae1; /* Color al pasar el ratón (puedes cambiarlo) */
+    background-color: #fdcae1;
+    /* Color al pasar el ratón (puedes cambiarlo) */
 }
 
 .whatsapp-btn {
     position: fixed;
-    bottom: 40px;
+    bottom: 20px;
     right: 20px;
     background-color: #25D366;
     color: white;
     border-radius: 50%;
     padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
 }
 
 .whatsapp-btn:hover {
@@ -2717,26 +2846,30 @@ li{
     }
 }
 
-/*Mi Cuenta*/
-.container2 {
-    background-color: #f9f9f9; /* Color de fondo claro */
+/*Mi Cuenta*/ .container2 {
+    background-color: #f9f9f9;
+    /* Color de fondo claro */
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 20px;
     max-width: 600px;
-    margin: 20px auto; /* Centrado */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    margin: 20px auto;
+    /* Centrado */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra ligera */
 }
 
 
 .container2 p {
     font-size: 18px;
-    color: #555; /* Color de texto */
+    color: #555;
+    /* Color de texto */
     margin: 15px 0;
 }
 
 .container2 a {
-    color: #fdcae1; /* Color del enlace */
+    color: #fdcae1;
+    /* Color del enlace */
     text-decoration: none;
     font-weight: bold;
 }
@@ -2746,7 +2879,8 @@ li{
 }
 
 .container2 .home-link i {
-    font-size: 25px; /* Ajustar tamaño del ícono */
+    font-size: 25px;
+    /* Ajustar tamaño del ícono */
     color: #000;
 }
 
@@ -2784,9 +2918,11 @@ li{
     padding: 30px;
     border-radius: 5px;
     width: 450px;
-    max-width: 90%; /* Cambiar a 90% para que sea más responsive */
+    max-width: 90%;
+    /* Cambiar a 90% para que sea más responsive */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    overflow: auto; /* Añadir overflow para pantallas pequeñas */
+    overflow: auto;
+    /* Añadir overflow para pantallas pequeñas */
 }
 
 .close-custom {
@@ -2796,7 +2932,8 @@ li{
     font-weight: bold;
 }
 
-.close-custom:hover, .close-custom:focus {
+.close-custom:hover,
+.close-custom:focus {
     color: #fdcae1;
     text-decoration: none;
     cursor: pointer;
@@ -2808,11 +2945,13 @@ li{
 }
 
 .modal-custom form div {
-    margin-bottom: 5px; /* Espacio entre los campos */
+    margin-bottom: 5px;
+    /* Espacio entre los campos */
 }
 
 .modal-custom form label {
-    margin-bottom: 5px; /* Espacio entre la etiqueta y el input */
+    margin-bottom: 5px;
+    /* Espacio entre la etiqueta y el input */
 }
 
 .modal-custom form input {
@@ -2820,7 +2959,8 @@ li{
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%; /* Asegurar que los inputs ocupen el 100% del ancho */
+    width: 100%;
+    /* Asegurar que los inputs ocupen el 100% del ancho */
 }
 
 .modal-custom form button {
@@ -2831,46 +2971,58 @@ li{
     cursor: pointer;
     font-size: 16px;
     border-radius: 4px;
-    transition: background-color 0.3s; /* Transición suave */
+    transition: background-color 0.3s;
+    /* Transición suave */
 }
 
 .modal-custom form button:hover {
-    background-color: #e5b3d1; /* Color al pasar el mouse */
+    background-color: #e5b3d1;
+    /* Color al pasar el mouse */
 }
 
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .modal-content-custom {
-        width: 95%; /* Para pantallas más pequeñas */
-        padding: 20px; /* Reducir padding en pantallas pequeñas */
+        width: 95%;
+        /* Para pantallas más pequeñas */
+        padding: 20px;
+        /* Reducir padding en pantallas pequeñas */
     }
 
     .modal-custom form input {
-        padding: 10px; /* Reducir padding en inputs */
+        padding: 10px;
+        /* Reducir padding en inputs */
     }
 
     .modal-custom form button {
-        padding: 8px; /* Reducir padding en el botón */
-        font-size: 14px; /* Tamaño de fuente más pequeño */
+        padding: 8px;
+        /* Reducir padding en el botón */
+        font-size: 14px;
+        /* Tamaño de fuente más pequeño */
     }
 }
 
 @media (max-width: 480px) {
     .modal-content-custom {
-        width: 98%; /* Para pantallas muy pequeñas */
+        width: 98%;
+        /* Para pantallas muy pequeñas */
     }
 
     .modal-custom form input {
-        padding: 8px; /* Ajustar padding en inputs para pantallas pequeñas */
+        padding: 8px;
+        /* Ajustar padding en inputs para pantallas pequeñas */
     }
 
     .modal-custom form button {
-        padding: 6px; /* Ajustar padding en el botón */
-        font-size: 12px; /* Tamaño de fuente más pequeño */
+        padding: 6px;
+        /* Ajustar padding en el botón */
+        font-size: 12px;
+        /* Tamaño de fuente más pequeño */
     }
 
     .close-custom {
-        font-size: 24px; /* Ajustar el tamaño de la 'X' */
+        font-size: 24px;
+        /* Ajustar el tamaño de la 'X' */
     }
 }
 
@@ -2879,55 +3031,73 @@ li{
 
 /* Estilos Generales del Contenido */
 .admin-container {
-    padding: 30px; /* Ampliar el padding para un mejor espaciado */
-    background: #f9f2f4; /* Fondo ligeramente rosado */
-    text-align: center; /* Centrar el texto */
-    border-radius: 8px; /* Bordes redondeados para un estilo más suave */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra sutil */
+    padding: 30px;
+    /* Ampliar el padding para un mejor espaciado */
+    background: #f9f2f4;
+    /* Fondo ligeramente rosado */
+    text-align: center;
+    /* Centrar el texto */
+    border-radius: 8px;
+    /* Bordes redondeados para un estilo más suave */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil */
 }
 
 .admin-header {
-    margin-bottom: 30px; /* Mayor margen para mayor separación */
+    margin-bottom: 30px;
+    /* Mayor margen para mayor separación */
 }
 
 .admin-title {
     margin: 0;
-    font-size: 2em; /* Aumentar tamaño de título */
-    font-weight: bold; /* Negrita para el título */
+    font-size: 2em;
+    /* Aumentar tamaño de título */
+    font-weight: bold;
+    /* Negrita para el título */
 }
 
 .admin-description {
     margin-top: 20px;
-    font-size: 1.2em; /* Aumentar tamaño de descripción */
+    font-size: 1.2em;
+    /* Aumentar tamaño de descripción */
 }
 
 /* Estilos para la Navegación */
 .admin-nav {
-    margin-bottom: 30px; /* Mayor margen para separar los botones de otras secciones */
+    margin-bottom: 30px;
+    /* Mayor margen para separar los botones de otras secciones */
 }
 
 .admin-nav-button,
 .admin-add-button,
 .admin-nav-button-main {
-    background-color: #ffffff; /* Color de fondo */
+    background-color: #ffffff;
+    /* Color de fondo */
     border-color: #000;
-    padding: 12px 20px; /* Padding cómodo */
-    border-radius: 8px; /* Bordes redondeados */
-    color: #000; /* Color del texto */
-    font-size: 18px; /* Tamaño de fuente ligeramente mayor */
-    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+    padding: 12px 20px;
+    /* Padding cómodo */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    color: #000;
+    /* Color del texto */
+    font-size: 18px;
+    /* Tamaño de fuente ligeramente mayor */
+    transition: background-color 0.3s, transform 0.2s;
+    /* Transiciones suaves */
 }
 
 .admin-nav-button:hover,
 .admin-add-button:hover,
 .admin-nav-button-main:hover {
     background-color: #fdcae1;
-    transform: translateY(-2px); /* Efecto de elevación */
+    transform: translateY(-2px);
+    /* Efecto de elevación */
 }
 
 /* Secciones */
 .admin-section {
-    margin-bottom: 50px; /* Mayor separación para secciones principales */
+    margin-bottom: 50px;
+    /* Mayor separación para secciones principales */
 }
 
 .admin-section-header {
@@ -2951,7 +3121,8 @@ li{
     border-collapse: collapse;
 }
 
-.admin-table th, .admin-table td {
+.admin-table th,
+.admin-table td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
@@ -2975,12 +3146,14 @@ li{
     top: 50%;
     transform: translateY(-50%);
     border: 5px solid transparent;
-    border-top-color: #000; /* Icono de orden ascendente */
+    border-top-color: #000;
+    /* Icono de orden ascendente */
 }
 
 .admin-table th.sort-desc::after {
     border-top-color: transparent;
-    border-bottom-color: #000; /* Icono de orden descendente */
+    border-bottom-color: #000;
+    /* Icono de orden descendente */
 }
 
 /* Estilos para las filas de la tabla */
@@ -3072,7 +3245,8 @@ li{
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-bottom: 8px solid black; /* Color fucsia */
+    border-bottom: 8px solid black;
+    /* Color fucsia */
 }
 
 /* Flecha descendente */
@@ -3083,7 +3257,8 @@ li{
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 8px solid black; /* Color fucsia */
+    border-top: 8px solid black;
+    /* Color fucsia */
 }
 
 /* Estilos para el Modal */
@@ -3102,92 +3277,133 @@ li{
 }
 
 .admin-modal-content {
-    background: #ffffff; /* Fondo blanco */
-    padding: 20px; /* Espaciado interno más ajustado */
-    border-radius: 12px; /* Bordes más redondeados */
-    width: 45%; /* Ancho responsivo */
-    max-width: 500px; /* Ancho máximo */
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
-    position: relative; /* Para posicionar el botón de cerrar */
-    overflow-y: auto; /* Permitir desplazamiento vertical */
-    max-height: 80vh; /* Altura máxima del modal */
+    background: #ffffff;
+    /* Fondo blanco */
+    padding: 20px;
+    /* Espaciado interno más ajustado */
+    border-radius: 12px;
+    /* Bordes más redondeados */
+    width: 45%;
+    /* Ancho responsivo */
+    max-width: 500px;
+    /* Ancho máximo */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    /* Sombra más pronunciada */
+    position: relative;
+    /* Para posicionar el botón de cerrar */
+    overflow-y: auto;
+    /* Permitir desplazamiento vertical */
+    max-height: 80vh;
+    /* Altura máxima del modal */
 }
 
 /* Botón de cerrar */
 .admin-modal-close {
     cursor: pointer;
-    font-size: 28px; /* Tamaño de fuente mayor */
-    color: #333; /* Color más oscuro */
+    font-size: 28px;
+    /* Tamaño de fuente mayor */
+    color: #333;
+    /* Color más oscuro */
     position: absolute;
-    top: 15px; /* Ajustar posición */
-    right: 15px; /* Ajustar posición */
+    top: 15px;
+    /* Ajustar posición */
+    right: 15px;
+    /* Ajustar posición */
 }
 
 .admin-modal-close:hover {
-    color: #fdcae1; /* Color al pasar el ratón */
+    color: #fdcae1;
+    /* Color al pasar el ratón */
 }
 
 /* Estilos de botones en el modal */
 .modal-buttons {
     display: flex;
-    justify-content: center; /* Centrar los botones */
-    margin-top: 20px; /* Espacio superior */
+    justify-content: center;
+    /* Centrar los botones */
+    margin-top: 20px;
+    /* Espacio superior */
 }
 
 .admin-modal-button {
-    background-color: #fdcae1; /* Color de fondo */
-    border: none; /* Sin borde */
-    padding: 12px 20px; /* Espaciado interno */
-    border-radius: 8px; /* Bordes redondeados */
-    color: #000; /* Color del texto */
-    font-size: 16px; /* Tamaño de fuente más pequeño para mejor ajuste */
-    cursor: pointer; /* Cambiar cursor */
-    transition: background-color 0.3s; /* Transición suave */
-    margin: 0 10px; /* Espaciado entre botones */
+    background-color: #fdcae1;
+    /* Color de fondo */
+    border: none;
+    /* Sin borde */
+    padding: 12px 20px;
+    /* Espaciado interno */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    color: #000;
+    /* Color del texto */
+    font-size: 16px;
+    /* Tamaño de fuente más pequeño para mejor ajuste */
+    cursor: pointer;
+    /* Cambiar cursor */
+    transition: background-color 0.3s;
+    /* Transición suave */
+    margin: 0 10px;
+    /* Espaciado entre botones */
 }
 
 .admin-modal-button:hover {
-    background-color: #f6a5b4; /* Color más oscuro al pasar el ratón */
+    background-color: #f6a5b4;
+    /* Color más oscuro al pasar el ratón */
 }
 
 /* Estilo de entrada de formulario */
 .admin-form-input {
-    width: 100%; /* Ancho completo para mejor disposición */
-    padding: 12px; /* Padding más amplio */
-    margin: 10px 0; /* Espaciado superior e inferior */
-    border: 1px solid #ddd; /* Borde suave */
-    border-radius: 6px; /* Bordes redondeados */
-    font-size: 16px; /* Tamaño de fuente */
+    width: 100%;
+    /* Ancho completo para mejor disposición */
+    padding: 12px;
+    /* Padding más amplio */
+    margin: 10px 0;
+    /* Espaciado superior e inferior */
+    border: 1px solid #ddd;
+    /* Borde suave */
+    border-radius: 6px;
+    /* Bordes redondeados */
+    font-size: 16px;
+    /* Tamaño de fuente */
 }
 
 .admin-form-input:focus {
-    border-color: #fdcae1; /* Color al enfocar */
-    outline: none; /* Sin contorno predeterminado */
+    border-color: #fdcae1;
+    /* Color al enfocar */
+    outline: none;
+    /* Sin contorno predeterminado */
 }
 
 /* Estilo de las etiquetas de entrada */
 .admin-form-label {
     display: block;
-    margin: 15px 0 5px; /* Margen superior e inferior */
-    font-weight: bold; /* Negrita para mejor legibilidad */
+    margin: 15px 0 5px;
+    /* Margen superior e inferior */
+    font-weight: bold;
+    /* Negrita para mejor legibilidad */
 }
 
 /* Estilos para el encabezado del modal */
 .admin-modal-header {
-    margin-bottom: 20px; /* Espacio debajo del encabezado */
-    font-size: 24px; /* Tamaño de fuente del encabezado */
-    text-align: center; /* Centrar el texto */
+    margin-bottom: 20px;
+    /* Espacio debajo del encabezado */
+    font-size: 24px;
+    /* Tamaño de fuente del encabezado */
+    text-align: center;
+    /* Centrar el texto */
 }
 
 /* Estilo para el formulario */
 form {
     display: flex;
     flex-direction: column;
-    margin-top: 20px; /* Espacio superior */
+    margin-top: 20px;
+    /* Espacio superior */
 }
 
 label {
-    margin-bottom: 5px; /* Espacio inferior */
+    margin-bottom: 5px;
+    /* Espacio inferior */
 }
 
 /* Estilo de las entradas específicas */
@@ -3195,44 +3411,60 @@ input[type="date"],
 input[type="number"],
 input[type="text"],
 input[type="file"] {
-    padding: 10px; /* Espaciado interno */
-    border: 1px solid #ddd; /* Borde suave */
-    border-radius: 5px; /* Bordes redondeados */
-    width: 100%; /* Ancho completo */
-    margin-top: 5px; /* Espacio entre el texto y el input */
+    padding: 10px;
+    /* Espaciado interno */
+    border: 1px solid #ddd;
+    /* Borde suave */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    width: 100%;
+    /* Ancho completo */
+    margin-top: 5px;
+    /* Espacio entre el texto y el input */
 }
 
 input[type="date"]:focus,
 input[type="number"]:focus,
 input[type="text"]:focus {
-    border-color: #fdcae1; /* Cambiar color al enfocar */
-    outline: none; /* Quitar contorno predeterminado */
+    border-color: #fdcae1;
+    /* Cambiar color al enfocar */
+    outline: none;
+    /* Quitar contorno predeterminado */
 }
 
 /* Separador de informes */
 .report-separator {
-    border-top: 2px solid #ddd; /* Color de la línea divisoria */
-    margin: 20px 0; /* Espacio arriba y abajo de la línea divisoria */
+    border-top: 2px solid #ddd;
+    /* Color de la línea divisoria */
+    margin: 20px 0;
+    /* Espacio arriba y abajo de la línea divisoria */
 }
 
 /* Contenido del reporte */
 .report-content {
-    padding: 20px; /* Padding para un mejor espaciado */
-    background: #fff; /* Fondo blanco */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra ligera */
-    text-align: center; /* Alineación del texto */
+    padding: 20px;
+    /* Padding para un mejor espaciado */
+    background: #fff;
+    /* Fondo blanco */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra ligera */
+    text-align: center;
+    /* Alineación del texto */
 }
 
 /* Galería de imágenes */
 .image-gallery {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 20px; /* Espacio entre la tabla y la galería */
+    margin-top: 20px;
+    /* Espacio entre la tabla y la galería */
 }
 
 .image-gallery img {
-    margin: 5px; /* Espacio entre las imágenes */
+    margin: 5px;
+    /* Espacio entre las imágenes */
 }
 
 /* Responsive Styles */
@@ -3335,7 +3567,8 @@ footer {
 /* Sección de redes sociales */
 .footer-socials {
     flex: 1;
-    min-width: 200px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+    min-width: 200px;
+    /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
 }
 
 .footer-socials .footer-title {
@@ -3345,24 +3578,30 @@ footer {
 
 .social-icons {
     display: flex;
-    gap: 10px; /* Espacio entre íconos */
+    gap: 10px;
+    /* Espacio entre íconos */
 }
 
 .social-icon {
-    color: #000; /* Color de los íconos */
-    font-size: 2em; /* Tamaño de los íconos */
+    color: #000;
+    /* Color de los íconos */
+    font-size: 2em;
+    /* Tamaño de los íconos */
     text-decoration: none;
 }
 
 .social-icon:hover {
-    color: #fdcae1; /* Cambia el color al pasar el cursor */
+    color: #fdcae1;
+    /* Cambia el color al pasar el cursor */
 }
 
 /* Sección de contacto */
 .footer-contact {
     flex: 1;
-    min-width: 150px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
-    margin-right: 40px; /* Aumenta el espacio adicional a la derecha para separar de la sección de flores */
+    min-width: 150px;
+    /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+    margin-right: 40px;
+    /* Aumenta el espacio adicional a la derecha para separar de la sección de flores */
 }
 
 .footer-contact .footer-title {
@@ -3370,12 +3609,14 @@ footer {
     margin-bottom: 10px;
 }
 
-.footer-contact ul, .footer-flowers ul {
+.footer-contact ul,
+.footer-flowers ul {
     list-style: none;
     padding: 0;
 }
 
-.footer-contact li, .footer-flowers li {
+.footer-contact li,
+.footer-flowers li {
     margin-bottom: 8px;
 }
 
@@ -3397,7 +3638,8 @@ footer {
 /* Sección de flores */
 .footer-flowers {
     flex: 1;
-    min-width: 250px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+    min-width: 250px;
+    /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
 }
 
 .footer-flowers .footer-title {
@@ -3417,7 +3659,8 @@ footer {
 /* Sección de descripción */
 .footer-description {
     flex: 2;
-    min-width: 250px; /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
+    min-width: 250px;
+    /* Ancho mínimo para que el contenido se adapte en pantallas pequeñas */
 }
 
 .footer-description .footer-title {
@@ -3427,16 +3670,19 @@ footer {
 
 .footer-description p {
     margin: 0;
-    line-height: 1.6; /* Espaciado entre líneas para mejor legibilidad */
+    line-height: 1.6;
+    /* Espaciado entre líneas para mejor legibilidad */
 }
 
 /* Estilo del pie de página */
 .footer-bottom {
     text-align: center;
     padding: 10px;
-    background-color: #e0e0e0; /* Color de fondo ligeramente diferente */
+    background-color: #e0e0e0;
+    /* Color de fondo ligeramente diferente */
     border-top: 1px solid #ccc;
-    margin-top: 20px; /* Espacio superior entre el contenido del footer y el pie de página */
+    margin-top: 20px;
+    /* Espacio superior entre el contenido del footer y el pie de página */
 }
 
 .footer-bottom p {
@@ -3458,7 +3704,10 @@ footer {
         align-items: center;
     }
 
-    .footer-socials, .footer-contact, .footer-flowers, .footer-description {
+    .footer-socials,
+    .footer-contact,
+    .footer-flowers,
+    .footer-description {
         text-align: center;
         margin: 10px 0;
     }
@@ -3477,7 +3726,8 @@ footer {
         font-size: 20px;
     }
 
-    .footer-contact li, .footer-flowers li {
+    .footer-contact li,
+    .footer-flowers li {
         font-size: 14px;
     }
 

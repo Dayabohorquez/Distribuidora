@@ -129,7 +129,7 @@ const ProductPage = ({ addToCart }) => {
                     <h2>
                         <a href="index.html" className="home-link">
                             <i className="fa-solid fa-house"></i>
-                        </a> / Fechas Especiales
+                        </a> / Dia De La Madre
                     </h2>
                     <div className="filter">
                         <h3>Ocasión</h3>

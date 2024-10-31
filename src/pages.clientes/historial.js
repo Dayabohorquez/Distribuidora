@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../index.css';
 import { FaWhatsapp } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import Headerc from '../components/Header.c';
 import { jwtDecode } from 'jwt-decode';
 
@@ -49,6 +51,28 @@ const OrderHistory = () => {
     }
   };
 
+  const cancelarPedido = async (id_pedido) => {
+    const token = localStorage.getItem('token');
+    const decoded = token ? jwtDecode(token) : null;
+
+    if (decoded && decoded.documento) {
+      try {
+        const response = await fetch(`http://localhost:4000/api/pedidos/cancelar/${id_pedido}`, {
+          method: 'PUT',
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al cancelar el pedido');
+        }
+
+        fetchOrderHistory(decoded.documento);
+      } catch (error) {
+        console.error('Error cancelando el pedido:', error);
+        setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
+      }
+    }
+  };
+
   return (
     <>
       {isAuthenticated ? <Headerc /> : <Header />}
@@ -66,38 +90,35 @@ const OrderHistory = () => {
               <table className="his5-historial-table">
                 <thead>
                   <tr>
-                    <th>ID del Pedido</th>
                     <th>Fecha del Pedido</th>
-                    <th>Estado del Pedido</th>
                     <th>Método de Pago</th>
                     <th>Total Pagado</th>
                     <th>Dirección de Envío</th>
+                    <th>Estado de Envío</th>
                     <th>Detalles de Compra</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => {
-                    const productos = order.productos ? order.productos.split(', ') : [];
-                    return (
-                      <React.Fragment key={order.id_pedido}>
-                        {productos.map((producto, index) => (
-                          <tr key={`${order.id_pedido}-${index}`}>
-                            {index === 0 && (
-                              <>
-                                <td rowSpan={productos.length}>{order.id_pedido}</td>
-                                <td rowSpan={productos.length}>{new Date(order.fecha_pedido).toLocaleDateString()}</td>
-                                <td rowSpan={productos.length}>{order.estado_pedido}</td>
-                                <td rowSpan={productos.length}>{order.metodo_pago}</td>
-                                <td rowSpan={productos.length}>${parseFloat(order.total_pagado).toLocaleString()}</td>
-                                <td rowSpan={productos.length}>{order.direccion_envio}</td>
-                              </>
-                            )}
-                            <td>{producto}</td>
-                          </tr>
-                        ))}
-                      </React.Fragment>
-                    );
-                  })}
+                  {orders.map((order) => (
+                    <tr key={order.id_pedido}>
+                      <td>{new Date(order.fecha_pedido).toLocaleDateString()}</td>
+                      <td>{order.metodo_pago}</td>
+                      <td>${parseFloat(order.total_pagado).toLocaleString()}</td>
+                      <td>{order.direccion_envio}</td>
+                      <td>{order.estado_pedido}</td>
+                      <td>{order.productos}</td>
+                      <td>
+                        <button
+                          onClick={order.estado_pedido !== 'Cancelado' ? () => cancelarPedido(order.id_pedido) : null}
+                          className={`icon-faxmark ${order.estado_pedido === 'Cancelado' ? 'disabled' : ''}`}
+                          disabled={order.estado_pedido === 'Cancelado'}
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             )}

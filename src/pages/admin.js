@@ -1,4 +1,4 @@
-import { faEdit, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faToggleOff, faToggleOn, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +13,7 @@ import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
 import ManageOrderModal from '../components/ManageOrderModal';
 import ManageTipoFlorModal from '../components/ManageTipoFlorModal';
 import '../index.css';
+import ManageOptionModal from '../components/ManageOptionModal';
 
 const App = () => {
     const [activeSection, setActiveSection] = useState('usuarios');
@@ -47,6 +48,9 @@ const App = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortColumn, setSortColumn] = useState('documento');
     const [sortDirection, setSortDirection] = useState('asc');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentOpcion, setCurrentOpcion] = useState(null);
+    const [opcionesAdicionales, setOpcionesAdicionales] = useState([]);
 
     // Llama a fetchPagos en useEffect
     useEffect(() => {
@@ -58,6 +62,7 @@ const App = () => {
         fetchFechasEspeciales();
         fetchEventos();
         fetchPagos(); // Agregar esta línea
+        fetchOpcionesAdicionales();
     }, []);
 
     useEffect(() => {
@@ -69,6 +74,7 @@ const App = () => {
         if (activeSection === 'fechasEspeciales') fetchFechasEspeciales();
         if (activeSection === 'eventos') fetchEventos();
         if (activeSection === 'pagos') fetchPagos();
+        if (activeSection === 'opciones') fetchOpcionesAdicionales();
     }, [activeSection]);
 
     const fetchPagos = async () => {
@@ -307,16 +313,24 @@ const App = () => {
         }
 
         try {
+            // Obtener el producto actual
             const productoActual = productos.find(p => p.id_producto === idProducto);
+            if (!productoActual) {
+                console.error('Producto no encontrado');
+                return;
+            }
+
+            // Determinar el nuevo estado
             const nuevoEstado = !productoActual.estado_producto;
 
+            // Hacer la solicitud para actualizar el estado
             const response = await axios.patch(`http://localhost:4000/api/productos/${idProducto}/estado`, {
-                estado: nuevoEstado
+                estado: nuevoEstado,
             });
 
             if (response.status === 200) {
-                fetchProductos();
-                showNotification('Estado del producto cambiado exitosamente.');
+                fetchProductos(); // Actualizar la lista de productos
+                showNotification(`Estado del producto cambiado a ${nuevoEstado ? 'activo' : 'inactivo'} exitosamente.`);
             } else {
                 console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al cambiar el estado del producto.');
@@ -349,7 +363,7 @@ const App = () => {
             nombre_producto: formData.get('campo_nombre'),
             descripcion_producto: formData.get('campo_descripcion'),
             precio_producto: parseFloat(formData.get('campo_precio')),
-            cantidad_disponible: parseInt(formData.get('campo_cantidad')),
+            cantidad_disponible: parseInt(formData.get('campo_cantidad')) || 0, // Asegurar que tenga un valor por defecto
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
             id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')),
@@ -360,6 +374,7 @@ const App = () => {
             formData.append('foto_Producto', fotoFile);
         }
 
+        // Añadir los datos del producto a FormData
         for (const key in productoData) {
             formData.append(key, productoData[key]);
         }
@@ -379,6 +394,44 @@ const App = () => {
         }
     };
 
+    const handleUpdateCantidad = async (idProducto, nuevaCantidad) => {
+        if (!idProducto) {
+            console.error('El ID del producto no está definido');
+            return;
+        }
+    
+        // Verificar que la nueva cantidad sea un número
+        if (typeof nuevaCantidad !== 'number') {
+            console.error('La nueva cantidad debe ser un número');
+            showNotification('La nueva cantidad debe ser un número.');
+            return;
+        }
+    
+        // Verificar que la nueva cantidad no sea negativa
+        if (nuevaCantidad < 0) {
+            console.error('La nueva cantidad no puede ser negativa');
+            showNotification('La nueva cantidad no puede ser negativa.');
+            return;
+        }
+    
+        try {
+            const response = await axios.patch(`http://localhost:4000/api/productos/${idProducto}/cantidad`, {
+                nuevaCantidad // Enviar la nueva cantidad con el nombre correcto
+            });
+    
+            if (response.status === 200) {
+                fetchProductos(); // Actualizar la lista de productos
+                showNotification('Cantidad disponible actualizada exitosamente.');
+            } else {
+                console.error('Error en la respuesta del servidor:', response.status);
+                showNotification('Error al actualizar la cantidad del producto.');
+            }
+        } catch (error) {
+            console.error('Error al actualizar la cantidad del producto:', error);
+            showNotification('Error al actualizar la cantidad del producto.');
+        }
+    };      
+
     const handleEditProducto = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -388,10 +441,9 @@ const App = () => {
             nombre_producto: formData.get('campo_nombre'),
             descripcion_producto: formData.get('campo_descripcion'),
             precio_producto: parseFloat(formData.get('campo_precio')),
-            cantidad_disponible: parseInt(formData.get('campo_cantidad')),
             id_tipo_flor: parseInt(formData.get('campo_idTipoFlor')),
             id_evento: parseInt(formData.get('campo_idEvento')),
-            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')), // ID de fecha especial
+            id_fecha_especial: parseInt(formData.get('campo_idFechaEspecial')),
         };
 
         const fotoFile = formData.get('campo_foto');
@@ -399,6 +451,7 @@ const App = () => {
             formData.append('foto_Producto', fotoFile);
         }
 
+        // Añadir los datos actualizados a FormData
         Object.entries(updatedProducto).forEach(([key, value]) => {
             formData.append(key, value);
         });
@@ -408,6 +461,29 @@ const App = () => {
             closeEditProductModal();
         } catch (error) {
             console.error('Error al actualizar el producto:', error.response ? error.response.data : error.message);
+        }
+    };
+
+    const handleIncrementarCantidad = async (producto) => {
+        const nuevaCantidad = producto.cantidad_disponible + 1; // Incrementar en 1
+
+        try {
+            await handleUpdateCantidad(producto.id_producto, nuevaCantidad);
+
+            // Verificar si la nueva cantidad es cero
+            if (nuevaCantidad === 0) {
+                // Si la cantidad llega a cero, inactivar el producto
+                await handleToggleProductStatus(producto.id_producto, false);
+                showNotification('Producto inactivado porque la cantidad llegó a cero.');
+            } else if (producto.estado_producto === false) {
+                await handleToggleProductStatus(producto.id_producto, true);
+                showNotification('Producto activado porque se ha agregado cantidad.');
+            }
+
+            fetchProductos(); // Actualizar la lista de productos
+        } catch (error) {
+            console.error('Error al incrementar la cantidad:', error);
+            showNotification('Error al incrementar la cantidad del producto.');
         }
     };
 
@@ -1063,10 +1139,10 @@ const App = () => {
 
     const filteredAndSortedPagos = pagos.filter((pago) => {
         const lowerCaseQuery = searchQuery.toLowerCase();
-    
+
         // Asegúrate de que 'pago' esté definido y tiene las propiedades necesarias
         if (!pago) return false; // Sal de la función si 'pago' es undefined
-    
+
         const formattedid_pago = pago.id_pago ? pago.id_pago.toString() : '';
         const formattedmetodo_pago = pago.metodo_pago ? pago.metodo_pago.toString() : '';
         const formattednombre_pago = pago.nombre_pago ? pago.nombre_pago.toString() : '';
@@ -1074,7 +1150,7 @@ const App = () => {
         const formattedSubtotal = pago.subtotal_pago ? pago.subtotal_pago.toString() : '';
         const formattedTotal = pago.total_pago ? pago.total_pago.toString() : '';
         const formattedestado_pago = pago.estado_pago ? pago.estado_pago.toString() : '';
-    
+
         return (
             formattedid_pago.includes(lowerCaseQuery) ||
             formattedmetodo_pago.includes(lowerCaseQuery) ||
@@ -1084,7 +1160,7 @@ const App = () => {
             formattedTotal.includes(lowerCaseQuery) ||
             formattedestado_pago.includes(lowerCaseQuery)
         );
-    });    
+    });
 
     // Ordenar usuarios
     const sortedPagos = [...filteredAndSortedPagos].sort((a, b) => {
@@ -1143,6 +1219,70 @@ const App = () => {
         pago.metodo_pago.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const fetchOpcionesAdicionales = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
+            setOpcionesAdicionales(response.data);
+        } catch (error) {
+            console.error('Error al obtener opciones adicionales:', error);
+            showNotification('Error al obtener opciones adicionales: ' + (error.response ? error.response.data.message : error.message));
+        }
+    };
+
+    const createOpcionAdicional = async (nuevaOpcion) => {
+        try {
+            await axios.post('http://localhost:4000/api/opciones-adicionales', nuevaOpcion);
+            fetchOpcionesAdicionales();
+            closeModal1();
+            showNotification('Opción adicional creada exitosamente.');
+        } catch (error) {
+            console.error('Error al crear opción adicional:', error);
+        }
+    };
+
+    const updateOpcionAdicional = async (id_opcion, nuevaOpcion) => {
+        try {
+            const { opcion_adicional, precio_adicional } = nuevaOpcion; // Desestructura las propiedades
+            await axios.put(`http://localhost:4000/api/opciones-adicionales/${id_opcion}`, {
+                nueva_opcion_adicional: opcion_adicional, // Renombra la propiedad
+                nuevo_precio_adicional: precio_adicional // Renombra la propiedad
+            });
+            fetchOpcionesAdicionales();
+            closeModal1();
+            showNotification('Opción adicional actualizada exitosamente.');
+        } catch (error) {
+            console.error('Error al actualizar opción adicional:', error);
+        }
+    };
+
+    const deleteOpcionAdicional = async (id_opcion) => {
+        try {
+            await axios.delete(`http://localhost:4000/api/opciones-adicionales/${id_opcion}`);
+            fetchOpcionesAdicionales();
+            showNotification('Opción adicional eliminada exitosamente.');
+        } catch (error) {
+            console.error('Error al eliminar opción adicional:', error);
+        }
+    };
+
+    const handleOpenModal = (opcion = null) => {
+        setCurrentOpcion(opcion);
+        setModalVisible(true);
+    };
+
+    const closeModal1 = () => {
+        setModalVisible(false);
+        setCurrentOpcion(null);
+    };
+
+    const handleSaveOption = (data) => {
+        if (currentOpcion) {
+            updateOpcionAdicional(currentOpcion.id_opcion, data);
+        } else {
+            createOpcionAdicional(data);
+        }
+    };
+
     return (
         <div className="admin-app">
             <Headerc />
@@ -1160,7 +1300,7 @@ const App = () => {
                     <button className="admin-nav-button" onClick={() => handleSectionChange('fechasEspeciales')}>Fechas Especiales</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('eventos')}>Eventos</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('pagos')}>Pagos</button>
-
+                    <button className="admin-nav-button" onClick={() => handleSectionChange('opciones')}>Opciones Adicionales</button>
                 </div>
 
                 {activeSection === 'usuarios' && (
@@ -1254,7 +1394,6 @@ const App = () => {
                     </div>
                 )}
 
-
                 {activeSection === 'productos' && (
                     <div className="admin-section">
                         <div className="admin-section-header">
@@ -1303,7 +1442,7 @@ const App = () => {
                                             <td>{producto.id_producto || 'N/A'}</td>
                                             <td>{producto.codigo_producto || 'N/A'}</td>
                                             <td>{producto.nombre_producto || 'N/A'}</td>
-                                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
+                                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)}` : 'N/A'}</td>
                                             <td>{producto.cantidad_disponible !== undefined ? producto.cantidad_disponible : 0}</td>
                                             <td>{producto.descripcion_producto || 'N/A'}</td>
                                             <td>
@@ -1329,6 +1468,12 @@ const App = () => {
                                                         icon={producto.estado_producto ? faToggleOn : faToggleOff}
                                                         className="icon-toggle"
                                                         onClick={() => handleToggleProductStatus(producto.id_producto)}
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={faPlus}
+                                                        className="icon-update"
+                                                        onClick={() => handleIncrementarCantidad(producto)}
+                                                        title="Incrementar cantidad"
                                                     />
                                                 </div>
                                             </td>
@@ -1849,6 +1994,58 @@ const App = () => {
                     </div>
                 )}
 
+                {activeSection === 'opciones' && (
+                    <div className="vend4-section">
+                        <h2>Opciones Adicionales</h2>
+                        <input
+                            type="text"
+                            placeholder="Buscar opción adicional..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            className="admin-search"
+                        />
+                        <button onClick={() => handleOpenModal()} className="admin-add-button">Agregar Opción</button>
+                        <table className="vend4-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Opción Adicional</th>
+                                    <th>Precio Adicional</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {opcionesAdicionales.filter(opcion =>
+                                    opcion.opcion_adicional.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    opcion.id_opcion.toString().includes(searchQuery)
+                                ).map(opcion => (
+                                    <tr key={opcion.id_opcion}>
+                                        <td>{opcion.id_opcion}</td>
+                                        <td>{opcion.opcion_adicional}</td>
+                                        <td>{opcion.precio_adicional}</td>
+                                        <td>
+                                            <div className="admin-actions">
+                                                <FontAwesomeIcon
+                                                    icon={faEdit}
+                                                    className="icon-edit"
+                                                    title="Editar tipo de flor"
+                                                    onClick={() => handleOpenModal(opcion)}
+                                                />
+                                                <FontAwesomeIcon
+                                                    icon={faTrash}
+                                                    className="icon-delete"
+                                                    title="Eliminar tipo de flor"
+                                                    onClick={() => deleteOpcionAdicional(opcion.id_opcion)}
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
             </div>
             <Footer />
             {showEditModal && (
@@ -1856,6 +2053,13 @@ const App = () => {
                     usuario={currentUsuario}
                     onClose={closeEditModal}
                     onSave={handleEditUsuario}
+                />
+            )}
+            {modalVisible && (
+                <ManageOptionModal
+                    onClose={closeModal1}
+                    onSave={handleSaveOption}
+                    optionData={currentOpcion}
                 />
             )}
             {showEditProductModal && (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../index.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
@@ -163,6 +163,13 @@ const Login = () => {
                                     <span className="icon">
                                         <FontAwesomeIcon icon={faLock} />
                                     </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPasswordVisible(!passwordVisible)}
+                                        className="toggle-password"
+                                    >
+                                        <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
+                                    </button>
                                     <input
                                         type={passwordVisible ? 'text' : 'password'}
                                         id="password"

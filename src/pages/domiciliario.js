@@ -145,7 +145,7 @@ const App = () => {
                                 <div>
                                     <p>ID: {currentItem.id_pedido}</p>
                                     <p>Fecha: {currentItem.fecha_pedido}</p>
-                                    <p>Total: {currentItem.total_pagado}</p>
+                                    <p>Total: {currentItem.total_pagado} USD</p>
                                     <p>Estado: {currentItem.estado_pedido}</p>
                                     {currentItem.foto_PedidoURL && (
                                         <img
@@ -158,16 +158,27 @@ const App = () => {
                                     {itemsPedido.length > 0 ? (
                                         <ul>
                                             {itemsPedido.map(item => (
-                                                <li key={item.id_pedido_item} style={{ width: '100px', marginRight: '50px' }}>
+                                                <li key={item.id_pedido_item} style={{ marginBottom: '10px' }}>
                                                     {item.foto_ProductoURL && (
-                                                        <img src={item.foto_ProductoURL} alt={item.nombre_producto} style={{ width: '50px', marginRight: '10px' }} />
+                                                        <img src={item.foto_ProductoURL} alt={item.nombre_producto} style={{ width: '100px', marginRight: '50px' }} />
                                                     )}
                                                     <div>
                                                         <strong>{item.nombre_producto}</strong><br />
                                                         Cantidad: {item.cantidad}<br />
-                                                        Precio Unitario: {item.precio_unitario} USD<br />
-                                                        Opción Adicional: {item.opcion_adicional || 'Ninguna'}<br />
-                                                        Dedicatoria: {item.dedicatoria || 'No especificada'}<br />
+                                                        Precio Unitario: {item.precio_unitario} <br />
+                                                        {item.opcion_adicional && (
+                                                            <><strong>Opción Adicional:</strong> {item.opcion_adicional}<br /></>
+                                                        )}
+                                                        {item.precio_adicional ? (
+                                                            <>
+                                                                <strong>Precio Adicional:</strong> {item.precio_adicional} <br />
+                                                            </>
+                                                        ) : null}
+                                                        {item.dedicatoria && (
+                                                            <>
+                                                                <strong>Dedicatoria:</strong> {item.dedicatoria}<br />
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </li>
                                             ))}
@@ -182,8 +193,6 @@ const App = () => {
                                     ) : (
                                         <p>No hay dirección disponible.</p>
                                     )}
-
-
                                 </div>
                             )}
                         </div>

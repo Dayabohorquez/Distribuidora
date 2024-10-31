@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Importar axios
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import '../index.css';
 
 const ProductPage = ({ addToCart }) => {
-    const [products, setProducts] = useState([]); // Estado para productos
+    const [products, setProducts] = useState([]);
     const [modalData, setModalData] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
@@ -17,7 +17,8 @@ const ProductPage = ({ addToCart }) => {
         price: null,
         type: ''
     });
-    const [notification, setNotification] = useState(''); // Estado para notificaciones
+    const [notification, setNotification] = useState('');
+    const [cartTotal, setCartTotal] = useState(0);
 
     const navigate = useNavigate();
 
@@ -26,9 +27,9 @@ const ProductPage = ({ addToCart }) => {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
+                setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
+                console.error('Error decoding token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -37,10 +38,16 @@ const ProductPage = ({ addToCart }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/productos/6'); // Cambia el ID según el tipo de flor que desees
-                setProducts(response.data);
+                const response = await axios.get('http://localhost:4000/api/productos/6');
+                if (Array.isArray(response.data)) {
+                    setProducts(response.data);
+                } else {
+                    console.error('Data is not an array:', response.data);
+                    setProducts([]);
+                }
             } catch (error) {
-                console.error('Error al obtener productos:', error);
+                console.error('Error fetching products:', error);
+                setProducts([]);
             }
         };
 
@@ -50,10 +57,11 @@ const ProductPage = ({ addToCart }) => {
     const handleDetailsClick = (product) => {
         setModalData({
             imgSrc: product.foto_ProductoURL || '',
-            title: product.nombre_producto || 'Producto sin nombre',
-            price: product.precio_producto,
-            description: product.descripcion_producto || 'Descripción del producto no disponible.',
-            id: product.id_producto // Agregar ID para usar en el carrito
+            title: product.nombre_producto || 'Product without name',
+            price: Math.floor(product.precio_producto),
+            description: product.descripcion_producto || 'Product description not available.',
+            id: product.id_producto,
+            cantidad_disponible: product.cantidad_disponible // Incluye cantidad disponible
         });
     };
 
@@ -62,21 +70,29 @@ const ProductPage = ({ addToCart }) => {
     };
 
     const handleFilterChange = (e) => {
-        const { id, checked } = e.target;
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [id]: checked ? id : ''
-        }));
+        const { id, checked, name } = e.target;
+
+        if (name === 'price') {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                price: checked ? id : null
+            }));
+        } else {
+            setFilters((prevFilters) => ({
+                ...prevFilters,
+                [id]: checked ? id : ''
+            }));
+        }
     };
 
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
+
         const matchOccasion = !occasion || product.occasion === occasion;
-        const matchPrice = !price || (
+        const matchPrice = !price ||
             (price === 'below-100' && product.precio_producto < 100000) ||
             (price === 'between-100-200' && product.precio_producto >= 100000 && product.precio_producto <= 200000) ||
-            (price === 'above-200' && product.precio_producto > 200000)
-        );
+            (price === 'above-200' && product.precio_producto > 200000);
         const matchType = !type || product.tipo_flor === type;
 
         return matchOccasion && matchPrice && matchType;
@@ -84,31 +100,32 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-    
+
         if (!documento) {
-            setNotification('Please log in to add products to the cart.');
+            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
             return;
         }
-    
+
         try {
-            // Agregar el producto al carrito
             const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: 1,
                 precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
             });
-    
-            const idCarrito = response.data.id_carrito; // Asegúrate de que esta propiedad esté en la respuesta
-    
-            // Llamar al procedimiento para actualizar el total del carrito
+
+            const idCarrito = response.data.id_carrito;
+
             await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
-    
+
             setNotification('Producto agregado al carrito');
             setModalData(null);
+            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            setNotification(`Error adding product to cart: ${error.response?.data?.message || error.message}`);
+            setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
+            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
         }
     };
 
@@ -162,7 +179,13 @@ const ProductPage = ({ addToCart }) => {
                             <p>${product.precio_producto?.toLocaleString() || '0'}</p>
                             <button className="btn-details" onClick={() => handleDetailsClick(product)}>Ver detalles</button>
                             <button className="btn-details personalizar" onClick={() => handlePersonalizeClick(product)}>Personalizar</button>
-                            <button className="btn-cart" onClick={() => handleAddToCart(product)}>Añadir al carrito</button>
+                            <button
+                                className="btn-cart"
+                                onClick={() => handleAddToCart(product)}
+                                disabled={product.cantidad_disponible < 1} // Deshabilitar si está agotado
+                            >
+                                Añadir al carrito
+                            </button>
                         </div>
                     ))}
                 </main>
@@ -176,13 +199,21 @@ const ProductPage = ({ addToCart }) => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-price">${modalData.price.toLocaleString()}</p>
-                                    <button className="btn-cart" onClick={() => handleAddToCart({
-                                        id_producto: modalData.id,
-                                        nombre_producto: modalData.title,
-                                        precio_producto: modalData.price,
-                                        foto_ProductoURL: modalData.imgSrc
-                                    })}>
+                                    <p id="modal-code">Código: {modalData.codigo_producto}</p> {/* Código del producto */}
+                                    <p id="modal-status">Estado: {modalData.estado_producto}</p> {/* Estado del producto */}
+                                    <p id="modal-price">Precio: ${modalData.price.toLocaleString()}</p>
+                                    <p id="modal-available">Cantidad disponible: {modalData.cantidad_disponible}</p> {/* Cantidad disponible */}
+                                    <button
+                                        className="btn-cart"
+                                        onClick={() => handleAddToCart({
+                                            id_producto: modalData.id,
+                                            nombre_producto: modalData.title,
+                                            precio_producto: modalData.price,
+                                            foto_ProductoURL: modalData.imgSrc,
+                                            cantidad_disponible: modalData.cantidad_disponible
+                                        })}
+                                        disabled={modalData.cantidad_disponible < 1}
+                                    >
                                         Añadir al carrito
                                     </button>
                                 </div>
@@ -192,10 +223,10 @@ const ProductPage = ({ addToCart }) => {
                 )}
             </div>
             {/* Botón de WhatsApp */}
-            <a 
-                href="https://wa.me/3222118028" 
-                className="whatsapp-btn" 
-                target="_blank" 
+            <a
+                href="https://wa.me/3222118028"
+                className="whatsapp-btn"
+                target="_blank"
                 rel="noopener noreferrer"
             >
                 <FaWhatsapp size={30} />

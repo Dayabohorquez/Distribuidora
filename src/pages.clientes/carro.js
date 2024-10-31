@@ -8,7 +8,6 @@ import '../index.css';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-// Interceptor para agregar el token
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -17,34 +16,15 @@ axios.interceptors.request.use(config => {
     return config;
 }, error => Promise.reject(error));
 
-// Define the function here
-const groupCartItems = (items) => {
-    return items.reduce((acc, item) => {
-        const key = `${item.nombre_producto}-${item.opcion_adicional}-${item.dedicatoria}`;
-        if (!acc[key]) {
-            acc[key] = { ...item, cantidad: 0 };
-        }
-        acc[key].cantidad += item.cantidad;
-        return acc;
-    }, {});
-};
-
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [additionalOptions, setAdditionalOptions] = useState([]);
     const [notification, setNotification] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
     const [cartTotal, setCartTotal] = useState({ subtotal: 0, iva: 0 });
-
-    const additionalOptionPrices = {
-        'Ninguno': 0,
-        'Chocolates': 30000,
-        'Vino': 86000,
-    };
-
     const ivaRate = 0.19;
 
-    // Verificar autenticación del usuario
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -61,7 +41,18 @@ const CartPage = () => {
         }
     }, [navigate]);
 
-    // Cargar elementos del carrito
+    useEffect(() => {
+        const fetchAdditionalOptions = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
+                setAdditionalOptions(response.data);
+            } catch (error) {
+                console.error('Error al obtener las opciones adicionales:', error);
+            }
+        };
+        fetchAdditionalOptions();
+    }, []);
+
     useEffect(() => {
         const fetchCart = async () => {
             const documento = localStorage.getItem('documento');
@@ -71,14 +62,10 @@ const CartPage = () => {
             }
             try {
                 const response = await axios.get(`http://localhost:4000/api/carrito/completo/${documento}`);
-                localStorage.setItem('id_carrito', response.data.id_carrito);
-                setCartItems(response.data.map(item => ({
-                    ...item,
-                    id_producto: item.id_producto || item.id_carrito_item, // Asignar id_producto
-                })));
+                setCartItems(response.data);
                 updateCartTotal(response.data);
             } catch (error) {
-                console.error('Error al cargar el carrito:', error);
+                setNotification('Carrito Vacio.');
             }
         };
 
@@ -87,7 +74,6 @@ const CartPage = () => {
         }
     }, [isAuthenticated]);
 
-    // Calcular totales
     const updateCartTotal = (items) => {
         const total = items.reduce((acc, item) => {
             const precioBase = parseFloat(item.precio_producto) || 0;
@@ -98,65 +84,48 @@ const CartPage = () => {
         setCartTotal({ subtotal: total, iva: total * ivaRate });
     };
 
-    // Actualizar el total en la base de datos
-    const updateTotalInDatabase = useCallback(async () => {
-        const id_carrito = localStorage.getItem('id_carrito');
-        if (!id_carrito) {
-            setNotification('ID de carrito no encontrado.');
-            return;
-        }
-
-        const totalConIva = cartTotal.subtotal + cartTotal.iva;
-        try {
-            await axios.put(`http://localhost:4000/api/actualizarTotal/${id_carrito}`, { total: totalConIva });
-        } catch (error) {
-            setNotification('Error al actualizar el total.');
-        }
-    }, [cartTotal]);
-
-    // Actualizar cantidad del producto en el carrito
-    const updateQuantity = useCallback(async (itemId, newQuantity, availableStock) => {
+    const handleQuantityChange = async (id, newQuantity, availableStock) => {
         if (newQuantity < 1 || newQuantity > availableStock) {
-            setNotification(`Los productos se han agotado`);
+            setNotification(`La cantidad debe estar entre 1 y ${availableStock}.`);
             return;
         }
+
         const documento = localStorage.getItem('documento');
         if (!documento) {
             setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
             return;
         }
+
         try {
-            await axios.put(`http://localhost:4000/api/carrito/actualizar/${itemId}`, { cantidad: newQuantity });
+            await axios.put(`http://localhost:4000/api/carrito/actualizarc/${id}`, { cantidad: newQuantity });
             setCartItems(prevItems => {
                 const updatedItems = prevItems.map(item =>
-                    item.id_carrito_item === itemId ? { ...item, cantidad: newQuantity } : item
+                    item.id_carrito_item === id ? { ...item, cantidad: newQuantity } : item
                 );
                 updateCartTotal(updatedItems);
-                updateTotalInDatabase();
                 return updatedItems;
             });
             setNotification('Cantidad actualizada.');
-            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al actualizar la cantidad:', error);
             setNotification('Error al actualizar la cantidad.');
         }
-    }, [updateTotalInDatabase]);
+    };
 
-    // Actualizar opción adicional y dedicatoria
-    const updateAdditionalOptions = useCallback(async (itemId, newOption, newDedicatoria) => {
+    const handleOptionChange = async (itemId, newOption, newDedicatoria) => {
+        const selectedOption = additionalOptions.find(option => option.opcion_adicional === newOption);
+        const newPrice = selectedOption ? selectedOption.precio_adicional : 0;
+
         const documento = localStorage.getItem('documento');
         if (!documento) {
             setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
             return;
         }
 
-        const newPrice = additionalOptionPrices[newOption] || 0;
-
         try {
             await axios.put(`http://localhost:4000/api/carritos/actualizar/${itemId}`, {
-                opcion_adicional: newOption,
-                dedicatoria: newDedicatoria
+                opcion_adicional: selectedOption ? selectedOption.id_opcion : null,
+                dedicatoria: newDedicatoria,
             });
 
             setCartItems(prevItems => {
@@ -166,69 +135,56 @@ const CartPage = () => {
                         opcion_adicional: newOption,
                         dedicatoria: newDedicatoria,
                         precio_adicional: newPrice,
-                        id_producto: item.id_producto // Asegúrate de mantener el id_producto
                     } : item
                 );
                 updateCartTotal(updatedItems);
-                updateTotalInDatabase();
                 return updatedItems;
             });
 
+            setNotification('Opción adicional y dedicatoria actualizadas.');
         } catch (error) {
-            console.error('Error al actualizar la opción adicional o dedicatoria:', error);
+            console.error('Error al actualizar:', error);
             setNotification('Error al actualizar.');
         }
-    }, [additionalOptionPrices, updateTotalInDatabase]);
+    };
 
-    // Eliminar producto del carrito
-    const removeFromCart = useCallback(async (itemId) => {
+    const removeFromCart = async (itemId) => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
             setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
             return;
         }
+
         try {
             await axios.delete(`http://localhost:4000/api/carrito/eliminar/${itemId}`);
-            setCartItems(prevItems => {
-                const updatedItems = prevItems.filter(item => item.id_carrito_item !== itemId);
-                updateCartTotal(updatedItems);
-                updateTotalInDatabase();
-                return updatedItems;
-            });
+            setCartItems(prevItems => prevItems.filter(item => item.id_carrito_item !== itemId));
+            updateCartTotal(cartItems);
             setNotification('Producto eliminado del carrito.');
-            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
             setNotification('Error al eliminar el producto.');
         }
-    }, [updateTotalInDatabase]);
+    };
 
-    // Vaciar carrito completo
-    const emptyCart = useCallback(async () => {
+    const emptyCart = async () => {
         const documento = localStorage.getItem('documento');
         if (!documento) {
             setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
             return;
         }
+
         try {
             await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
             setCartItems([]);
             setCartTotal({ subtotal: 0, iva: 0 });
-            updateTotalInDatabase();
             setNotification('Carrito vacío.');
-            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al vaciar el carrito:', error);
             setNotification('Error al vaciar el carrito.');
         }
-    }, [updateTotalInDatabase]);
-
-    // Opciones adicionales para el desplegable
-    const additionalOptions = Object.keys(additionalOptionPrices);
+    };
 
     const handleCheckout = () => {
-        updateTotalInDatabase();
-    
         const cartData = cartItems.map(({ id_producto, nombre_producto, precio_producto, cantidad, opcion_adicional, dedicatoria, precio_adicional }) => ({
             id_producto,
             nombre_producto,
@@ -238,17 +194,14 @@ const CartPage = () => {
             dedicatoria,
             precio_adicional: precio_adicional || 0,
         }));
-    
+
         const id_carrito = localStorage.getItem('id_carrito');
-    
-        // Verificar que el ID del carrito esté presente
-        console.log('ID del carrito antes de navegar:', id_carrito);
-    
+
         if (!id_carrito) {
-            console.error('El ID del carrito no está definido. Asegúrate de que se almacene correctamente en localStorage.');
-            return; // Detener la ejecución si no hay ID
+            console.error('El ID del carrito no está definido.');
+            return;
         }
-    
+
         navigate('/payment-method', {
             state: {
                 cartItems: cartData,
@@ -256,8 +209,8 @@ const CartPage = () => {
                 id_carrito: id_carrito,
             },
         });
-    };    
-    
+    };
+
     return (
         <div className="admin-app">
             {isAuthenticated ? <Headerc /> : <Header />}
@@ -270,9 +223,9 @@ const CartPage = () => {
                     </div>
                 ) : (
                     <div className="cart-content">
-                        {Object.values(groupCartItems(cartItems)).map(item => {
-                            const precioAdicional = parseFloat(item.precio_adicional) || 0;
+                        {cartItems.map(item => {
                             const precioBase = parseFloat(item.precio_producto) || 0;
+                            const precioAdicional = parseFloat(item.precio_adicional) || 0;
                             const total = (precioBase + precioAdicional) * item.cantidad;
 
                             return (
@@ -289,10 +242,8 @@ const CartPage = () => {
                                     <h3 className="cart-item-name">{item.nombre_producto}</h3>
                                     <p className="cart-item-price">Precio base: ${precioBase.toLocaleString()}</p>
 
-                                    {item.opcion_adicional && item.opcion_adicional !== 'Ninguno' && (
-                                        <p className="cart-item-adicional">
-                                            Precio adicional: ${precioAdicional.toLocaleString()} ({item.opcion_adicional})
-                                        </p>
+                                    {item.opcion_adicional && (
+                                        <p className="cart-item-adicional">Opción adicional: {item.opcion_adicional} (+${precioAdicional.toLocaleString()})</p>
                                     )}
 
                                     {item.dedicatoria && (
@@ -304,34 +255,29 @@ const CartPage = () => {
                                     <input
                                         type="number"
                                         min="1"
-                                        max={item.cantidad_disponible} // Límite superior
+                                        max={item.cantidad_disponible}
                                         value={item.cantidad}
-                                        onChange={(e) => {
-                                            const value = parseInt(e.target.value);
-                                            if (value >= 1 && value <= item.cantidad_disponible) {
-                                                updateQuantity(item.id_carrito_item, value, item.cantidad_disponible);
-                                            } else {
-                                                setNotification(`La cantidad debe estar entre 1 y ${item.cantidad_disponible}.`);
-                                            }
-                                        }}
+                                        onChange={(e) => handleQuantityChange(item.id_carrito_item, parseInt(e.target.value), item.cantidad_disponible)}
                                         className="quantity-input"
                                     />
 
                                     <select
-                                        value={item.opcion_adicional}
-                                        onChange={(e) => updateAdditionalOptions(item.id_carrito_item, e.target.value, item.dedicatoria)}
-                                        className="additional-option-select"
+                                        value={item.opcion_adicional || 'ninguno'}
+                                        onChange={(e) => handleOptionChange(item.id_carrito_item, e.target.value, item.dedicatoria)}
                                     >
+                                        <option value="ninguno">Ninguno</option>
                                         {additionalOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
+                                            <option key={option.id} value={option.opcion_adicional}>
+                                                {option.opcion_adicional} (+${option.precio_adicional.toLocaleString()})
+                                            </option>
                                         ))}
                                     </select>
 
                                     {item.opcion_adicional !== 'Ninguno' && (
                                         <input
                                             type="text"
-                                            value={item.dedicatoria}
-                                            onChange={(e) => updateAdditionalOptions(item.id_carrito_item, item.opcion_adicional, e.target.value)}
+                                            value={item.dedicatoria || ''}
+                                            onChange={(e) => handleOptionChange(item.id_carrito_item, item.opcion_adicional, e.target.value)}
                                             className="dedicatoria-input"
                                             placeholder="Dedicatoria"
                                         />
