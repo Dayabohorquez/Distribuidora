@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaTrash, FaWhatsapp } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
-import { FaWhatsapp, FaTrash } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
 import '../index.css';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
@@ -261,6 +261,8 @@ const CartPage = () => {
                                         className="quantity-input"
                                     />
 
+                                    <div>
+                                    <label>Opción Adicional:</label>
                                     <select
                                         value={item.opcion_adicional || 'ninguno'}
                                         onChange={(e) => handleOptionChange(item.id_carrito_item, e.target.value, item.dedicatoria)}
@@ -272,6 +274,7 @@ const CartPage = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    </div>
 
                                     {item.opcion_adicional !== 'Ninguno' && (
                                         <input

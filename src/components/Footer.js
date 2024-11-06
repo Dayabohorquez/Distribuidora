@@ -34,19 +34,20 @@ const Footer = () => {
                 <div className="footer-flowers">
                     <p className="footer-title">Flores</p>
                     <ul>
-                        <li>Tropicales</li>
-                        <li>Coloridas</li>
-                        <li>Orquídeas</li>
                         <li>Rosas</li>
-                        <li>Decorativas</li>
+                        <li>Chirosas</li>
+                        <li>Anturios</li>
+                        <li>Gerberas</li>
+                        <li>Lirios</li>
+                        <li>Girasoles</li>
                     </ul>
                 </div>
 
                 <div className="footer-description">
                     <p className="footer-title">Somos su mejor opción</p>
                     <p>
-                        Si está pensando enviar regalos, Flores Colombia es su mejor elección.
-                        Nuestras Floristerías ofrecen regalos, arreglos florales, cajas de rosas
+                        Si está pensando enviar regalos, Distribuidora de flores Yesid es su mejor elección.
+                        Nuestras Distribuidora ofrece regalos, arreglos florales, cajas de rosas
                         y otros tipos de flores que son entregados a domicilio en fechas tan
                         especiales como el día del amor y la amistad, día de la mujer, día de la madre,
                         cumpleaños, condolencias, entre otros.

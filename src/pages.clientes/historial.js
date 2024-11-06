@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import Headerc from '../components/Header.c';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import Headerc from '../components/Header.c';
+import '../index.css';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -56,22 +56,30 @@ const OrderHistory = () => {
     const decoded = token ? jwtDecode(token) : null;
 
     if (decoded && decoded.documento) {
-      try {
-        const response = await fetch(`http://localhost:4000/api/pedidos/cancelar/${id_pedido}`, {
-          method: 'PUT',
-        });
+        try {
+            const response = await fetch(`http://localhost:4000/api/pedidos/cancelar/${id_pedido}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ documento: decoded.documento }) // Incluye documento en el cuerpo
+            });
 
-        if (!response.ok) {
-          throw new Error('Error al cancelar el pedido');
+            if (!response.ok) {
+                throw new Error('Error al cancelar el pedido');
+            }
+
+            // Actualizar el historial de pedidos después de cancelar el pedido
+            fetchOrderHistory(decoded.documento);
+        } catch (error) {
+            console.error('Error cancelando el pedido:', error);
+            setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
         }
-
-        fetchOrderHistory(decoded.documento);
-      } catch (error) {
-        console.error('Error cancelando el pedido:', error);
-        setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
-      }
+    } else {
+        setError('Usuario no autenticado. Por favor, inicia sesión nuevamente.');
     }
-  };
+};
 
   return (
     <>

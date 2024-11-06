@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
-import { jwtDecode } from 'jwt-decode';
+import '../index.css';
 
 const QuienesSomosPage = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,7 +28,7 @@ const QuienesSomosPage = () => {
             <div className="container1">
                 <div>
                     <h2>
-                        <a href="/Main" className="home-link">
+                        <a href="/" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Quienes Somos
                     </h2>

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import '../index.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 import AddressModal from '../components/AddressModal';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../index.css';
 
 const Login = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -191,7 +191,7 @@ const Login = () => {
                                     />
                                     Recordar contraseña
                                 </label>
-                                <Link to="#">¿Olvidó su contraseña?</Link>
+                                <Link to="/request-password-reset">¿Olvidó su contraseña?</Link>
                             </div>
                             <button type="submit" className="btn0" id="submit-button">Iniciar sesión</button>
                             <div className="login-registerr">

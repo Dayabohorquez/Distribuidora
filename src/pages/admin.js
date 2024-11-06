@@ -1,26 +1,24 @@
-import { faEdit, faToggleOff, faToggleOn, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import CreateProductModal from '../components/createprodmodal';
 import EditModal from '../components/editmodal';
 import EditProdModal from '../components/editprodmodal';
-import EnvioModal from '../components/enviomodal';
 import Footer from '../components/Footer';
 import Headerc from '../components/Header.c';
 import ManageEventoModal from '../components/ManageEventoModal';
 import ManageFechaEspecialModal from '../components/ManageFechaEspecialModal';
+import ManageOptionModal from '../components/ManageOptionModal';
 import ManageOrderModal from '../components/ManageOrderModal';
 import ManageTipoFlorModal from '../components/ManageTipoFlorModal';
 import '../index.css';
-import ManageOptionModal from '../components/ManageOptionModal';
 
 const App = () => {
     const [activeSection, setActiveSection] = useState('usuarios');
     const [filteredUsuarios, setUsuarios] = useState([]);
     const [productos, setProductos] = useState([]);
     const [pedidos, setPedidos] = useState([]);
-    const [envios, setEnvios] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCreateProductModal, setShowCreateProductModal] = useState(false);
@@ -29,8 +27,6 @@ const App = () => {
     const [imageList, setImageList] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
     const [currentOrder, setCurrentOrder] = useState(null);
-    const [isEnvioModalOpen, setEnvioModalOpen] = useState(false);
-    const [currentEnvio, setCurrentEnvio] = useState(null);
     const [tiposFlor, setTiposFlor] = useState([]);
     const [currentTipoFlor, setCurrentTipoFlor] = useState(null);
     const [eventos, setEventos] = useState([]);
@@ -57,7 +53,6 @@ const App = () => {
         fetchUsuarios();
         fetchProductos();
         fetchPedidos();
-        fetchEnvios();
         fetchTiposFlor();
         fetchFechasEspeciales();
         fetchEventos();
@@ -69,7 +64,6 @@ const App = () => {
         if (activeSection === 'usuarios') fetchUsuarios();
         if (activeSection === 'productos') fetchProductos();
         if (activeSection === 'pedidos') fetchPedidos();
-        if (activeSection === 'envios') fetchEnvios();
         if (activeSection === 'tiposFlor') fetchTiposFlor();
         if (activeSection === 'fechasEspeciales') fetchFechasEspeciales();
         if (activeSection === 'eventos') fetchEventos();
@@ -225,23 +219,34 @@ const App = () => {
         const query = searchQuery.toLowerCase();
         return (
             String(usuario.documento || '').toLowerCase().includes(query) ||
-            (usuario.nombre_usuario || '').toLowerCase().includes(query) ||
-            (usuario.apellido_usuario || '').toLowerCase().includes(query) ||
-            (usuario.correo_electronico_usuario || '').toLowerCase().includes(query) ||
-            (usuario.direccion || '').toLowerCase().includes(query) ||
-            new Date(usuario.fecha_registro).toLocaleDateString().includes(query) ||
-            (usuario.rol_usuario || '').toLowerCase().includes(query) ||
+            String(usuario.nombre_usuario || '').toLowerCase().includes(query) ||
+            String(usuario.apellido_usuario || '').toLowerCase().includes(query) ||
+            String(usuario.correo_electronico_usuario || '').toLowerCase().includes(query) ||
+            String(usuario.direccion || '').toLowerCase().includes(query) ||
+            String(usuario.fecha_registro).toLowerCase().includes(query) || // Asegúrate de que este campo esté bien definido
+            String(usuario.rol_usuario || '').toLowerCase().includes(query) ||
             (usuario.estado_usuario === 1 ? 'activo' : 'inactivo').includes(query)
         );
-    });
-
+    });    
+    
     // Ordenar usuarios
     const sortedUsuarios = [...filteredAndSortedUsuarios].sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
     });
 
     // Paginación
@@ -256,9 +261,12 @@ const App = () => {
     };
 
     const handleSort = (column) => {
-        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
-        setSortColumn(column);
-        setSortDirection(direction);
+        if (sortColumn === column) {
+            setSortDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
     };
 
     const fetchProductos = async () => {
@@ -659,7 +667,7 @@ const App = () => {
         return (
             String(pedido.id_pedido || '').toLowerCase().includes(query) ||
             String(pedido.fecha_pedido || '').toLowerCase().includes(query) ||
-            (pedido.documento || '').toLowerCase().includes(query) ||
+            String(pedido.documento || '').toLowerCase().includes(query) ||
             `${pedido.nombre_usuario || ''} ${pedido.apellido_usuario || ''}`.toLowerCase().includes(query) ||
             (pedido.total_pagado !== null ? String(Math.floor(pedido.total_pagado)) : '').includes(query) ||
             (pedido.estado_pedido || '').toLowerCase().includes(query)
@@ -687,121 +695,6 @@ const App = () => {
     };
 
     const handleSortPedidos = (column) => {
-        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
-        setSortColumn(column);
-        setSortDirection(direction);
-    };
-
-    const fetchEnvios = async () => {
-        try {
-            const response = await axios.get('http://localhost:4000/api/envios');
-            setEnvios(response.data);
-        } catch (error) {
-            console.error('Error al obtener los envíos:', error);
-        }
-    };
-
-    const handleAddEnvio = async (envioData) => {
-        try {
-            // Aquí asumo que envió fecha_envio y pedido_id en el objeto envioData
-            const response = await axios.post('http://localhost:4000/api/envios', envioData);
-            fetchEnvios(); // Refresca la lista de envíos
-            showNotification('Envío agregado exitosamente.');
-        } catch (error) {
-            console.error('Error al agregar envío:', error.response ? error.response.data : error.message);
-            showNotification('Error al agregar envío.');
-        }
-    };
-
-    const handleEditEnvio = async (envioData) => {
-        if (!currentEnvio || !currentEnvio.id_envio) {
-            console.error('No se puede editar el envío, el envío no es válido.');
-            return;
-        }
-
-        try {
-            // Asegúrate de que envioData contenga fecha_envio y pedido_id
-            await axios.put(`http://localhost:4000/api/envios/${currentEnvio.id_envio}`, envioData);
-            fetchEnvios(); // Refresca la lista de envíos
-            closeEnvioModal(); // Cierra el modal de edición
-            showNotification('Envío actualizado exitosamente.');
-        } catch (error) {
-            console.error('Error al actualizar envío:', error.response ? error.response.data : error.message);
-            showNotification('Error al actualizar el envío.');
-        }
-    };
-
-    const handleEstadoChange = async (id_envio, nuevoEstado) => {
-        try {
-            await axios.put(`http://localhost:4000/api/envios/estado/${id_envio}`, { nuevo_estado: nuevoEstado });
-            fetchEnvios(); // Asegúrate de que esta función está definida y actualiza la lista de envíos
-            showNotification('Estado del envío actualizado.');
-        } catch (error) {
-            console.error('Error al actualizar el estado del envío:', error);
-            showNotification('Error al actualizar el estado del envío.');
-        }
-    };
-
-    const handleDeleteEnvio = async (id_envio) => {
-        try {
-            await axios.delete(`http://localhost:4000/api/envios/${id_envio}`);
-            fetchEnvios();
-            showNotification('Envío eliminado exitosamente.');
-        } catch (error) {
-            console.error('Error al eliminar envío:', error);
-            showNotification('Error al eliminar el envío.');
-        }
-    };
-
-    useEffect(() => {
-        fetchEnvios(); // Cargar envíos al montar el componente
-    }, []);
-
-    const openEnvioModal = () => {
-        setCurrentEnvio(null); // Limpia el envío actual para agregar uno nuevo
-        setEnvioModalOpen(true); // Abre el modal de envío
-    };
-
-    const handleEditEnvioClick = (envio) => {
-        setCurrentEnvio(envio);
-        setEnvioModalOpen(true); // Abre el modal de envío
-    };
-
-    const closeEnvioModal = () => {
-        setEnvioModalOpen(false);
-        setCurrentEnvio(null); // Limpia el envío actual
-    };
-
-    const filteredAndSortedEnvios = envios.filter((envio) => {
-        const query = searchQuery.toLowerCase();
-        return (
-            String(envio.id_envio || '').toLowerCase().includes(query) ||
-            String(envio.fecha_envio || '').toLowerCase().includes(query) ||
-            (envio.estado_envio || '').toLowerCase().includes(query)
-        );
-    });
-
-    // Ordenar usuarios
-    const sortedEnvios = [...filteredAndSortedEnvios].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    // Paginación
-    const totalPagesEnvios = Math.ceil(sortedEnvios.length / rowsPerPage);
-    const startIndexEnvios = (currentPage - 1) * rowsPerPage;
-    const endIndexEnvios = startIndexEnvios + rowsPerPage;
-    const paginatedEnvios = sortedEnvios.slice(startIndexEnvios, endIndexEnvios);
-
-    const handleSearchChangeEnvios = (e) => {
-        setSearchQuery(e.target.value);
-        setCurrentPage(1); // Resetear a la primera página al buscar
-    };
-
-    const handleSortEnvios = (column) => {
         const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
         setSortColumn(column);
         setSortDirection(direction);
@@ -1295,7 +1188,6 @@ const App = () => {
                     <button className="admin-nav-button" onClick={() => handleSectionChange('usuarios')}>Usuarios</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('productos')}>Productos</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('pedidos')}>Pedidos</button>
-                    <button className="admin-nav-button" onClick={() => handleSectionChange('envios')}>Envios</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('tiposFlor')}>Tipos de Flores</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('fechasEspeciales')}>Fechas Especiales</button>
                     <button className="admin-nav-button" onClick={() => handleSectionChange('eventos')}>Eventos</button>
@@ -1304,95 +1196,97 @@ const App = () => {
                 </div>
 
                 {activeSection === 'usuarios' && (
-                    <div className="admin-section">
-                        <div className="admin-section-header">
-                            <h2>Usuarios</h2>
-                            <input
-                                type="text"
-                                id="search-usuarios"
-                                className="admin-search"
-                                placeholder="Buscar usuario"
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                            />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
-                        </div>
-                        <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    {['documento', 'nombre', 'apellido', 'correo', 'direccion', 'fecha_registro', 'rol', 'estado'].map((col) => (
-                                        <th key={col} onClick={() => handleSort(col)} style={{ cursor: 'pointer' }}>
-                                            {col.charAt(0).toUpperCase() + col.slice(1)}
-                                            {sortColumn === col && (
-                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                            )}
-                                        </th>
-                                    ))}
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginatedUsuarios.length > 0 ? (
-                                    paginatedUsuarios.map(usuario => (
-                                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
-                                            <td>{usuario.documento}</td>
-                                            <td>{usuario.nombre_usuario}</td>
-                                            <td>{usuario.apellido_usuario}</td>
-                                            <td>{usuario.correo_electronico_usuario}</td>
-                                            <td>{usuario.direccion}</td>
-                                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
-                                            <td>
-                                                <select
-                                                    value={usuario.rol_usuario}
-                                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
-                                                    className="admin-role-select"
-                                                >
-                                                    <option value="Cliente">Cliente</option>
-                                                    <option value="Vendedor">Vendedor</option>
-                                                    <option value="Domiciliario">Domiciliario</option>
-                                                    <option value="Administrador">Administrador</option>
-                                                </select>
-                                            </td>
-                                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
-                                            <td>
-                                                <div className="admin-actions">
-                                                    <FontAwesomeIcon
-                                                        icon={faEdit}
-                                                        className="admin-icon-edit"
-                                                        onClick={() => openEditModal(usuario)}
-                                                    />
-                                                    <FontAwesomeIcon
-                                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
-                                                        className="icon-toggle"
-                                                        onClick={() => handleToggleStatus(usuario.documento)}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="9">No hay usuarios disponibles</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                        <div className="pagination">
-                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                                Anterior
-                            </button>
-                            <span>Página {currentPage} de {totalPages}</span>
-                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                                Siguiente
-                            </button>
-                        </div>
-                    </div>
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Usuarios</h2>
+            <input
+                type="text"
+                id="search-usuarios"
+                className="admin-search"
+                placeholder="Buscar usuario"
+                value={searchQuery}
+                onChange={handleSearchChange}
+            />
+            <div className='admi'>
+            <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+            </select>
+            </div>
+        </div>
+        <table className="admin-table">
+            <thead>
+                <tr>
+                    {['documento', 'nombre', 'apellido', 'correo', 'direccion', 'fecha_registro', 'rol', 'estado'].map((col) => (
+                        <th key={col} onClick={() => handleSort(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedUsuarios.length > 0 ? (
+                    paginatedUsuarios.map(usuario => (
+                        <tr key={usuario.documento} className={usuario.estado_usuario === 0 ? 'inactive' : ''}>
+                            <td>{usuario.documento}</td>
+                            <td>{usuario.nombre_usuario}</td>
+                            <td>{usuario.apellido_usuario}</td>
+                            <td>{usuario.correo_electronico_usuario}</td>
+                            <td>{usuario.direccion}</td>
+                            <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
+                            <td>
+                                <select
+                                    value={usuario.rol_usuario}
+                                    onChange={(e) => handleUpdateRolUsuario(usuario.documento, e.target.value)}
+                                    className="admin-role-select"
+                                >
+                                    <option value="Cliente">Cliente</option>
+                                    <option value="Vendedor">Vendedor</option>
+                                    <option value="Domiciliario">Domiciliario</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </td>
+                            <td>{usuario.estado_usuario === 1 ? 'Activo' : 'Inactivo'}</td>
+                            <td>
+                                <div className="admin-actions">
+                                    <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="admin-icon-edit"
+                                        onClick={() => openEditModal(usuario)}
+                                    />
+                                    <FontAwesomeIcon
+                                        icon={usuario.estado_usuario === 1 ? faToggleOn : faToggleOff}
+                                        className="icon-toggle"
+                                        onClick={() => handleToggleStatus(usuario.documento)}
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="9">No hay usuarios disponibles</td>
+                    </tr>
                 )}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPages}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
 
                 {activeSection === 'productos' && (
                     <div className="admin-section">
@@ -1406,12 +1300,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangeProductos}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <button className="admin-add-button" onClick={openCreateProductModal}>Añadir Nuevo Producto</button>
                         {showCreateProductModal && (
@@ -1510,12 +1406,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangePedidos}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <button className="admin-add-button" onClick={openCreateModal}>Crear Nuevo Pedido</button>
                         <table className="admin-table">
@@ -1582,96 +1480,10 @@ const App = () => {
                     </div>
                 )}
 
-                {activeSection === 'envios' && (
-                    <div className="admin-section">
-                        <div className="admin-section-header">
-                            <h2>Envíos</h2>
-                            <input
-                                type="text"
-                                id="search-envios"
-                                className="admin-search"
-                                placeholder="Buscar envío..."
-                                value={searchQuery}
-                                onChange={handleSearchChangeEnvios}
-                            />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
-                        </div>
-                        <button className="admin-add-button" onClick={openEnvioModal}>Agregar Nuevo Envío</button>
-                        <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    {['ID', 'Fecha', 'Estado'].map((col) => (
-                                        <th key={col} onClick={() => handleSortEnvios(col)} style={{ cursor: 'pointer' }}>
-                                            {col.charAt(0).toUpperCase() + col.slice(1)}
-                                            {sortColumn === col && (
-                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
-                                            )}
-                                        </th>
-                                    ))}
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginatedEnvios.length > 0 ? (
-                                    paginatedEnvios.map(envio => (
-                                        <tr key={envio.id_envio}>
-                                            <td>{envio.id_envio}</td>
-                                            <td>{envio.fecha_envio}</td>
-                                            <td>
-                                                <select
-                                                    value={envio.estado_envio}
-                                                    onChange={(e) => handleEstadoChange(envio.id_envio, e.target.value)}
-                                                >
-                                                    <option value="Preparando">Preparando</option>
-                                                    <option value="En camino">En camino</option>
-                                                    <option value="Entregado">Entregado</option>
-                                                    <option value="Retrasado">Retrasado</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <div className="admin-actions">
-                                                    <FontAwesomeIcon
-                                                        icon={faEdit}
-                                                        className="icon-edit"
-                                                        onClick={() => handleEditEnvioClick(envio)}
-                                                    />
-                                                    <FontAwesomeIcon
-                                                        icon={faTrash}
-                                                        className="icon-delete"
-                                                        onClick={() => handleDeleteEnvio(envio.id_envio)}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="4">No hay envíos disponibles</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                        <div className="pagination">
-                            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                                Anterior
-                            </button>
-                            <span>Página {currentPage} de {totalPagesEnvios}</span>
-                            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesEnvios))} disabled={currentPage === totalPagesEnvios}>
-                                Siguiente
-                            </button>
-                        </div>
-                    </div>
-                )}
-
                 {activeSection === 'tiposFlor' && (
                     <div className="admin-section">
                         <div className="admin-section-header">
-                            <h2>Tipos de Flores</h2>
+                            <h2>Tipos de <br></br>Flores</h2>
                             <input
                                 type="text"
                                 id="search-tipos-flor"
@@ -1680,12 +1492,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangeTiposFlor}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <button className="admin-add-button" onClick={openAddTipoFlorModal}>
                             Agregar Nuevo Tipo de Flor
@@ -1753,7 +1567,7 @@ const App = () => {
                 {activeSection === 'fechasEspeciales' && (
                     <div className="admin-section">
                         <div className="admin-section-header">
-                            <h2>Fechas Especiales</h2>
+                            <h2>Fechas <br></br>Especiales</h2>
                             <input
                                 type="text"
                                 id="search-fechas-especiales"
@@ -1762,12 +1576,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangeFechasEspeciales}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <button className="admin-add-button" onClick={openFechaEspecialModal}>
                             Agregar Nueva Fecha Especial
@@ -1839,12 +1655,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangeEventos}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <button className="admin-add-button" onClick={openAddEventoModal}>
                             Agregar Nuevo Evento
@@ -1932,12 +1750,14 @@ const App = () => {
                                 value={searchQuery}
                                 onChange={handleSearchChangePagos}
                             />
-                            <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
+                            <div className='admi'>
+                                <select  value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                                    <option value={5}>5</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
+                                </select>
+                            </div>
                         </div>
                         <table className="admin-table">
                             <thead>
@@ -2080,14 +1900,6 @@ const App = () => {
                     onClose={closeModal}
                     onSave={currentOrder ? handleUpdatePedido : handleCreatePedido}
                     orderData={currentOrder}
-                />
-            )}
-            {isEnvioModalOpen && (
-                <EnvioModal
-                    currentEnvio={currentEnvio}
-                    isOpen={isEnvioModalOpen}
-                    onClose={closeEnvioModal}
-                    onSave={currentEnvio ? handleEditEnvio : handleAddEnvio}
                 />
             )}
             {fechaEspecialModalOpen && (

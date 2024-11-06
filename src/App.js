@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Route, Routes } from "react-router-dom";
+import { AuthProvider } from './AuthContext';
 import ScrollToTop from './components/ScrollToTop'; // Mantén solo esta línea
 import AmorAmistad from "./pages.clientes/amor_amistad";
 import Aniversario from "./pages.clientes/aniversario";
@@ -16,6 +17,8 @@ import Eventos from "./pages.clientes/eventos";
 import Gerberas from "./pages.clientes/Gerberas";
 import Girasoles from "./pages.clientes/girasoles";
 import OrderHistory from "./pages.clientes/historial";
+import ResetPasswordForm from "./pages.clientes/ingresarNuevaContrase";
+import RequestPasswordReset from "./pages.clientes/introducirCorreo";
 import Lirios from "./pages.clientes/lirios";
 import Login from "./pages.clientes/login";
 import Main from "./pages.clientes/main";
@@ -26,11 +29,11 @@ import QuienesSomos from "./pages.clientes/quienes_somos";
 import Register from "./pages.clientes/register";
 import Rosas from "./pages.clientes/rosas";
 import Terminos from './pages.clientes/TerminsAndConditions';
-import { AuthProvider } from './AuthContext';
 import Admin from "./pages/admin";
 import Domiciliary from "./pages/domiciliario";
 import ProtectedRoute from './pages/ProtectedRoute';
 import VendorDashboard from "./pages/vendedor";
+
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -82,6 +85,8 @@ function App() {
             <Route path="/myaccount" element={<Myaccount />} />
             <Route path="/Terminos" element={<Terminos />} />
             <Route path="/Politica" element={<Politica />} />
+            <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
 
             {/* Rutas protegidas */}
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
