@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
 import '../index.css';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 
 const EventosPage = () => {
     const [eventos, setEventos] = useState([]);
@@ -42,8 +42,10 @@ const EventosPage = () => {
     // Mapeo de rutas
     const routeMap = {
         'aniversario': '/aniversario',
-        'funeral': '/condolencias',
+        'condolencias': '/condolencias',
         'cumpleaños': '/Cumpleaños',
+        'graduación': '/graduacion',
+        'boda': '/boda',
     };
 
     return (

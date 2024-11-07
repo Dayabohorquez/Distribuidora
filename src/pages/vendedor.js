@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { faEdit, faEye, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faToggleOn, faToggleOff, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import Headerc from '../components/Header.c';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
+import Headerc from '../components/Header.c';
 import ManageOptionModal from '../components/ManageOptionModal';
 
 const App = () => {
@@ -18,6 +18,10 @@ const App = () => {
     const [itemsPedido, setItemsPedido] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentOpcion, setCurrentOpcion] = useState(null);
+    const [sortColumn, setSortColumn] = useState('documento');
+    const [sortDirection, setSortDirection] = useState('asc');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const showNotification = (message) => {
         setNotification(message);
@@ -181,6 +185,180 @@ const App = () => {
         }
     };
 
+    // Filtro para productos
+const filteredAndSortedProductos = productos.filter((producto) => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+
+    return (
+        producto.id_producto.toString().includes(lowerCaseQuery) ||
+        (typeof producto.codigo_producto === 'string' && producto.codigo_producto.toLowerCase().includes(lowerCaseQuery)) ||
+        (typeof producto.nombre_producto === 'string' && producto.nombre_producto.toLowerCase().includes(lowerCaseQuery)) ||
+        producto.cantidad_disponible.toString().includes(lowerCaseQuery) ||
+        (producto.precio_producto?.toString() || '').includes(lowerCaseQuery) ||
+        (producto.estado_producto ? 'activo' : 'inactivo').includes(lowerCaseQuery)
+    );
+});
+
+    const columnMapProductos = {
+        'id': 'id_producto',
+        'codigo': 'codigo_producto',
+        'nombre': 'nombre_producto',
+        'cantidad': 'cantidad_disponible',
+        'precio': 'precio_producto',
+        'estado': 'estado_producto'
+    };
+
+    // Ordenar Productos
+    const sortedProductos = [...filteredAndSortedProductos].sort((a, b) => {
+        const aValue = a[columnMapProductos[sortColumn]];
+        const bValue = b[columnMapProductos[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Paginación
+    const totalPagesProductos = Math.ceil(sortedProductos.length / rowsPerPage);
+    const startIndexProductos = (currentPage - 1) * rowsPerPage;
+    const endIndexProductos = startIndexProductos + rowsPerPage;
+    const paginatedProductos = sortedProductos.slice(startIndexProductos, endIndexProductos);
+
+    const handleSearchChangeProductos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortProductos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+    // Filtro para pedidos
+    const filteredAndSortedPedidos = pedidos.filter((pedido) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+
+        return (
+            pedido.id_pedido.toString().includes(lowerCaseQuery) ||
+            (typeof pedido.fecha_pedido === 'string' && pedido.fecha_pedido.toLowerCase().includes(lowerCaseQuery)) ||
+            (typeof pedido.documento === 'string' && pedido.documento.toLowerCase().includes(lowerCaseQuery)) ||
+            (`${pedido.nombre_usuario} ${pedido.apellido_usuario}`.toLowerCase().includes(lowerCaseQuery)) ||
+            pedido.total_pagado.toString().includes(lowerCaseQuery) ||
+            (typeof pedido.estado_pedido === 'string' && pedido.estado_pedido.toLowerCase().includes(lowerCaseQuery))
+        );
+    });
+
+    const columnMapPedidos = {
+        'ID': 'id_pedido',
+        'Fecha': 'fecha_pedido',
+        'Documento Cliente': 'documento',
+        'Nombre Cliente': 'nombre_usuario',
+        'Total': 'total_pagado',
+        'Estado': 'estado_pedido'
+    };
+
+    // Ordenar Productos
+    const sortedPedidos = [...filteredAndSortedPedidos].sort((a, b) => {
+        const aValue = a[columnMapPedidos[sortColumn]];
+        const bValue = b[columnMapPedidos[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Paginación
+    const totalPagesPedidos = Math.ceil(sortedPedidos.length / rowsPerPage);
+    const startIndexPedidos = (currentPage - 1) * rowsPerPage;
+    const endIndexPedidos = startIndexPedidos + rowsPerPage;
+    const paginatedPedidos = sortedPedidos.slice(startIndexPedidos, endIndexPedidos);
+
+    const handleSearchChangePedidos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortPedidos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
+    // Filtro para opciones adicionales
+    const filteredAndSortedOpciones = opcionesAdicionales.filter((opcion) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+
+        return (
+            opcion.id_opcion.toString().includes(lowerCaseQuery) ||
+            opcion.opcion_adicional.toLowerCase().includes(lowerCaseQuery) ||
+            opcion.precio_adicional.toString().includes(lowerCaseQuery)
+        );
+    });
+
+    const columnMapOpciones = {
+        'ID': 'id_opcion',
+        'Opción Adicional': 'opcion_adicional',
+        'Precio Adicional': 'precio_adicional'
+    };
+
+    // Ordenar Opciones
+    const sortedOpciones = [...filteredAndSortedOpciones].sort((a, b) => {
+        const aValue = a[columnMapOpciones[sortColumn]];
+        const bValue = b[columnMapOpciones[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Paginación
+    const totalPagesOpciones = Math.ceil(sortedOpciones.length / rowsPerPage);
+    const startIndexOpciones = (currentPage - 1) * rowsPerPage;
+    const endIndexOpciones = startIndexOpciones + rowsPerPage;
+    const paginatedOpciones = sortedOpciones.slice(startIndexOpciones, endIndexOpciones);
+
+    const handleSearchChangeOpciones = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortOpciones = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
     return (
         <div className="admin-app">
             <Headerc />
@@ -196,173 +374,243 @@ const App = () => {
                 </div>
 
                 {activeSection === 'productos' && (
-                    <div className="vend5-product-section">
-                        <h2>Productos</h2>
-                        <input
-                            type="text"
-                            placeholder="Buscar producto..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="admin-search"
-                        />
-                        <table className="vend5-product-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
-                                    <th>Stock</th>
-                                    <th>Precio</th>
-                                    <th>Estado</th>
-                                    <th>Foto</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredProductos.length > 0 ? (
-                                    filteredProductos.map(producto => (
-                                        <tr key={producto.id_producto}>
-                                            <td>{producto.id_producto}</td>
-                                            <td>{producto.codigo_producto}</td>
-                                            <td>{producto.nombre_producto}</td>
-                                            <td>{producto.cantidad_disponible}</td>
-                                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
-                                            <td>{producto.estado_producto ? 'Activo' : 'Inactivo'}</td>
-                                            <td>
-                                                {producto.foto_ProductoURL ? (
-                                                    <img
-                                                        src={producto.foto_ProductoURL}
-                                                        alt={producto.nombre_producto}
-                                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
-                                                    />
-                                                ) : (
-                                                    <span>No disponible</span>
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div className="admin-actions">
-                                                    <FontAwesomeIcon
-                                                        icon={producto.estado_producto ? faToggleOn : faToggleOff}
-                                                        onClick={() => handleToggleProductStatus(producto.id_producto)}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Productos</h2>
+            <input
+                type="text"
+                id="search-productos"
+                className="admin-search"
+                placeholder="Buscar producto..."
+                value={searchQuery}
+                onChange={handleSearchChangeProductos}
+            />
+            <div className="admi">
+                <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                </select>
+            </div>
+        </div>
+        <table className="admin-table">
+            <thead>
+            <tr>
+                    {['id', 'codigo', 'nombre', 'cantidad', 'precio', 'estado', 'foto'].map((col) => (
+                        <th key={col} onClick={() => handleSortProductos(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedProductos.length > 0 ? (
+                    paginatedProductos.map(producto => (
+                        <tr key={producto.id_producto}>
+                            <td>{producto.id_producto}</td>
+                            <td>{producto.codigo_producto}</td>
+                            <td>{producto.nombre_producto}</td>
+                            <td>{producto.cantidad_disponible}</td>
+                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
+                            <td>{producto.estado_producto ? 'Activo' : 'Inactivo'}</td>
+                            <td>
+                                {producto.foto_ProductoURL ? (
+                                    <img
+                                        src={producto.foto_ProductoURL}
+                                        alt={producto.nombre_producto}
+                                        style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+                                    />
                                 ) : (
-                                    <tr><td colSpan="8">No hay productos disponibles</td></tr>
+                                    <span>No disponible</span>
                                 )}
-                            </tbody>
-                        </table>
-                    </div>
+                            </td>
+                            <td>
+                                <div className="admin-actions">
+                                    <FontAwesomeIcon
+                                        icon={producto.estado_producto ? faToggleOn : faToggleOff}
+                                        onClick={() => handleToggleProductStatus(producto.id_producto)}
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr><td colSpan="8" className="no-events-message">No hay productos disponibles</td></tr>
                 )}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPagesProductos}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesProductos))} disabled={currentPage === totalPagesProductos}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
 
-                {activeSection === 'pedidos' && (
-                    <div className="vend4-section">
-                        <h2>Pedidos</h2>
-                        <input
-                            type="text"
-                            placeholder="Buscar pedido..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="admin-search"
-                        />
-                        <table className="vend4-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Documento Cliente</th>
-                                    <th>Nombre Cliente</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredPedidos.length > 0 ? (
-                                    filteredPedidos.map(pedido => (
-                                        <tr key={pedido.id_pedido}>
-                                            <td>{pedido.id_pedido}</td>
-                                            <td>{pedido.fecha_pedido}</td>
-                                            <td>{pedido.documento}</td>
-                                            <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
-                                            <td>{pedido.total_pagado}</td>
-                                            <td>
-                                                <select
-                                                    value={pedido.estado_pedido}
-                                                    onChange={(e) => handleTogglePedidoStatus(pedido.id_pedido, e.target.value)}
-                                                >
-                                                    <option value="Pendiente">Pendiente</option>
-                                                    <option value="Enviado">Enviado</option>
-                                                    <option value="Entregado">Entregado</option>
-                                                    <option value="Cancelado">Cancelado</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr><td colSpan="7">No hay pedidos disponibles</td></tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+{activeSection === 'pedidos' && (
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Pedidos</h2>
+            <input
+                type="text"
+                id="search-pedidos"
+                className="admin-search"
+                placeholder="Buscar pedido..."
+                value={searchQuery}
+                onChange={handleSearchChangePedidos}
+            />
+            <div className="admi">
+                <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                </select>
+            </div>
+        </div>
+        <table className="admin-table">
+            <thead>
+            <tr>
+                    {['ID', 'Fecha', 'Documento Cliente', 'Nombre Cliente', 'Total', 'Estado'].map((col) => (
+                        <th key={col} onClick={() => handleSortPedidos(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedPedidos.length > 0 ? (
+                    paginatedPedidos.map(pedido => (
+                        <tr key={pedido.id_pedido}>
+                            <td>{pedido.id_pedido}</td>
+                            <td>{pedido.fecha_pedido}</td>
+                            <td>{pedido.documento}</td>
+                            <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
+                            <td>{pedido.total_pagado}</td>
+                            <td>
+                                <select
+                                    value={pedido.estado_pedido}
+                                    onChange={(e) => handleTogglePedidoStatus(pedido.id_pedido, e.target.value)}
+                                >
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Enviado">Enviado</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </td>
+                            <td>
+                                <FontAwesomeIcon icon={faEye} onClick={() => handleOpenDetalle(pedido)} />
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr><td colSpan="7" className="no-events-message">No hay pedidos disponibles</td></tr>
                 )}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPagesPedidos}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesPedidos))} disabled={currentPage === totalPagesPedidos}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
 
-                {activeSection === 'opciones' && (
-                    <div className="vend4-section">
-                        <h2>Opciones Adicionales</h2>
-                        <input
-                            type="text"
-                            placeholder="Buscar opción adicional..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="admin-search"
-                        />
-                        <button onClick={() => handleOpenModal()} className="admin-add-button">Agregar Opción</button>
-                        <table className="vend4-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Opción Adicional</th>
-                                    <th>Precio Adicional</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {opcionesAdicionales.filter(opcion =>
-                                    opcion.opcion_adicional.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    opcion.id_opcion.toString().includes(searchQuery)
-                                ).map(opcion => (
-                                    <tr key={opcion.id_opcion}>
-                                        <td>{opcion.id_opcion}</td>
-                                        <td>{opcion.opcion_adicional}</td>
-                                        <td>{opcion.precio_adicional}</td>
-                                        <td>
-                                            <div className="admin-actions">
-                                                <FontAwesomeIcon
-                                                    icon={faEdit}
-                                                    className="icon-edit"
-                                                    title="Editar tipo de flor"
-                                                    onClick={() => handleOpenModal(opcion)}
-                                                />
-                                                <FontAwesomeIcon
-                                                    icon={faTrash}
-                                                    className="icon-delete"
-                                                    title="Eliminar tipo de flor"
-                                                    onClick={() => deleteOpcionAdicional(opcion.id_opcion)}
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+{activeSection === 'opciones' && (
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Opciones <br></br>Adicionales</h2>
+            <input
+                type="text"
+                id="search-opciones"
+                className="admin-search"
+                placeholder="Buscar opción adicional..."
+                value={searchQuery}
+                onChange={handleSearchChangeOpciones}
+            />
+            <div className="admi">
+                <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                </select>
+            </div>
+        </div>
+        <div className="button-container">
+        <button onClick={() => handleOpenModal()} className="admin-add-button">Agregar Opción</button>
+        </div>
+        <table className="admin-table">
+            <thead>
+            <tr>
+                    {['ID', 'Opción Adicional', 'Precio Adicional'].map((col) => (
+                        <th key={col} onClick={() => handleSortOpciones(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedOpciones.filter(opcion =>
+                    opcion.opcion_adicional.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    opcion.id_opcion.toString().includes(searchQuery)
+                ).map(opcion => (
+                    <tr key={opcion.id_opcion}>
+                        <td>{opcion.id_opcion}</td>
+                        <td>{opcion.opcion_adicional}</td>
+                        <td>{opcion.precio_adicional}</td>
+                        <td>
+                            <div className="admin-actions">
+                                <FontAwesomeIcon
+                                    icon={faEdit}
+                                    className="icon-edit"
+                                    title="Editar opción"
+                                    onClick={() => handleOpenModal(opcion)}
+                                />
+                                <FontAwesomeIcon
+                                    icon={faTrash}
+                                    className="icon-delete"
+                                    title="Eliminar opción"
+                                    onClick={() => deleteOpcionAdicional(opcion.id_opcion)}
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPagesOpciones}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesOpciones))} disabled={currentPage === totalPagesOpciones}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
 
                 {modalVisible && (
                     <ManageOptionModal

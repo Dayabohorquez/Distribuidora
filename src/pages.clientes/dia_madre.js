@@ -127,7 +127,7 @@ const ProductPage = ({ addToCart }) => {
                 {notification && <div className="notification">{notification}</div>} 
                 <aside className="sidebar">
                     <h2>
-                        <a href="index.html" className="home-link">
+                        <a href="/" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Dia De La Madre
                     </h2>

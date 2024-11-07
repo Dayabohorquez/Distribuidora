@@ -3178,6 +3178,11 @@ li {
     margin-bottom: 15px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
 .admin-table {
     margin-top: 30px;
     width: 100%;
@@ -3298,30 +3303,6 @@ li {
 .admin-section-header select:focus {
     outline: none;
     border-color: #fdcae1;
-}
-
-/* Flecha ascendente */
-.arrow-up {
-    display: inline-block;
-    margin-left: 8px;
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 8px solid black;
-    /* Color fucsia */
-}
-
-/* Flecha descendente */
-.arrow-down {
-    display: inline-block;
-    margin-left: 8px;
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 8px solid black;
-    /* Color fucsia */
 }
 
 /* Estilos para el Modal */
@@ -3662,6 +3643,35 @@ footer {
     color: #fdcae1;
     /* Cambia el color al pasar el cursor */
 }
+
+.section-btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+  /* Estilos para el botón de cargar más productos */
+.load-more-btn {
+    background-color: #fdcae1;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.load-more-btn:hover {
+    background-color: #ff96c5;
+}
+
+.load-more-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed
+}
+
 
 /* Sección de contacto */
 .footer-contact {

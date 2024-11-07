@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import '../index.css';
-import { FaWhatsapp } from 'react-icons/fa';
 import Headerc from '../components/Header.c';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import '../index.css';
 
 const ProductPage = ({ addToCart }) => {
     const [products, setProducts] = useState([]); 
@@ -127,7 +127,7 @@ const ProductPage = ({ addToCart }) => {
                 {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
-                        <a href="index.html" className="home-link">
+                        <a href="/" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Día de la Mujer
                     </h2>

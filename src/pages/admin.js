@@ -229,10 +229,21 @@ const App = () => {
         );
     });    
     
+    const columnMapUsuario = {
+        'documento': 'documento',
+        'nombre': 'nombre_usuario',
+        'apellido': 'apellido_usuario',
+        'correo': 'correo_electronico_usuario',
+        'direccion': 'direccion',
+        'fecha_registro': 'fecha_registro',
+        'rol': 'rol_usuario',
+        'estado': 'estado_usuario'
+    };
+
     // Ordenar usuarios
     const sortedUsuarios = [...filteredAndSortedUsuarios].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
+        const aValue = a[columnMapUsuario[sortColumn]];
+        const bValue = b[columnMapUsuario[sortColumn]];
     
         if (aValue === undefined) return 1;
         if (bValue === undefined) return -1;
@@ -508,14 +519,36 @@ const App = () => {
         );
     });
 
-    // Ordenar usuarios
+    const columnMapProducto = {
+        'ID': 'id_producto',
+        'Código': 'codigo_producto',
+        'Nombre': 'nombre_producto',
+        'Precio': 'precio_producto',
+        'Stock': 'cantidad_disponible',
+        'Descripción': 'descripcion_producto',
+        'Foto': 'foto_ProductoURL',
+        'Estado': 'estado_producto'
+    };
+
+    // Ordenar productos
     const sortedProductos = [...filteredAndSortedProductos].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
+    const aValue = a[columnMapProducto[sortColumn]];
+    const bValue = b[columnMapProducto[sortColumn]];
+
+    if (aValue === undefined) return 1;
+    if (bValue === undefined) return -1;
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc'
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+    } else if (aValue instanceof Date && bValue instanceof Date) {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+    }
+    return 0;
+});
 
     // Paginación
     const totalPagesProductos = Math.ceil(sortedProductos.length / rowsPerPage);
@@ -529,10 +562,13 @@ const App = () => {
     };
 
     const handleSortProductos = (column) => {
-        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
-        setSortColumn(column);
-        setSortDirection(direction);
-    };
+        if (sortColumn === column) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+    };    
 
     const fetchPedidos = async () => {
         try {
@@ -674,13 +710,33 @@ const App = () => {
         );
     });
 
+    const columnMapPedido = {
+        'ID': 'id_pedido',
+        'Fecha': 'fecha_pedido',
+        'Documento Cliente': 'documento',
+        'Nombre Cliente': 'nombre_usuario',
+        'Total': 'total_pagado',
+        'Estado': 'estado_pedido',
+    };
+
     // Ordenar usuarios
     const sortedPedidos = [...filteredAndSortedPedidos].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+        const aValue = a[columnMapPedido[sortColumn]];
+        const bValue = b[columnMapPedido[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
     });
 
     // Paginación
@@ -861,13 +917,29 @@ const App = () => {
         );
     });
 
-    // Ordenar usuarios
+    const columnMapFechasEspeciales = {
+        'ID': 'id_fecha_especial',
+        'Nombre': 'nombre_fecha_especial',
+    };
+
+    // Ordenar FechasEspeciales
     const sortedFechasEspeciales = [...filteredAndSortedFechasEspeciales].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+        const aValue = a[columnMapFechasEspeciales[sortColumn]];
+        const bValue = b[columnMapFechasEspeciales[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
     });
 
     // Paginación
@@ -996,13 +1068,30 @@ const App = () => {
         );
     });
 
-    // Ordenar usuarios
+    const columnMapEventos = {
+        'ID': 'id_evento',
+        'Nombre': 'nombre_evento',
+        'Descripción': 'descripcion'
+    };
+
+    // Ordenar Eventos
     const sortedEventos = [...filteredAndSortedEventos].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+        const aValue = a[columnMapEventos[sortColumn]];
+        const bValue = b[columnMapEventos[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
     });
 
     // Paginación
@@ -1030,64 +1119,29 @@ const App = () => {
         );
     });
 
-    const filteredAndSortedPagos = pagos.filter((pago) => {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-
-        // Asegúrate de que 'pago' esté definido y tiene las propiedades necesarias
-        if (!pago) return false; // Sal de la función si 'pago' es undefined
-
-        const formattedid_pago = pago.id_pago ? pago.id_pago.toString() : '';
-        const formattedmetodo_pago = pago.metodo_pago ? pago.metodo_pago.toString() : '';
-        const formattednombre_pago = pago.nombre_pago ? pago.nombre_pago.toString() : '';
-        const formattedFecha = pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString() : '';
-        const formattedSubtotal = pago.subtotal_pago ? pago.subtotal_pago.toString() : '';
-        const formattedTotal = pago.total_pago ? pago.total_pago.toString() : '';
-        const formattedestado_pago = pago.estado_pago ? pago.estado_pago.toString() : '';
-
-        return (
-            formattedid_pago.includes(lowerCaseQuery) ||
-            formattedmetodo_pago.includes(lowerCaseQuery) ||
-            formattednombre_pago.includes(lowerCaseQuery) ||
-            formattedFecha.includes(lowerCaseQuery) ||
-            formattedSubtotal.includes(lowerCaseQuery) ||
-            formattedTotal.includes(lowerCaseQuery) ||
-            formattedestado_pago.includes(lowerCaseQuery)
-        );
-    });
-
-    // Ordenar usuarios
-    const sortedPagos = [...filteredAndSortedPagos].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    // Paginación
-    const totalPagesPagos = Math.ceil(sortedPagos.length / rowsPerPage);
-    const startIndexPagos = (currentPage - 1) * rowsPerPage;
-    const endIndexPagos = startIndexPagos + rowsPerPage;
-    const paginatedPagos = sortedPagos.slice(startIndexPagos, endIndexPagos);
-
-    const handleSearchChangePagos = (e) => {
-        setSearchQuery(e.target.value);
-        setCurrentPage(1); // Resetear a la primera página al buscar
-    };
-
-    const handleSortPagos = (column) => {
-        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
-        setSortColumn(column);
-        setSortDirection(direction);
+    const columnMapTiposFlor = {
+        'ID': 'id_tipo_flor',
+        'Nombre': 'nombre_tipo_flor',
     };
 
     // Ordenar usuarios
     const sortedTiposFlor = [...filteredAndSortedTiposFlor].sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+        const aValue = a[columnMapTiposFlor[sortColumn]];
+        const bValue = b[columnMapTiposFlor[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
     });
 
     // Paginación
@@ -1107,10 +1161,66 @@ const App = () => {
         setSortDirection(direction);
     };
 
-    const filteredPagos = pagos.filter(pago =>
-        pago.id_pago.toString().includes(searchQuery) ||
-        pago.metodo_pago.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredAndSortedPagos = pagos.filter((pago) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            String(pago.id_pago).toLowerCase().includes(query) ||
+            String(pago.documento || '').toLowerCase().includes(query) ||
+            String(new Date(pago.fecha_pago).toLocaleDateString()).toLowerCase().includes(query) ||
+            String(pago.metodo_pago || '').toLowerCase().includes(query) ||
+            String(pago.subtotal_pago).toLowerCase().includes(query) ||
+            String(pago.total_pago).toLowerCase().includes(query) ||
+            String(pago.estado_pago || '').toLowerCase().includes(query)
+        );
+    });    
+
+
+    const columnMaPagos = {
+        'ID Pago': 'id_pago',
+        'Documento': 'documento',
+        'Fecha': 'fecha_pago',
+        'Método de Pago': 'metodo_pago',
+        'Subtotal': 'subtotal_pago',
+        'Total': 'total_pago',
+        'Estado': 'estado_pago',
+    };
+
+    // Ordenar opciones
+    const sortedPagos = [...filteredAndSortedPagos].sort((a, b) => {
+        const aValue = a[columnMaPagos[sortColumn]];
+        const bValue = b[columnMaPagos[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Paginación
+    const totalPagesPagos = Math.ceil(sortedPagos.length / rowsPerPage);
+    const startIndexPagos = (currentPage - 1) * rowsPerPage;
+    const endIndexPagos = startIndexPagos + rowsPerPage;
+    const paginatedPagos = sortedPagos.slice(startIndexPagos, endIndexPagos);
+
+    const handleSearchChangePagos = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortPagos = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
 
     const fetchOpcionesAdicionales = async () => {
         try {
@@ -1175,6 +1285,60 @@ const App = () => {
             createOpcionAdicional(data);
         }
     };
+
+    const filteredAndSortedOpciones = opcionesAdicionales.filter((opcion) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+    
+        return (
+            opcion.id_opcion.toString().includes(lowerCaseQuery) ||
+            opcion.opcion_adicional.toLowerCase().includes(lowerCaseQuery) ||
+            opcion.precio_adicional.toString().includes(lowerCaseQuery)
+        );
+    });
+
+    const columnMapOpciones = {
+        'ID': 'id_opcion',
+        'Opción Adicional': 'opcion_adicional',
+        'Precio Adicional': 'precio_adicional',
+    };
+
+    // Ordenar opciones
+    const sortedOpciones = [...filteredAndSortedOpciones].sort((a, b) => {
+        const aValue = a[columnMapOpciones[sortColumn]];
+        const bValue = b[columnMapOpciones[sortColumn]];
+    
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+    
+        const aIsDate = aValue instanceof Date;
+        const bIsDate = bValue instanceof Date;
+    
+        if (aIsDate && bIsDate) {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        } else if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        } else {
+            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+    });
+
+    // Paginación
+    const totalPagesOpciones = Math.ceil(sortedOpciones.length / rowsPerPage);
+    const startIndexOpciones = (currentPage - 1) * rowsPerPage;
+    const endIndexOpciones = startIndexOpciones + rowsPerPage;
+    const paginatedOpciones = sortedOpciones.slice(startIndexOpciones, endIndexOpciones);
+
+    const handleSearchChangeOpciones = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página al buscar
+    };
+
+    const handleSortOpciones = (column) => {
+        const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortColumn(column);
+        setSortDirection(direction);
+    };
+
 
     return (
         <div className="admin-app">
@@ -1316,7 +1480,7 @@ const App = () => {
                                 onClose={closeCreateProductModal}
                                 fetchProductos={fetchProductos}
                             />
-                        )}
+                        )}  
                         <table className="admin-table">
                             <thead>
                                 <tr>
@@ -1762,18 +1926,19 @@ const App = () => {
                         <table className="admin-table">
                             <thead>
                                 <tr>
-                                    <th>ID Pago</th>
-                                    <th>Documento</th>
-                                    <th>Fecha</th>
-                                    <th>Método de Pago</th>
-                                    <th>Subtotal</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
+                                    {['ID Pago', 'Documento', 'Fecha', 'Método de Pago', 'Subtotal', 'Total', 'Estado'].map((col) => (
+                                        <th key={col} onClick={() => handleSortPagos(col)} style={{ cursor: 'pointer' }}>
+                                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                                            {sortColumn === col && (
+                                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                                            )}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredAndSortedPagos.length > 0 ? (
-                                    filteredAndSortedPagos.map(pago => (
+                                {paginatedPagos.length > 0 ? (
+                                    paginatedPagos.map(pago => (
                                         <tr key={pago.id_pago}>
                                             <td>{pago.id_pago}</td>
                                             <td>{pago.documento}</td>
@@ -1814,57 +1979,87 @@ const App = () => {
                     </div>
                 )}
 
-                {activeSection === 'opciones' && (
-                    <div className="vend4-section">
-                        <h2>Opciones Adicionales</h2>
-                        <input
-                            type="text"
-                            placeholder="Buscar opción adicional..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="admin-search"
-                        />
-                        <button onClick={() => handleOpenModal()} className="admin-add-button">Agregar Opción</button>
-                        <table className="vend4-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Opción Adicional</th>
-                                    <th>Precio Adicional</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {opcionesAdicionales.filter(opcion =>
-                                    opcion.opcion_adicional.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                    opcion.id_opcion.toString().includes(searchQuery)
-                                ).map(opcion => (
-                                    <tr key={opcion.id_opcion}>
-                                        <td>{opcion.id_opcion}</td>
-                                        <td>{opcion.opcion_adicional}</td>
-                                        <td>{opcion.precio_adicional}</td>
-                                        <td>
-                                            <div className="admin-actions">
-                                                <FontAwesomeIcon
-                                                    icon={faEdit}
-                                                    className="icon-edit"
-                                                    title="Editar tipo de flor"
-                                                    onClick={() => handleOpenModal(opcion)}
-                                                />
-                                                <FontAwesomeIcon
-                                                    icon={faTrash}
-                                                    className="icon-delete"
-                                                    title="Eliminar tipo de flor"
-                                                    onClick={() => deleteOpcionAdicional(opcion.id_opcion)}
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+{activeSection === 'opciones' && (
+    <div className="admin-section">
+        <div className="admin-section-header">
+            <h2>Opciones <br></br> Adicionales</h2>
+            <input
+                type="text"
+                placeholder="Buscar opción adicional..."
+                value={searchQuery}
+                onChange={handleSearchChangeOpciones}
+                className="admin-search"
+            />
+            <div className="admi">
+                <select value={rowsPerPage} onChange={(e) => setRowsPerPage(Number(e.target.value))}>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                </select>
+            </div>
+        </div>
+        <button onClick={() => handleOpenModal()} className="admin-add-button">Agregar Opción</button>
+        <table className="admin-table">
+            <thead>
+                <tr>
+                    {['ID', 'Opción Adicional', 'Precio Adicional'].map((col) => (
+                        <th key={col} onClick={() => handleSortOpciones(col)} style={{ cursor: 'pointer' }}>
+                            {col.charAt(0).toUpperCase() + col.slice(1)}
+                            {sortColumn === col && (
+                                <span className={sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'}></span>
+                            )}
+                        </th>
+                    ))}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {paginatedOpciones.length > 0 ? (
+                    paginatedOpciones.map(opcion => (
+                        <tr key={opcion.id_opcion}>
+                            <td>{opcion.id_opcion}</td>
+                            <td>{opcion.opcion_adicional}</td>
+                            <td>${parseFloat(opcion.precio_adicional).toLocaleString()}</td>
+                            <td>
+                                <div className="admin-actions">
+                                    <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="icon-edit"
+                                        title="Editar opción adicional"
+                                        onClick={() => handleOpenModal(opcion)}
+                                    />
+                                    <FontAwesomeIcon
+                                        icon={faTrash}
+                                        className="icon-delete"
+                                        title="Eliminar opción adicional"
+                                        onClick={() => deleteOpcionAdicional(opcion.id_opcion)}
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan="4" className="no-options-message"> {/* Cambiar colSpan a 4 */}
+                            No hay opciones adicionales disponibles
+                        </td>
+                    </tr>
                 )}
+            </tbody>
+        </table>
+        <div className="pagination">
+            <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                Anterior
+            </button>
+            <span>Página {currentPage} de {totalPagesOpciones}</span>
+            <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPagesOpciones))} disabled={currentPage === totalPagesOpciones}>
+                Siguiente
+            </button>
+        </div>
+    </div>
+)}
+
 
             </div>
             <Footer />

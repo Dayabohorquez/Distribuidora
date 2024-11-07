@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 
 const DetalleProducto = () => {
     const location = useLocation();
@@ -124,7 +124,7 @@ const DetalleProducto = () => {
             <div className="contenedor-detalle">
                 <aside className="sidebar">
                     <h2>
-                        <Link to="#" className="home-link" onClick={() => navigate(-1)}>
+                        <Link to="/" className="home-link" onClick={() => navigate(-1)}>
                             <FontAwesomeIcon icon={faArrowLeft} />
                         </Link> / Personalización
                     </h2>

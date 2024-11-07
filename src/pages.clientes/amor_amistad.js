@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
-import { FaWhatsapp } from 'react-icons/fa';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 import '../index.css';
-import { useNavigate } from 'react-router-dom';
 
 const ProductPage = () => {
     const [products, setProducts] = useState([]);
@@ -120,7 +120,7 @@ const ProductPage = () => {
                 {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
-                        <a href="index.html" className="home-link">
+                        <a href="/" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Amor y Amistad
                     </h2>

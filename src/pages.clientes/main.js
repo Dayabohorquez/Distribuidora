@@ -1,7 +1,7 @@
+import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
@@ -112,10 +112,12 @@ const HomePage = () => {
 
           ))}
         </div>
-        {/* Botón para cargar más productos */}
-        {visibleCount < products.length && (
-          <button onClick={loadMoreProducts}>Cargar Más</button>
-        )}
+        <section className="section-btn-container">
+  {/* Botón para cargar más productos */}
+  {visibleCount < products.length && (
+    <button className="load-more-btn" onClick={loadMoreProducts}>Cargar Más</button>
+  )}
+</section>
       </section>
 
       {/* Botón de WhatsApp */}

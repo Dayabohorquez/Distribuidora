@@ -121,7 +121,7 @@ const ProductPage = () => {
                 {notification && <div className="notification">{notification}</div>} {/* Mensaje de notificación */}
                 <aside className="sidebar">
                     <h2>
-                        <a href="index.html" className="home-link">
+                        <a href="/" className="home-link">
                             <i className="fa-solid fa-house"></i>
                         </a> / Aniversario
                     </h2>

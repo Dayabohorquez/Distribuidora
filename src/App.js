@@ -5,6 +5,7 @@ import ScrollToTop from './components/ScrollToTop'; // Mantén solo esta línea
 import AmorAmistad from "./pages.clientes/amor_amistad";
 import Aniversario from "./pages.clientes/aniversario";
 import Anturios from "./pages.clientes/anturios";
+import Boda from "./pages.clientes/boda";
 import Car from "./pages.clientes/carro";
 import Chirosas from "./pages.clientes/chirosas";
 import PurchasePage from "./pages.clientes/compra";
@@ -16,6 +17,7 @@ import DiaMujer from "./pages.clientes/dia_mujer";
 import Eventos from "./pages.clientes/eventos";
 import Gerberas from "./pages.clientes/Gerberas";
 import Girasoles from "./pages.clientes/girasoles";
+import Graduacion from "./pages.clientes/graduacion";
 import OrderHistory from "./pages.clientes/historial";
 import ResetPasswordForm from "./pages.clientes/ingresarNuevaContrase";
 import RequestPasswordReset from "./pages.clientes/introducirCorreo";
@@ -80,6 +82,8 @@ function App() {
             <Route path="/girasoles" element={<Girasoles addToCart={addToCart} />} />
             <Route path="/lirios" element={<Lirios addToCart={addToCart} />} />
             <Route path="/rosas" element={<Rosas addToCart={addToCart} />} />
+            <Route path="/graduacion" element={<Graduacion addToCart={addToCart} />} />
+            <Route path="/boda" element={<Boda addToCart={addToCart} />} />
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/quienessomos" element={<QuienesSomos />} />
             <Route path="/myaccount" element={<Myaccount />} />
@@ -87,6 +91,7 @@ function App() {
             <Route path="/Politica" element={<Politica />} />
             <Route path="/request-password-reset" element={<RequestPasswordReset />} />
             <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+
 
             {/* Rutas protegidas */}
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['Administrador']}><Admin /></ProtectedRoute>} />
