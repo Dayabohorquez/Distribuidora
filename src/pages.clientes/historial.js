@@ -16,23 +16,25 @@ const OrderHistory = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Verifica si el usuario está autenticado y obtiene el historial de pedidos
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setIsAuthenticated(!!decoded.rol);
-        fetchOrderHistory(decoded.documento);
+        setIsAuthenticated(!!decoded.rol); // Verifica si el usuario tiene rol
+        fetchOrderHistory(decoded.documento); // Obtiene el historial
       } catch (e) {
-        console.error('Error decodificando el token', e);
+        console.error('Error al decodificar el token:', e);
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/login'); // Redirige al login si no puede decodificar el token
       }
     } else {
-      navigate('/login');
+      navigate('/login'); // Redirige al login si no está autenticado
     }
   }, [navigate]);
 
+  // Función para obtener el historial de pedidos desde la API
   const fetchOrderHistory = async (documento) => {
     setLoading(true);
     setError('');
@@ -42,7 +44,7 @@ const OrderHistory = () => {
         throw new Error('Error al obtener el historial de pedidos');
       }
       const data = await response.json();
-      setOrders(data);
+      setOrders(data); // Guarda los pedidos en el estado
     } catch (error) {
       console.error('Error fetching order history:', error);
       setError('No se pudo cargar el historial de pedidos. Inténtalo más tarde.');
@@ -51,35 +53,42 @@ const OrderHistory = () => {
     }
   };
 
+  // Función para formatear el total de pago con el símbolo de moneda
+  const formatCurrency = (amount) => {
+    return `$${parseFloat(amount).toLocaleString()}`;
+  };
+
+  // Función para cancelar el pedido y devolver productos al stock
   const cancelarPedido = async (id_pedido) => {
     const token = localStorage.getItem('token');
     const decoded = token ? jwtDecode(token) : null;
 
     if (decoded && decoded.documento) {
-        try {
-            const response = await fetch(`http://localhost:4000/api/pedidos/cancelar/${id_pedido}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ documento: decoded.documento }) // Incluye documento en el cuerpo
-            });
+      try {
+        // Cancelar el pedido
+        const cancelResponse = await fetch(`http://localhost:4000/api/pedidos/cancelar/${id_pedido}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ documento: decoded.documento }),
+        });
 
-            if (!response.ok) {
-                throw new Error('Error al cancelar el pedido');
-            }
-
-            // Actualizar el historial de pedidos después de cancelar el pedido
-            fetchOrderHistory(decoded.documento);
-        } catch (error) {
-            console.error('Error cancelando el pedido:', error);
-            setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
+        if (!cancelResponse.ok) {
+          throw new Error('Error al cancelar el pedido');
         }
+
+        // Actualiza el historial de pedidos después de cancelar
+        fetchOrderHistory(decoded.documento);
+      } catch (error) {
+        console.error('Error al cancelar el pedido:', error);
+        setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
+      }
     } else {
-        setError('Usuario no autenticado. Por favor, inicia sesión nuevamente.');
+      setError('Usuario no autenticado. Por favor, inicia sesión nuevamente.');
     }
-};
+  };
 
   return (
     <>
@@ -102,6 +111,7 @@ const OrderHistory = () => {
                     <th>Método de Pago</th>
                     <th>Total Pagado</th>
                     <th>Dirección de Envío</th>
+                    <th>Fecha de Entrega</th>
                     <th>Estado de Envío</th>
                     <th>Detalles de Compra</th>
                     <th>Acciones</th>
@@ -110,10 +120,11 @@ const OrderHistory = () => {
                 <tbody>
                   {orders.map((order) => (
                     <tr key={order.id_pedido}>
-                      <td>{new Date(order.fecha_pedido).toLocaleDateString()}</td>
+                      <td>{order.fecha_pedido}</td>
                       <td>{order.metodo_pago}</td>
-                      <td>${parseFloat(order.total_pagado).toLocaleString()}</td>
+                      <td>{formatCurrency(order.total_pagado)}</td>
                       <td>{order.direccion_envio}</td>
+                      <td>{order.fecha_entrega}</td> {/* Aquí se aplica el formateo */}
                       <td>{order.estado_pedido}</td>
                       <td>{order.productos}</td>
                       <td>

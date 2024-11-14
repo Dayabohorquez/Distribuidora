@@ -14,7 +14,7 @@ const ProductPage = ({ addToCart }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [filters, setFilters] = useState({
         occasion: '',
-        price: null,
+        price: '',
         type: ''
     });
     const [notification, setNotification] = useState('');
@@ -62,8 +62,8 @@ const ProductPage = ({ addToCart }) => {
             description: product.descripcion_producto || 'Descripción no disponible.',
             id: product.id_producto,
             cantidad_disponible: product.cantidad_disponible,
-            codigo_producto: product.codigo_producto, // Agregar el código del producto
-            estado_producto: product.estado_producto ? 'Disponible' : 'No disponible' // Estado del producto
+            codigo_producto: product.codigo_producto,
+            estado_producto: product.estado_producto ? 'Disponible' : 'No disponible'
         });
     };
 
@@ -74,12 +74,13 @@ const ProductPage = ({ addToCart }) => {
     const handleFilterChange = (e) => {
         const { id, checked, name } = e.target;
 
+        // Filtros por tipo
         if (name === 'price') {
             setFilters((prevFilters) => ({
                 ...prevFilters,
-                price: checked ? id : null
+                price: checked ? id : ''
             }));
-        } else {
+        } else if (name === 'occasion' || name === 'type') {
             setFilters((prevFilters) => ({
                 ...prevFilters,
                 [id]: checked ? id : ''
@@ -87,6 +88,7 @@ const ProductPage = ({ addToCart }) => {
         }
     };
 
+    // Filtrar productos según los filtros activos
     const filteredProducts = products.filter(product => {
         const { occasion, price, type } = filters;
 
@@ -102,31 +104,30 @@ const ProductPage = ({ addToCart }) => {
 
     const handleAddToCart = async (product) => {
         const documento = localStorage.getItem('documento');
-
+    
         if (!documento) {
             setNotification('Por favor, inicie sesión para agregar productos al carrito.');
-            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
+            setTimeout(() => setNotification(''), 3000);
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento,
                 id_producto: product.id_producto,
                 cantidad: 1,
             });
-
+    
             const idCarrito = response.data.id_carrito;
-
             await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
-
+    
             setNotification('Producto agregado al carrito');
-            setModalData(null);
-            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
+            setModalData(null); // Cerrar modal después de agregar
+            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error adding product to cart:', error);
             setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
-            setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
+            setTimeout(() => setNotification(''), 3000);
         }
     };
 
@@ -191,7 +192,7 @@ const ProductPage = ({ addToCart }) => {
                 </aside>
 
                 <main className="product-grid2">
-                    {filteredProducts.map(product => (
+                    {filteredProducts.length > 0 ? filteredProducts.map(product => (
                         <div key={product.id_producto} className="product-card">
                             <img src={product.foto_ProductoURL || ''} alt={product.nombre_producto} className="product-img" />
                             <h3>{product.nombre_producto}</h3>
@@ -202,12 +203,14 @@ const ProductPage = ({ addToCart }) => {
                             <button
                                 className="btn-cart"
                                 onClick={() => handleAddToCart(product)}
-                                disabled={product.cantidad_disponible < 1} // Deshabilitar si está agotado
+                                disabled={product.cantidad_disponible < 1}
                             >
                                 Añadir al carrito
                             </button>
                         </div>
-                    ))}
+                    )) : (
+                        <p>No se encontraron productos que coincidan con los filtros seleccionados.</p>
+                    )}
                 </main>
 
                 {modalData && (
@@ -219,10 +222,10 @@ const ProductPage = ({ addToCart }) => {
                                 <div className="modal-text">
                                     <h3 id="modal-title">{modalData.title}</h3>
                                     <p id="modal-description">{modalData.description}</p>
-                                    <p id="modal-code">Código: {modalData.codigo_producto}</p> {/* Código del producto */}
-                                    <p id="modal-status">Estado: {modalData.estado_producto}</p> {/* Estado del producto */}
+                                    <p id="modal-code">Código: {modalData.codigo_producto}</p>
+                                    <p id="modal-status">Estado: {modalData.estado_producto}</p>
                                     <p id="modal-price">Precio: ${modalData.price.toLocaleString()}</p>
-                                    <p id="modal-available">Cantidad disponible: {modalData.cantidad_disponible}</p> {/* Cantidad disponible */}
+                                    <p id="modal-available">Cantidad disponible: {modalData.cantidad_disponible}</p>
                                     <button
                                         className="btn-cart"
                                         onClick={() => handleAddToCart({

@@ -18,7 +18,7 @@ const DetalleProducto = () => {
     const [quantity, setQuantity] = useState(1);
     const [selectedOption, setSelectedOption] = useState('ninguno');
     const [dedicatoria, setDedicatoria] = useState('');
-    const [notification, setNotification] = useState('');
+    const [notification, setNotification] = useState({ message: '', type: '' });
     const [opcionesAdicionales, setOpcionesAdicionales] = useState([]);
 
     useEffect(() => {
@@ -41,6 +41,7 @@ const DetalleProducto = () => {
                 setOpcionesAdicionales(response.data);
             } catch (error) {
                 console.error('Error al obtener las opciones adicionales:', error);
+                setOpcionesAdicionales([]);  // Fallback para manejar el error
             }
         };
 
@@ -70,9 +71,9 @@ const DetalleProducto = () => {
     const handleQuantityChange = (event) => {
         const value = Math.max(parseInt(event.target.value, 10), 1);
         if (value > product.cantidad_disponible) {
-            setNotification(`La cantidad no puede exceder ${product.cantidad_disponible}.`);
+            setNotification({ message: `La cantidad no puede exceder ${product.cantidad_disponible}.`, type: 'error' });
         } else {
-            setNotification('');
+            setNotification({ message: '', type: '' });
         }
         setQuantity(value);
     };
@@ -83,38 +84,62 @@ const DetalleProducto = () => {
 
     const updateProductPrice = () => {
         const basePrice = parseInt(product?.precio_producto) || 0;
-        return (basePrice + opcionAdicionalPrecio) * quantity;
+        const totalPrice = (basePrice + opcionAdicionalPrecio) * quantity;  // No multiplicar el precio adicional por la cantidad
+        return totalPrice;
     };
 
     const handleAddToCart = async () => {
         const documento = localStorage.getItem('documento');
-
+        const token = localStorage.getItem('token');
+      
         if (!documento) {
-            setNotification('Por favor, inicie sesión para agregar productos al carrito.');
+            setNotification({ message: 'Por favor, inicie sesión para agregar productos al carrito.', type: 'error' });
             return;
         }
-
+    
+        if (!token) {
+            setNotification({ message: 'Por favor, inicie sesión para agregar productos al carrito.', type: 'error' });
+            return;
+        }
+    
         if (quantity < 1 || quantity > product.cantidad_disponible) {
-            setNotification('Cantidad no válida.');
+            setNotification({ message: 'Cantidad no válida.', type: 'error' });
             return;
         }
-
+    
         const selectedOptionId = opcionesAdicionales.find(op => op.opcion_adicional === selectedOption)?.id_opcion;
-
+    
         try {
-            await axios.post('http://localhost:4000/api/carrito-item/agregar', {
-                documento,
-                id_producto: product.id_producto,
-                cantidad: quantity,
-                dedicatoria: dedicatoria.trim() || null,
-                id_opcion: selectedOptionId || null, // Asegúrate de enviar el ID correcto
-            });
-            setNotification('Producto agregado al carrito.');
+            // Hacer la solicitud para agregar al carrito
+            const response = await axios.post(
+                'http://localhost:4000/api/carrito-item/agregar',
+                {
+                    documento,
+                    id_producto: product.id_producto,
+                    cantidad: quantity,
+                    dedicatoria: dedicatoria.trim() || null,
+                    id_opcion: selectedOptionId || null, // Asegúrate de enviar el ID correcto
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`  // Pasa el token en la cabecera de la solicitud
+                    }
+                }
+            );
+        
+            // Verificar la respuesta y establecer la notificación
+            if (response.data && response.data.message) {
+                setNotification({ message: response.data.message, type: 'success' });
+            } else {
+                setNotification({ message: 'Error desconocido al agregar el producto al carrito.', type: 'error' });
+            }
+        
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
-            setNotification('Error al agregar el producto al carrito.');
+            setNotification({ message: 'Error al procesar la solicitud.', type: 'error' });
         } finally {
-            setTimeout(() => setNotification(''), 3000);
+            // Limpiar la notificación después de 3 segundos
+            setTimeout(() => setNotification({ message: '', type: '' }), 3000);
         }
     };
 
@@ -132,7 +157,11 @@ const DetalleProducto = () => {
 
                 <section className="detalle-producto">
                     <h2 className="descripcion">Personalización</h2>
-                    {notification && <div className="notification">{notification}</div>}
+                    {notification.message && (
+                        <div className={`notification ${notification.type}`}>
+                            {notification.message}
+                        </div>
+                    )}
                     <div className="contenido-producto">
                         <div className="imagen-producto">
                             <img src={product.foto_ProductoURL} alt={product.nombre_producto} />

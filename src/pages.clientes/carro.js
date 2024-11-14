@@ -84,27 +84,33 @@ const CartPage = () => {
         setCartTotal({ subtotal: total, iva: total * ivaRate });
     };
 
-    const handleQuantityChange = async (id, newQuantity, availableStock) => {
+    const handleQuantityChange = async (id, newQuantity, availableStock, idProducto, currentQuantity) => {
+        // Validar que la cantidad esté dentro del rango permitido (entre 1 y el stock disponible)
         if (newQuantity < 1 || newQuantity > availableStock) {
             setNotification(`La cantidad debe estar entre 1 y ${availableStock}.`);
             return;
         }
 
-        const documento = localStorage.getItem('documento');
-        if (!documento) {
-            setNotification('No se ha encontrado el documento. Por favor, inicie sesión nuevamente.');
-            return;
-        }
+        // Calcular la diferencia en cantidad (puede ser negativa o positiva)
+        const cantidadCambio = newQuantity - currentQuantity;
 
         try {
-            await axios.put(`http://localhost:4000/api/carrito/actualizarc/${id}`, { cantidad: newQuantity });
+            // Enviar la solicitud al servidor para actualizar la cantidad en el carrito
+            await axios.put(`http://localhost:4000/api/carrito/actualizarc/${id}`, {
+                cantidad: cantidadCambio,  // Diferencia en cantidad
+                id_producto: idProducto,   // Asegurarse de enviar el id del producto
+            });
+
+            // Actualizar el carrito localmente en el estado
             setCartItems(prevItems => {
                 const updatedItems = prevItems.map(item =>
                     item.id_carrito_item === id ? { ...item, cantidad: newQuantity } : item
                 );
-                updateCartTotal(updatedItems);
+                updateCartTotal(updatedItems);  // Actualizar el total del carrito después del cambio
                 return updatedItems;
             });
+
+            // Notificar al usuario que la cantidad se ha actualizado correctamente
             setNotification('Cantidad actualizada.');
         } catch (error) {
             console.error('Error al actualizar la cantidad:', error);
@@ -257,23 +263,23 @@ const CartPage = () => {
                                         min="1"
                                         max={item.cantidad_disponible}
                                         value={item.cantidad}
-                                        onChange={(e) => handleQuantityChange(item.id_carrito_item, parseInt(e.target.value), item.cantidad_disponible)}
+                                        onChange={(e) => handleQuantityChange(item.id_carrito_item, parseInt(e.target.value), item.cantidad_disponible, item.id_producto, item.cantidad)}
                                         className="quantity-input"
                                     />
 
                                     <div>
-                                    <label>Opción Adicional:</label>
-                                    <select
-                                        value={item.opcion_adicional || 'ninguno'}
-                                        onChange={(e) => handleOptionChange(item.id_carrito_item, e.target.value, item.dedicatoria)}
-                                    >
-                                        <option value="ninguno">Ninguno</option>
-                                        {additionalOptions.map(option => (
-                                            <option key={option.id} value={option.opcion_adicional}>
-                                                {option.opcion_adicional} (+${option.precio_adicional.toLocaleString()})
-                                            </option>
-                                        ))}
-                                    </select>
+                                        <label>Opción Adicional:</label>
+                                        <select
+                                            value={item.opcion_adicional || 'ninguno'}
+                                            onChange={(e) => handleOptionChange(item.id_carrito_item, e.target.value, item.dedicatoria)}
+                                        >
+                                            <option value="ninguno">Ninguno</option>
+                                            {additionalOptions.map(option => (
+                                                <option key={option.id} value={option.opcion_adicional}>
+                                                    {option.opcion_adicional} (+${option.precio_adicional.toLocaleString()})
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                     {item.opcion_adicional !== 'Ninguno' && (

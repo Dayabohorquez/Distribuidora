@@ -20,6 +20,7 @@ const PaymentMethod = () => {
   const [loading, setLoading] = useState(false);
   const [subtotal, setSubtotal] = useState(initialSubtotal || 0);
   const [shippingAddress, setShippingAddress] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -71,11 +72,13 @@ const PaymentMethod = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!cartItems.length) {
       setNotification({ message: 'El carrito está vacío.', type: 'error' });
       return;
     }
 
+    // Verificar si algún producto tiene una cantidad mayor que la disponible en stock
     const unavailableItems = cartItems.filter(item => item.cantidad > item.cantidad_disponible);
     if (unavailableItems.length > 0) {
       setNotification({ message: 'Algunos productos en el carrito están agotados. Actualiza el carrito.', type: 'error' });
@@ -106,6 +109,7 @@ const PaymentMethod = () => {
       total_pago: parseFloat(total.toFixed(2)),
       items: validItems,
       direccion_envio: shippingAddress,
+      fecha_entrega: deliveryDate, // Fecha de entrega
     };
 
     try {
@@ -113,9 +117,10 @@ const PaymentMethod = () => {
       const response = await axios.post('http://localhost:4000/api/pago-y-pedido', paymentAndOrderData);
 
       if (response.data.mensaje === "Pedido realizado con éxito") {
+        // Vaciar carrito tras la compra exitosa
         await axios.delete(`http://localhost:4000/api/carrito/vaciar/${documento}`);
         setNotification({ message: 'Pago realizado y pedido creado exitosamente!', type: 'success' });
-        navigate('/');
+        navigate('/OrderHistory');
       } else {
         throw new Error("Error al crear el pago y el pedido");
       }
@@ -199,6 +204,16 @@ const PaymentMethod = () => {
                 value={shippingAddress}
                 onChange={(e) => setShippingAddress(e.target.value)}
                 placeholder="Ingresa la dirección de envío"
+                required
+              />
+            </div>
+
+            <div className="delivery-date">
+              <h3>Fecha de Entrega</h3>
+              <input
+                type="date"
+                value={deliveryDate}
+                onChange={(e) => setDeliveryDate(e.target.value)}
                 required
               />
             </div>
