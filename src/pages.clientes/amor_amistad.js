@@ -85,17 +85,15 @@ const ProductPage = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:4000/api/carritos', {
+            const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento: documento,
                 id_producto: product.id_producto,
                 cantidad: 1
             });
 
-            if (response.status === 200 || response.status === 201) {
-                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
-            } else {
-                throw new Error('Error inesperado al agregar al carrito');
-            }
+            setNotification('Producto agregado al carrito');
+            setModalData(null);
+            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
             setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
