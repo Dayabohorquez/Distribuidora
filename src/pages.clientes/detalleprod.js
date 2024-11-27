@@ -28,7 +28,6 @@ const DetalleProducto = () => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -40,7 +39,6 @@ const DetalleProducto = () => {
                 const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
                 setOpcionesAdicionales(response.data);
             } catch (error) {
-                console.error('Error al obtener las opciones adicionales:', error);
                 setOpcionesAdicionales([]);  // Fallback para manejar el error
             }
         };
@@ -135,7 +133,6 @@ const DetalleProducto = () => {
             }
         
         } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
             setNotification({ message: 'Error al procesar la solicitud.', type: 'error' });
         } finally {
             // Limpiar la notificación después de 3 segundos

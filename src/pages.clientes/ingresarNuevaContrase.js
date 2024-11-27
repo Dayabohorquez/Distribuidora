@@ -27,7 +27,6 @@ const ResetPassword = () => {
             } else {
                 setNotification('Error al actualizar la contraseña');
             }
-            console.error('Error en el restablecimiento:', error);
         }
     };
     

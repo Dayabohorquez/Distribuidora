@@ -21,7 +21,6 @@ const Headerc = ({ totalItems }) => {
                 const decoded = jwtDecode(token);
                 setUser(decoded);
             } catch (e) {
-                console.error('Error decoding token', e);
                 localStorage.removeItem('token');
             }
         }

@@ -29,7 +29,6 @@ const ProductPage = ({ addToCart }) => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decoding token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -42,11 +41,9 @@ const ProductPage = ({ addToCart }) => {
                 if (Array.isArray(response.data)) {
                     setProducts(response.data);
                 } else {
-                    console.error('Data is not an array:', response.data);
                     setProducts([]);
                 }
             } catch (error) {
-                console.error('Error fetching products:', error);
                 setProducts([]);
             }
         };
@@ -130,7 +127,6 @@ const ProductPage = ({ addToCart }) => {
             setModalData(null);
             setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
         } catch (error) {
-            console.error('Error adding product to cart:', error);
             setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
             setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos
         }

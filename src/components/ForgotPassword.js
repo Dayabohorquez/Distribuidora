@@ -16,7 +16,6 @@ const ForgotPassword = () => {
             setTimeout(() => navigate('/login'), 3000); // Redirige después de 3 segundos
         } catch (error) {
             setNotification('Error al enviar el enlace. Verifique su correo electrónico.');
-            console.error(error);
         }
     };
 

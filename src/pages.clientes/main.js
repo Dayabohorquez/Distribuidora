@@ -52,11 +52,9 @@ const HomePage = () => {
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
-          console.error('Data is not an array:', response.data);
           setProducts([]);
         }
       } catch (error) {
-        console.error('Error fetching products:', error);
         setProducts([]);
       }
     };

@@ -27,7 +27,6 @@ const ProductPage = () => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -39,7 +38,6 @@ const ProductPage = () => {
                 const response = await axios.get('http://localhost:4000/api/productos/fecha-especial/5'); // Cambia el ID según sea necesario
                 setProducts(response.data);
             } catch (error) {
-                console.error('Error al obtener productos:', error);
             }
         };
 
@@ -97,7 +95,6 @@ const ProductPage = () => {
                 throw new Error('Error inesperado al agregar al carrito');
             }
         } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
             setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
         }
     };

@@ -12,7 +12,6 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
             const decoded = jwtDecode(token);
             userRole = decoded.rol; 
         } catch (e) {
-            console.error('Error decoding token', e);
             localStorage.removeItem('token');
         }
     }

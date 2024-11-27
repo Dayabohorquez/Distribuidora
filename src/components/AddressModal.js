@@ -19,7 +19,6 @@ const AddressModal = ({ onClose }) => {
             });
             onClose(); // Cerrar el modal después de agregar la dirección
         } catch (error) {
-            console.error('Error al agregar la dirección:', error);
             setErrorMessage('Error al guardar la dirección. Intente de nuevo.');
         }
     };

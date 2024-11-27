@@ -16,7 +16,6 @@ const QuienesSomosPage = () => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol); // Verifica si hay un rol
             } catch (e) {
-                console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
             }
         }

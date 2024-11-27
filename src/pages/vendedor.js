@@ -44,7 +44,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/productos');
             setProductos(response.data);
         } catch (error) {
-            console.error('Error al obtener productos:', error);
             showNotification('Error al obtener productos: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -54,7 +53,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/pedidos');
             setPedidos(response.data);
         } catch (error) {
-            console.error('Error al obtener pedidos:', error);
             showNotification('Error al obtener pedidos: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -64,7 +62,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
             setOpcionesAdicionales(response.data);
         } catch (error) {
-            console.error('Error al obtener opciones adicionales:', error);
             showNotification('Error al obtener opciones adicionales: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -74,7 +71,6 @@ const App = () => {
             const response = await axios.get(`http://localhost:4000/api/pedido/${id_pedido}/items`);
             setItemsPedido(response.data);
         } catch (error) {
-            console.error('Error al obtener items del pedido:', error);
             showNotification('Error al obtener items del pedido: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -101,7 +97,6 @@ const App = () => {
             fetchProductos();
             showNotification(`Estado del producto ${idProducto} actualizado a "${nuevoEstado ? 'Activo' : 'Inactivo'}".`);
         } catch (error) {
-            console.error('Error al cambiar el estado del producto:', error);
             showNotification('Error al cambiar el estado del producto: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -113,7 +108,6 @@ const App = () => {
             fetchPedidos();
             showNotification(`Estado del pedido ${idPedido} actualizado a "${nuevoEstado}".`);
         } catch (error) {
-            console.error('Error al cambiar el estado del pedido:', error);
             showNotification('Error al cambiar el estado del pedido: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -138,7 +132,6 @@ const App = () => {
             closeModal();
             showNotification('Opción adicional creada exitosamente.');
         } catch (error) {
-            console.error('Error al crear opción adicional:', error);
         }
     };
 
@@ -153,7 +146,6 @@ const App = () => {
             closeModal();
             showNotification('Opción adicional actualizada exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar opción adicional:', error);
         }
     };
 
@@ -163,7 +155,6 @@ const App = () => {
             fetchOpcionesAdicionales();
             showNotification('Opción adicional eliminada exitosamente.');
         } catch (error) {
-            console.error('Error al eliminar opción adicional:', error);
         }
     };
 

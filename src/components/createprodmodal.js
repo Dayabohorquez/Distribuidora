@@ -8,7 +8,6 @@ const CreateProductModal = ({ onClose, onSave }) => {
         if (typeof onSave === 'function') {
             onSave(event);
         } else {
-            console.error('onSave no es una función', onSave);
         }
     };
 

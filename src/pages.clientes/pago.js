@@ -29,14 +29,8 @@ const PaymentMethod = () => {
         const decoded = jwtDecode(token);
         setIsAuthenticated(!!decoded.rol);
       } catch (e) {
-        console.error('Error decodificando el token', e);
         localStorage.removeItem('token');
       }
-    }
-
-    if (!id_carrito) {
-      console.error('ID del carrito no está definido.');
-      return;
     }
 
     const fetchCartItems = async () => {
@@ -53,7 +47,6 @@ const PaymentMethod = () => {
           setNotification({ message: 'No hay productos en el carrito.', type: 'info' });
         }
       } catch (error) {
-        console.error('Error al obtener los items del carrito:', error);
         setNotification({ message: 'Error al cargar los items del carrito', type: 'error' });
       }
     };
@@ -125,7 +118,6 @@ const PaymentMethod = () => {
         throw new Error("Error al crear el pago y el pedido");
       }
     } catch (error) {
-      console.error('Error al procesar el pago:', error);
       setNotification({
         message: error.response?.data.mensaje || 'Error al procesar el pago. Inténtalo de nuevo.',
         type: 'error',

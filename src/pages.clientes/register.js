@@ -107,7 +107,6 @@ const Register = () => {
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Error al registrar la cuenta. Verifique los datos e intente nuevamente.';
             setNotification(`Error: ${errorMessage}`);
-            console.error('Error en la solicitud:', error.response?.data); // Mostrar detalles del error
         }
     };
 

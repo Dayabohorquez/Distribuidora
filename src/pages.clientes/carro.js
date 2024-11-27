@@ -32,7 +32,6 @@ const CartPage = () => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
                 navigate('/login');
             }
@@ -47,7 +46,6 @@ const CartPage = () => {
                 const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
                 setAdditionalOptions(response.data);
             } catch (error) {
-                console.error('Error al obtener las opciones adicionales:', error);
             }
         };
         fetchAdditionalOptions();
@@ -113,7 +111,6 @@ const CartPage = () => {
             // Notificar al usuario que la cantidad se ha actualizado correctamente
             setNotification('Cantidad actualizada.');
         } catch (error) {
-            console.error('Error al actualizar la cantidad:', error);
             setNotification('Error al actualizar la cantidad.');
         }
     };
@@ -149,7 +146,6 @@ const CartPage = () => {
 
             setNotification('Opción adicional y dedicatoria actualizadas.');
         } catch (error) {
-            console.error('Error al actualizar:', error);
             setNotification('Error al actualizar.');
         }
     };
@@ -167,7 +163,6 @@ const CartPage = () => {
             updateCartTotal(cartItems);
             setNotification('Producto eliminado del carrito.');
         } catch (error) {
-            console.error('Error al eliminar el producto:', error);
             setNotification('Error al eliminar el producto.');
         }
     };
@@ -185,7 +180,6 @@ const CartPage = () => {
             setCartTotal({ subtotal: 0, iva: 0 });
             setNotification('Carrito vacío.');
         } catch (error) {
-            console.error('Error al vaciar el carrito:', error);
             setNotification('Error al vaciar el carrito.');
         }
     };
@@ -202,11 +196,6 @@ const CartPage = () => {
         }));
 
         const id_carrito = localStorage.getItem('id_carrito');
-
-        if (!id_carrito) {
-            console.error('El ID del carrito no está definido.');
-            return;
-        }
 
         navigate('/payment-method', {
             state: {

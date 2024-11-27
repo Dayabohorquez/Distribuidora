@@ -21,7 +21,6 @@ const EventosPage = () => {
                 const decoded = jwtDecode(token);
                 setIsAuthenticated(!!decoded.rol);
             } catch (e) {
-                console.error('Error decodificando el token', e);
                 localStorage.removeItem('token');
             }
         }
@@ -32,7 +31,6 @@ const EventosPage = () => {
                 const response = await axios.get('http://localhost:4000/api/eventos');
                 setEventos(response.data);
             } catch (error) {
-                console.error('Error al obtener eventos:', error);
             }
         };
 
@@ -58,7 +56,6 @@ const EventosPage = () => {
             <div className="eventos-grid">
                 {eventos.length > 0 ? (
                     eventos.map((evento) => {
-                        console.log('Nombre del evento:', evento.nombre_evento);
                         return (
                             <div key={evento.id_evento} className="evento-card">
                                 {evento.foto_eventoURL ? (

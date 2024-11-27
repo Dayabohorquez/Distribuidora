@@ -28,7 +28,6 @@ const App = () => {
         setIsAuthenticated(!!decoded.rol);
         fetchUsuario(decoded.documento);
       } catch (e) {
-        console.error('Error decodificando el token', e);
         localStorage.removeItem('token');
       }
     }
@@ -39,7 +38,6 @@ const App = () => {
       const response = await axios.get(`${API_URL}/usuario/${documento}`);
       setUserData(response.data);
     } catch (error) {
-      console.error('Error al obtener el usuario:', error);
       showNotification('Error al obtener el usuario.');
     }
   };
@@ -54,7 +52,6 @@ const App = () => {
         showNotification('Información actualizada correctamente.');
       }
     } catch (error) {
-      console.error('Error al actualizar el usuario:', error);
       showNotification('Error al actualizar el usuario.');
     }
   };
@@ -71,7 +68,6 @@ const App = () => {
         showNotification('Contraseña cambiada exitosamente.');
       }
     } catch (error) {
-      console.error('Error al cambiar la contraseña:', error);
       showNotification('Error al cambiar la contraseña.');
     } finally {
       setChangePasswordModalOpen(false);

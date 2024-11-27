@@ -25,7 +25,6 @@ const OrderHistory = () => {
         setIsAuthenticated(!!decoded.rol); // Verifica si el usuario tiene rol
         fetchOrderHistory(decoded.documento); // Obtiene el historial
       } catch (e) {
-        console.error('Error al decodificar el token:', e);
         localStorage.removeItem('token');
         navigate('/login'); // Redirige al login si no puede decodificar el token
       }
@@ -46,7 +45,6 @@ const OrderHistory = () => {
       const data = await response.json();
       setOrders(data); // Guarda los pedidos en el estado
     } catch (error) {
-      console.error('Error fetching order history:', error);
       setError('No se pudo cargar el historial de pedidos. Inténtalo más tarde.');
     } finally {
       setLoading(false);
@@ -82,7 +80,6 @@ const OrderHistory = () => {
         // Actualiza el historial de pedidos después de cancelar
         fetchOrderHistory(decoded.documento);
       } catch (error) {
-        console.error('Error al cancelar el pedido:', error);
         setError('No se pudo cancelar el pedido. Inténtalo más tarde.');
       }
     } else {

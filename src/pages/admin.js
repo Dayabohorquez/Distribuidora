@@ -76,7 +76,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/pagos');
             setPagos(response.data); // Asegúrate de que response.data es un array
         } catch (error) {
-            console.error('Error al obtener los pagos:', error);
         }
     };
 
@@ -92,7 +91,6 @@ const App = () => {
                 )
             );
         } catch (error) {
-            console.error('Error al actualizar el estado del pago:', error);
         }
     };
 
@@ -102,7 +100,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/usuarios');
             setUsuarios(response.data);
         } catch (error) {
-            console.error('Error al obtener los usuarios:', error);
             showNotification('Error al obtener los usuarios.');
         }
     };
@@ -110,7 +107,6 @@ const App = () => {
     // Función para actualizar un usuario
     const handleUpdateUsuario = async (documento, updatedUsuario) => {
         if (!documento) {
-            console.error('El documento no está definido');
             return;
         }
 
@@ -120,11 +116,9 @@ const App = () => {
                 fetchUsuarios();
                 showNotification('Usuario actualizado exitosamente.');
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al actualizar el usuario.');
             }
         } catch (error) {
-            console.error('Error al actualizar el usuario:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el usuario.');
         }
     };
@@ -132,7 +126,6 @@ const App = () => {
     // Función para actualizar el rol de un usuario
     const handleUpdateRolUsuario = async (documento, nuevoRol) => {
         if (!documento || !nuevoRol) {
-            console.error('El documento o el nuevo rol no están definidos');
             return;
         }
 
@@ -142,11 +135,9 @@ const App = () => {
                 fetchUsuarios();
                 showNotification('Rol actualizado exitosamente.');
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al actualizar el rol.');
             }
         } catch (error) {
-            console.error('Error al actualizar el rol:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el rol.');
         }
     };
@@ -154,7 +145,6 @@ const App = () => {
     // Función para cambiar el estado de un usuario
     const handleToggleStatus = async (documento) => {
         if (!documento) {
-            console.error('El documento no está definido');
             return;
         }
 
@@ -164,11 +154,9 @@ const App = () => {
                 fetchUsuarios();
                 showNotification('Estado del usuario cambiado exitosamente.');
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al cambiar el estado del usuario.');
             }
         } catch (error) {
-            console.error('Error al cambiar el estado del usuario:', error);
             showNotification('Error al cambiar el estado del usuario.');
         }
     };
@@ -204,7 +192,6 @@ const App = () => {
             await handleUpdateUsuario(currentUsuario.documento, updatedUsuario);
             closeEditModal();
         } catch (error) {
-            console.error('Error al actualizar el usuario:', error);
         }
     };
 
@@ -285,7 +272,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/productos');
             setProductos(response.data);
         } catch (error) {
-            console.error('Error al obtener los productos:', error);
             showNotification('Error al obtener los productos.');
         }
     };
@@ -295,7 +281,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/images/producto');
             setImageList(response.data);
         } catch (error) {
-            console.error('Error al obtener imágenes:', error);
             showNotification('Error al obtener imágenes.');
         }
     };
@@ -306,7 +291,6 @@ const App = () => {
 
     const handleUpdateProducto = async (idProducto, formData) => {
         if (!idProducto) {
-            console.error('El id Producto no está definido');
             return;
         }
         try {
@@ -320,14 +304,12 @@ const App = () => {
                 showNotification('Producto actualizado exitosamente.');
             }
         } catch (error) {
-            console.error('Error al actualizar el producto:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el producto.');
         }
     };
 
     const handleToggleProductStatus = async (idProducto) => {
         if (!idProducto) {
-            console.error('El ID del producto no está definido');
             return;
         }
 
@@ -335,7 +317,6 @@ const App = () => {
             // Obtener el producto actual
             const productoActual = productos.find(p => p.id_producto === idProducto);
             if (!productoActual) {
-                console.error('Producto no encontrado');
                 return;
             }
 
@@ -351,11 +332,9 @@ const App = () => {
                 fetchProductos(); // Actualizar la lista de productos
                 showNotification(`Estado del producto cambiado a ${nuevoEstado ? 'activo' : 'inactivo'} exitosamente.`);
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al cambiar el estado del producto.');
             }
         } catch (error) {
-            console.error('Error al cambiar el estado del producto:', error);
             showNotification('Error al cambiar el estado del producto.');
         }
     };
@@ -408,27 +387,23 @@ const App = () => {
             closeCreateProductModal();
             showNotification('Producto creado exitosamente.');
         } catch (error) {
-            console.error('Error al crear el producto:', error.response ? error.response.data : error.message);
             showNotification('Error al crear el producto.');
         }
     };
 
     const handleUpdateCantidad = async (idProducto, nuevaCantidad) => {
         if (!idProducto) {
-            console.error('El ID del producto no está definido');
             return;
         }
     
         // Verificar que la nueva cantidad sea un número
         if (typeof nuevaCantidad !== 'number') {
-            console.error('La nueva cantidad debe ser un número');
             showNotification('La nueva cantidad debe ser un número.');
             return;
         }
     
         // Verificar que la nueva cantidad no sea negativa
         if (nuevaCantidad < 0) {
-            console.error('La nueva cantidad no puede ser negativa');
             showNotification('La nueva cantidad no puede ser negativa.');
             return;
         }
@@ -442,11 +417,9 @@ const App = () => {
                 fetchProductos(); // Actualizar la lista de productos
                 showNotification('Cantidad disponible actualizada exitosamente.');
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al actualizar la cantidad del producto.');
             }
         } catch (error) {
-            console.error('Error al actualizar la cantidad del producto:', error);
             showNotification('Error al actualizar la cantidad del producto.');
         }
     };      
@@ -479,7 +452,6 @@ const App = () => {
             await handleUpdateProducto(currentProducto.id_producto, formData);
             closeEditProductModal();
         } catch (error) {
-            console.error('Error al actualizar el producto:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -501,7 +473,6 @@ const App = () => {
 
             fetchProductos(); // Actualizar la lista de productos
         } catch (error) {
-            console.error('Error al incrementar la cantidad:', error);
             showNotification('Error al incrementar la cantidad del producto.');
         }
     };
@@ -575,7 +546,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/pedidos'); // Cambiado a /api/pedidos
             setPedidos(response.data);
         } catch (error) {
-            console.error('Error al obtener pedidos:', error);
             showNotification('Error al obtener pedidos.');
         }
     };
@@ -583,7 +553,6 @@ const App = () => {
     // Cambiar el estado de un pedido
     const handleTogglePedidoStatus = async (idPedido, nuevoEstado) => {
         if (!idPedido) {
-            console.error('El ID del pedido no está definido');
             return;
         }
 
@@ -599,11 +568,9 @@ const App = () => {
                 setPedidos(updatedPedidos);
                 showNotification('Estado del pedido actualizado.');
             } else {
-                console.error('Error en la respuesta del servidor:', response.status);
                 showNotification('Error al actualizar el estado del pedido.');
             }
         } catch (error) {
-            console.error('Error al cambiar el estado del pedido:', error);
             showNotification('Error al cambiar el estado del pedido.');
         }
     };
@@ -618,7 +585,6 @@ const App = () => {
         };
 
         if (isNaN(pedidoData.total_pagado) || isNaN(pedidoData.pago_id)) {
-            console.error('Datos no válidos:', pedidoData);
             showNotification('Datos no válidos al crear el pedido.');
             return;
         }
@@ -641,7 +607,6 @@ const App = () => {
             closeModal();
             showNotification('Pedido creado exitosamente.');
         } catch (error) {
-            console.error('Error al crear el pedido:', error);
             showNotification('Error al crear el pedido.');
         }
     };
@@ -673,7 +638,6 @@ const App = () => {
             closeModal();
             showNotification('Pedido actualizado exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar el pedido:', error);
             showNotification('Error al actualizar el pedido.');
         }
     };
@@ -765,7 +729,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/tipos-flor');
             setTiposFlor(response.data);
         } catch (error) {
-            console.error('Error al obtener tipos de flor:', error);
         }
     };
 
@@ -774,19 +737,16 @@ const App = () => {
 
         try {
             const response = await axios.post('http://localhost:4000/api/tipo-flor', { nombre_tipo_flor: nombreTipoFlor });
-            console.log('Respuesta del servidor:', response.data);
             fetchTiposFlor(); // Función para refrescar la lista de tipos de flores
             showNotification('Tipo de flor agregado exitosamente.');
             closeTipoFlorModal(); // Cerrar el modal aquí
         } catch (error) {
-            console.error('Error al agregar tipo de flor:', error.response ? error.response.data : error.message);
             showNotification('Error al agregar el tipo de flor: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
     const handleEditTipoFlor = async (tipoFlorData) => {
         if (!currentTipoFlor || !currentTipoFlor.id_tipo_flor) {
-            console.error('No se puede editar el tipo de flor, el tipo no es válido.');
             showNotification('Tipo de flor no válido.');
             return;
         }
@@ -801,7 +761,6 @@ const App = () => {
             closeTipoFlorModal();
             showNotification('Tipo de flor actualizado exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar tipo de flor:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el tipo de flor.');
         }
     };
@@ -812,7 +771,6 @@ const App = () => {
             fetchTiposFlor();
             showNotification('Tipo de flor eliminado exitosamente.');
         } catch (error) {
-            console.error('Error al eliminar tipo de flor:', error);
             showNotification('Error al eliminar el tipo de flor.');
         }
     };
@@ -841,7 +799,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/fechas-especiales');
             setFechasEspeciales(response.data);
         } catch (error) {
-            console.error('Error al obtener las fechas especiales:', error);
             showNotification('Error al obtener las fechas especiales.');
         }
     };
@@ -856,14 +813,12 @@ const App = () => {
             closeFechaEspecialModal();
             showNotification('Fecha especial añadida exitosamente.');
         } catch (error) {
-            console.error('Error al agregar fecha especial:', error.response ? error.response.data : error.message);
             showNotification('Error al agregar fecha especial.');
         }
     };
 
     const handleEditFechaEspecial = async (formData) => {
         if (!currentFechaEspecial || !currentFechaEspecial.id_fecha_especial) {
-            console.error('No se puede editar la fecha especial, la fecha no es válida.');
             return;
         }
 
@@ -873,7 +828,6 @@ const App = () => {
             closeFechaEspecialModal();
             showNotification('Fecha especial actualizada exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar fecha especial:', error);
             showNotification('Error al actualizar la fecha especial.');
         }
     };
@@ -884,7 +838,6 @@ const App = () => {
             fetchFechasEspeciales();
             showNotification('Fecha especial eliminada exitosamente.');
         } catch (error) {
-            console.error('Error al eliminar fecha especial:', error);
             showNotification('Error al eliminar la fecha especial.');
         }
     };
@@ -965,10 +918,8 @@ const App = () => {
             if (Array.isArray(response.data)) {
                 setEventos(response.data);
             } else {
-                console.error('Expected an array but received:', response.data);
             }
         } catch (error) {
-            console.error('Error al obtener eventos:', error.response ? error.response.data : error.message);
             showNotification('Error al obtener eventos.'); // Notificación de error
         }
     };
@@ -988,19 +939,16 @@ const App = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log('Respuesta del servidor:', response.data);
             fetchEventos();
             showNotification('Evento agregado exitosamente.');
             closeEventoModal();  // Cerrar el modal aquí
         } catch (error) {
-            console.error('Error al agregar evento:', error.response ? error.response.data : error.message);
             showNotification('Error al agregar el evento: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
     const handleEditEvento = async (eventoData) => {
         if (!currentEvento || !currentEvento.id_evento) {
-            console.error('No se puede editar el evento, el evento no es válido.');
             showNotification('Evento no válido.');
             return;
         }
@@ -1023,7 +971,6 @@ const App = () => {
             closeEventoModal();
             showNotification('Evento actualizado exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar evento:', error.response ? error.response.data : error.message);
             showNotification('Error al actualizar el evento.');
         }
     };
@@ -1034,7 +981,6 @@ const App = () => {
             fetchEventos();
             showNotification('Evento eliminado exitosamente.'); // Notificación de éxito
         } catch (error) {
-            console.error('Error al eliminar evento:', error.response ? error.response.data : error.message);
             showNotification('Error al eliminar el evento.'); // Notificación de error
         }
     };
@@ -1227,7 +1173,6 @@ const App = () => {
             const response = await axios.get('http://localhost:4000/api/opciones-adicionales');
             setOpcionesAdicionales(response.data);
         } catch (error) {
-            console.error('Error al obtener opciones adicionales:', error);
             showNotification('Error al obtener opciones adicionales: ' + (error.response ? error.response.data.message : error.message));
         }
     };
@@ -1239,7 +1184,6 @@ const App = () => {
             closeModal1();
             showNotification('Opción adicional creada exitosamente.');
         } catch (error) {
-            console.error('Error al crear opción adicional:', error);
         }
     };
 
@@ -1254,7 +1198,6 @@ const App = () => {
             closeModal1();
             showNotification('Opción adicional actualizada exitosamente.');
         } catch (error) {
-            console.error('Error al actualizar opción adicional:', error);
         }
     };
 
@@ -1264,7 +1207,6 @@ const App = () => {
             fetchOpcionesAdicionales();
             showNotification('Opción adicional eliminada exitosamente.');
         } catch (error) {
-            console.error('Error al eliminar opción adicional:', error);
         }
     };
 

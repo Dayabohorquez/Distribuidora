@@ -49,8 +49,6 @@ const Login = () => {
                 contrasena_usuario: password
             });
 
-            console.log('Respuesta del servidor:', response.data);
-
             const { token, usuario } = response.data;
 
             if (usuario && usuario.documento) {
@@ -97,14 +95,12 @@ const Login = () => {
                 }
 
                 setNotification('Inicio de sesión exitoso');
-                console.log('Notificación de éxito establecida');
                 setTimeout(() => setNotification(''), 3000);
             } else {
                 throw new Error('Usuario no encontrado en la respuesta');
             }
         } catch (error) {
             setNotification('Error al iniciar sesión. Verifique su correo electrónico y contraseña.');
-            console.error(error.response ? error.response.data : error.message);
             setTimeout(() => setNotification(''), 3000);
         }
     };
