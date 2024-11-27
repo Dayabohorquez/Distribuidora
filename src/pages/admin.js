@@ -1444,7 +1444,7 @@ const App = () => {
                                             <td>{producto.id_producto || 'N/A'}</td>
                                             <td>{producto.codigo_producto || 'N/A'}</td>
                                             <td>{producto.nombre_producto || 'N/A'}</td>
-                                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)}` : 'N/A'}</td>
+                                            <td>${parseFloat(producto.precio_producto).toLocaleString()}</td>
                                             <td>{producto.cantidad_disponible !== undefined ? producto.cantidad_disponible : 0}</td>
                                             <td>{producto.descripcion_producto || 'N/A'}</td>
                                             <td>
@@ -1544,7 +1544,7 @@ const App = () => {
                                             <td>{pedido.fecha_pedido}</td>
                                             <td>{pedido.documento}</td>
                                             <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
-                                            <td>{pedido.total_pagado ? `${Math.floor(pedido.total_pagado)} USD` : 'N/A'}</td>
+                                            <td>${parseFloat(pedido.total_pagado).toLocaleString()}</td>
                                             <td>
                                                 <select
                                                     value={pedido.estado_pedido}

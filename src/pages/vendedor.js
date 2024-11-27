@@ -407,7 +407,7 @@ const filteredAndSortedProductos = productos.filter((producto) => {
                             <td>{producto.codigo_producto}</td>
                             <td>{producto.nombre_producto}</td>
                             <td>{producto.cantidad_disponible}</td>
-                            <td>{producto.precio_producto ? `${Math.floor(producto.precio_producto)} USD` : 'N/A'}</td>
+                            <td>${parseFloat(producto.precio_producto).toLocaleString()}</td>
                             <td>{producto.estado_producto ? 'Activo' : 'Inactivo'}</td>
                             <td>
                                 {producto.foto_ProductoURL ? (
@@ -490,7 +490,7 @@ const filteredAndSortedProductos = productos.filter((producto) => {
                             <td>{pedido.fecha_pedido}</td>
                             <td>{pedido.documento}</td>
                             <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
-                            <td>{pedido.total_pagado}</td>
+                            <td>${parseFloat(pedido.total_pagado).toLocaleString()}</td>
                             <td>
                                 <select
                                     value={pedido.estado_pedido}
@@ -570,7 +570,7 @@ const filteredAndSortedProductos = productos.filter((producto) => {
                     <tr key={opcion.id_opcion}>
                         <td>{opcion.id_opcion}</td>
                         <td>{opcion.opcion_adicional}</td>
-                        <td>{opcion.precio_adicional}</td>
+                        <td>${parseFloat(opcion.precio_adicional).toLocaleString()}</td>
                         <td>
                             <div className="admin-actions">
                                 <FontAwesomeIcon

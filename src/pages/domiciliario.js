@@ -177,7 +177,7 @@ const App = () => {
                                         <td>{pedido.fecha_pedido}</td>
                                         <td>{pedido.nombre_usuario} {pedido.apellido_usuario}</td>
                                         <td>{pedido.direccion}</td>
-                                        <td>{pedido.total_pagado ? `${Math.floor(pedido.total_pagado)} USD` : 'N/A'}</td>
+                                        <td>${parseFloat(pedido.total_pagado).toLocaleString()}</td>
                                         <td>
                                             <select
                                                 value={pedido.estado_pedido}
