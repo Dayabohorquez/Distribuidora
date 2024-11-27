@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Headerc from '../components/Header.c';
-import { FaWhatsapp } from 'react-icons/fa';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
 import '../index.css';
-import { useNavigate } from 'react-router-dom';
 
 
 const ProductPage = () => {
@@ -84,17 +84,15 @@ const ProductPage = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:4000/api/carritos', {
+            const response = await axios.post('http://localhost:4000/api/carrito/agregar', {
                 documento: documento,
                 id_producto: product.id_producto,
                 cantidad: 1
             });
 
-            if (response.status === 200 || response.status === 201) {
-                setNotification(`Producto agregado al carrito! Subtotal: ${response.data.subtotal}`);
-            } else {
-                throw new Error('Error inesperado al agregar al carrito');
-            }
+            setNotification('Producto agregado al carrito');
+            setModalData(null);
+            setTimeout(() => setNotification(''), 3000); 
         } catch (error) {
             setNotification('Error al agregar producto al carrito. Detalles: ' + error.message);
         }

@@ -119,10 +119,6 @@ const ProductPage = ({ addToCart }) => {
                 precio_adicional: 0 // Asegúrate de enviar esto si no hay opciones adicionales
             });
 
-            const idCarrito = response.data.id_carrito;
-
-            await axios.put(`http://localhost:4000/api/actualizarTotal/${idCarrito}`);
-
             setNotification('Producto agregado al carrito');
             setModalData(null);
             setTimeout(() => setNotification(''), 3000); // Ocultar después de 3 segundos

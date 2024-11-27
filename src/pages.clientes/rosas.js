@@ -116,6 +116,8 @@ const ProductPage = ({ addToCart }) => {
             });
     
             setNotification('Producto agregado al carrito');
+            setModalData(null);
+            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             setNotification(`Error al agregar el producto al carrito: ${error.response?.data?.message || error.message}`);
             setTimeout(() => setNotification(''), 3000);
